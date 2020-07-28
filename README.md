@@ -3,7 +3,7 @@
 # Group 00
 
 ## Members
-* SURNAME, GivenName (sXXXX)
+* Kogan, Yonathan (s3719826)
 * SURNAME, GivenName (sXXXX)
 * SURNAME, GivenName (sXXXX)
 * SURNAME, GivenName (sXXXX)
