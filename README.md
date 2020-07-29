@@ -5,7 +5,7 @@
 ## Members
 * Kogan, Yonathan (s3719826)
 * van Roon, Cameron (s3382032)
-* SURNAME, GivenName (sXXXX)
+* Breznikar, Sam (s3413437)
 * SURNAME, GivenName (sXXXX)
 * SURNAME, GivenName (sXXXX)
 
