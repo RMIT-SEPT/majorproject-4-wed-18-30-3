@@ -4,7 +4,7 @@
 
 ## Members
 * Kogan, Yonathan (s3719826)
-* SURNAME, GivenName (sXXXX)
+* van Roon, Cameron (s3382032)
 * SURNAME, GivenName (sXXXX)
 * SURNAME, GivenName (sXXXX)
 * SURNAME, GivenName (sXXXX)
