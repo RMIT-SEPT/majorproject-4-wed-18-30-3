@@ -7,7 +7,7 @@
 * van Roon, Cameron (s3382032)
 * Breznikar, Sam (s3413437)
 * Zhenzhuo, Ye (s3710760)
-* SURNAME, GivenName (sXXXX)
+* Zhihang, Zhang (s3737542)
 
 ## Records
 
