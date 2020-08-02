@@ -12,7 +12,8 @@
 ## Records
 
 * Github repository : https://github.com/RMIT-SEPT/majorproject-4-wed-18-30-3
-* ClickUp Workspace : https://app.clickup.com/xxxx/yyyy
+* Trello Workspace : https://trello.com/invite/b/r8S0CuUT/b7f0fd0358e9d7d8faae465ca6b5255e/major-project
+
 
 
 ## Code documentation
