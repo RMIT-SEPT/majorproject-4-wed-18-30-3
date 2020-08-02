@@ -6,7 +6,7 @@
 * Kogan, Yonathan (s3719826)
 * van Roon, Cameron (s3382032)
 * Breznikar, Sam (s3413437)
-* SURNAME, GivenName (sXXXX)
+* Zhihang, Zhang (s3737542)
 * SURNAME, GivenName (sXXXX)
 
 ## Records
