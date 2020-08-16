@@ -35,6 +35,6 @@ function accountCreated() {
     }
     else {
         /*TO DO send all info to backend*/
-        location.replace("LogIn UI.html")
+        location.replace("LogIn UI.html");
     }
 }
