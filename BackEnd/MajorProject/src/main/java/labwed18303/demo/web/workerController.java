@@ -1,7 +1,10 @@
 package labwed18303.demo.web;
 
-import  labwed18303.demo.model.Customer;
-import labwed18303.demo.services.CustomerService;
+
+
+import labwed18303.demo.model.Customer;
+import labwed18303.demo.model.Worker;
+import labwed18303.demo.services.WorkerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,17 +14,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/customer")
-public class customerController {
+@RequestMapping("/api/worker")
+public class workerController {
 
     @Autowired
-    private CustomerService customerService;
-
+    private WorkerService workerService;
     @PostMapping("")
-    public ResponseEntity<Customer> createNewPerson(@RequestBody Customer customer){
+    public ResponseEntity<Worker> createNewPerson(@RequestBody Worker worker){
 
-        Customer customer1 = customerService.saveOrUpdateCustomer(customer);
-        return new ResponseEntity<Customer>(customer, HttpStatus.CREATED);
+        Worker worker1 = workerService.saveOrUpdateCustomer(worker);
+        return new ResponseEntity<Worker>(worker, HttpStatus.CREATED);
     }
 
 }
