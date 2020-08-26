@@ -36,3 +36,18 @@
     transform: rotate(360deg);
   }
 }
+
+.list-group-item.delete:hover {
+  cursor: -webkit-grab;
+  background-color: red;
+}
+
+.list-group-item.update:hover {
+  cursor: -webkit-grab;
+  background-color: green;
+}
+
+.list-group-item.board:hover {
+  cursor: -webkit-grab;
+  background-color:white;
+}

@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import Nav from './Nav'
+import "bootstrap/dist/css/bootstrap.min.css"
+
 
 class Dashboard extends Component {
     render() {
         return (
             <div>
-             <Nav></Nav>
+            
             </div>
         )
     }
