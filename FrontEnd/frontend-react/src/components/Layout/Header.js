@@ -7,7 +7,7 @@ class Header extends Component {
             <nav className="navbar navbar-expand-sm navbar-dark bg-dark">
             <div className="container">
                 
-                <a className="navbar-brand" href="dashboard.html">
+                <a className="navbar-brand" href="/dashboard">
                     Home
                 </a>
                 <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#mobile-nav">
@@ -23,12 +23,12 @@ class Header extends Component {
 
                     <ul className="navbar-nav ml-auto">
                         <li className="nav-item">
-                            <a className="nav-link" href="register.html">
+                            <a className="nav-link" href="/register">
                                 Register
                             </a>
                         </li>
                         <li className="nav-item">
-                            <a className="nav-link" href="login.html">
+                            <a className="nav-link" href="/login">
                                 Sign in
                             </a>
                         </li>        

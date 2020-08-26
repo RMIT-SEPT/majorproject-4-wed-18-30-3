@@ -24,6 +24,16 @@
   color: white;
 }
 
+#footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #363b3d;
+  color: white;
+  text-align: center;
+}
+
 .App-link {
   color: #61dafb;
 }
@@ -36,6 +46,7 @@
     transform: rotate(360deg);
   }
 }
+
 
 .list-group-item.delete:hover {
   cursor: -webkit-grab;
