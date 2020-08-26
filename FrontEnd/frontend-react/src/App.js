@@ -33,10 +33,8 @@ function App() {
       <Route path="/profile" component={ProfileScreen}/>
       <Route path="/availabilites" component={AvailabilitiesScreen}/>
       <Route path="/admin_portal" component={AdminScreen}/>
-      <Route path="/history" component={HistoryScreen}/>
       <Route path="/about" component={AboutScreen}/>
-
-
+      <Route path="/history" component={HistoryScreen}/>
       <Footer/>
     </div>
     </Router>
