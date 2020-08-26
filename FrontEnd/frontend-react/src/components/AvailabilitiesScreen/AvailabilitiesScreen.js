@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
 
-class BookingScreen extends Component {
+class AvailabilitiesScreen extends Component {
     render() {
         return (
             <div>
@@ -11,4 +11,4 @@ class BookingScreen extends Component {
     }
 }
 
-export default BookingScreen;
+export default AvailabilitiesScreen;
