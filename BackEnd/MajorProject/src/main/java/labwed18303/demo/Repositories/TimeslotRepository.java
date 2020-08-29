@@ -10,5 +10,11 @@ import org.springframework.stereotype.Repository;
         @Override
         Iterable<Timeslot> findAllById(Iterable<Long> iterable);
 
+        Timeslot findByid(Long id);
+
+        //Timeslot findByDate(String date);
+
+        @Override
+        Iterable<Timeslot> findAll();
     }
 

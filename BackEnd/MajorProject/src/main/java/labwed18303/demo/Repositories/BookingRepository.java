@@ -9,5 +9,10 @@ import org.springframework.stereotype.Repository;
         @Override
         Iterable<Booking> findAllById(Iterable<Long> iterable);
 
+
+        Booking findByid(Long bookingId);
+
+        @Override
+        Iterable<Booking> findAll();
     }
 

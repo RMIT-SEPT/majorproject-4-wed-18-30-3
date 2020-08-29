@@ -13,5 +13,31 @@ public class BookingService {
     public Booking saveOrUpdateBooking(Booking booking) {
         return bookingRepository.save(booking);
     }
+
+    public Booking findByBookingIdentifier(Long bookingId){
+
+        Booking booking = bookingRepository.findByid(bookingId);
+
+        if(booking == null){
+            //throw new BookingException("Booking ID '"+bookingId+"' does not exist");
+        }
+
+        return booking;
+    }
+
+    public Iterable<Booking> findAllBookings(){
+        return bookingRepository.findAll();
+    }
+
+
+    public void deleteBookingByIdentifier(Long bookingId){
+        Booking booking = bookingRepository.findByid(bookingId);
+
+        if(booking == null){
+            //throw  new  BookingException("Cannot find Booking with ID '"+bookingId+"'. This booking does not exist");
+        }
+
+        bookingRepository.delete(booking);
+    }
 }
 

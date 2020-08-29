@@ -5,10 +5,7 @@ import labwed18303.demo.services.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -22,7 +19,23 @@ public class BookingController {
     public ResponseEntity<Booking> createNewBooking(@RequestBody Booking booking){
 
         Booking booking1 = bookingService.saveOrUpdateBooking(booking);
-        return new ResponseEntity<Booking>(booking, HttpStatus.CREATED);
+        return new ResponseEntity<Booking>(booking1, HttpStatus.CREATED);
+    }
+    @GetMapping("/{bookingId}")
+    public ResponseEntity<?> getBookingById(@PathVariable Long bookingId){
+
+        Booking booking = bookingService.findByBookingIdentifier(bookingId);
+
+        return new ResponseEntity<Booking>(booking, HttpStatus.OK);
     }
 
+    @GetMapping("/all")
+    public Iterable<Booking> getAllBookings(){return bookingService.findAllBookings();}
+
+    @DeleteMapping("/{bookingId}")
+    public ResponseEntity<?> deleteBooking(@PathVariable Long bookingId){
+        bookingService.deleteBookingByIdentifier(bookingId);
+
+        return new ResponseEntity<String>("Booking with ID: '"+bookingId+"' was deleted", HttpStatus.OK);
+    }
 }
