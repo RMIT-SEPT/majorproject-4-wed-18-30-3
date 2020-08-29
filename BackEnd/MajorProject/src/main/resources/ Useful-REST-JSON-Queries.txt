@@ -1,0 +1,24 @@
+POST localhost:8080/api/timeslot
+{
+    "id":"1",
+    "date":"2020-08-30-16-30"
+}
+
+POST localhost:8080/api/worker
+{
+"id":"1",
+"userName":"Jim from Jim's Mowing",
+"password":"password",
+"address":"Just Round the Corner",
+"phone":"1234567890"
+}
+
+POST localhost:8080/api/booking
+{
+"id":"1",
+"duration":"30",
+"created_At":"2020-01-01",
+"updated_At":"2020-08-29",
+"worker":"1",
+"timeslot":"1"
+}

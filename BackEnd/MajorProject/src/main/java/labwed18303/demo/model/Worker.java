@@ -1,5 +1,8 @@
 package labwed18303.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.tomcat.util.json.JSONParser;
+
 import javax.persistence.*;
 
 
@@ -16,6 +19,10 @@ public class Worker {
     private int phone;
 
     public Worker() {
+    }
+
+    public Worker(@JsonProperty("id") String id){
+        this.id = Integer.parseInt(id);
     }
 
     public long getId() {
