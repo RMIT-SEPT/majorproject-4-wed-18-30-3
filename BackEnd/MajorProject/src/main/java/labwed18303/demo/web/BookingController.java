@@ -3,9 +3,12 @@ package labwed18303.demo.web;
 import labwed18303.demo.model.Booking;
 import labwed18303.demo.services.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 
 @RestController
@@ -16,8 +19,8 @@ public class BookingController {
     private BookingService bookingService;
 
     @PostMapping("")
-    public ResponseEntity<Booking> createNewBooking(@RequestBody Booking booking){
-
+    public ResponseEntity<Booking> createNewBooking(@RequestBody Booking booking)
+    {
         Booking booking1 = bookingService.saveOrUpdateBooking(booking);
         return new ResponseEntity<Booking>(booking1, HttpStatus.CREATED);
     }

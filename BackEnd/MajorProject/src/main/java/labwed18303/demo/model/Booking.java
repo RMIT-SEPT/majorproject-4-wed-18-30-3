@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 public class Booking {
@@ -15,7 +16,6 @@ public class Booking {
     Date created_At;
     @JsonFormat(pattern = "yyyy-mm-dd")
     Date updated_At;
-    int Duration;
     @ManyToOne
     Worker worker;
     @ManyToOne
@@ -25,6 +25,15 @@ public class Booking {
     public Booking(){
 
     }
+
+    public Booking(long id, Date created_At, Date updated_At, Worker worker, Timeslot timeslot) {
+        this.id = id;
+        this.created_At = created_At;
+        this.updated_At = updated_At;
+        this.worker = worker;
+        this.timeslot = timeslot;
+    }
+
     public Worker getWorker() {
         return worker;
     }
@@ -65,12 +74,29 @@ public class Booking {
         this.updated_At = updated_At;
     }
 
-    public int getDuration() {
-        return Duration;
+    @Override
+    public String toString() {
+        return "Booking{" +
+                "id=" + id +
+                ", created_At=" + created_At +
+                ", updated_At=" + updated_At +
+                ", worker=" + worker +
+                ", timeslot=" + timeslot +
+                '}';
     }
 
-    public void setDuration(int duration) {
-        Duration = duration;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Booking)) return false;
+        Booking booking = (Booking) o;
+        return id == booking.getId() &&
+                Objects.equals(worker, booking.getWorker()) &&
+                timeslot.equals(booking.getTimeslot());
     }
-    
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, worker, timeslot);
+    }
 }
