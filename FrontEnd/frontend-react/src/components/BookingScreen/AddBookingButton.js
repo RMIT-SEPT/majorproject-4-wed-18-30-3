@@ -1,11 +1,6 @@
 import React, { Component } from 'react'
 import {link, Link} from "react-router-dom";
 
-
-function validate() {
-
-}
-
 function createBooking() {
     var timeslot
     var service
@@ -19,7 +14,7 @@ class AddBookingButton extends Component {
     render() {
         return (
             <React.Fragment>
-            <p className="btn btn-sm btn-dark" id="navButton" onclick={validate}>
+            <p className="btn btn-sm btn-dark" id="navButton" onclick={createBooking}>
             Create new booking
             </p>
             </React.Fragment>
