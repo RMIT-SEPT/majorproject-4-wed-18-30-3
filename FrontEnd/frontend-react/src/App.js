@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css"
 
-import {BrowserRouter as Router, Route} from "react-router-dom";
+import {BrowserRouter as Router, Route, Redirect} from "react-router-dom";
 
 import Header from './components/Layout/Header';
 import Footer from './components/Layout/Footer';
@@ -25,6 +25,7 @@ function App() {
     <div className="App">
       <Header/>
       <Route path="/dashboard" component={Dashboard}/>
+      <Redirect from="/" to="/dashboard"/>
       <Route path="/bookings" component={BookingScreen}/>
       <Route path="/login" component={LoginScreen}/>
       <Route path="/register" component={RegisterScreen}/>
