@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {link, Link} from "react-router-dom";
+import {Link} from "react-router-dom";
 
 class DashboardLinkButton extends Component {
     
