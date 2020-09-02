@@ -25,7 +25,7 @@ function App() {
     <div className="App">
       <Header/>
       <Route path="/dashboard" component={Dashboard}/>
-      <Route path="/booking" component={BookingScreen}/>
+      <Route path="/bookings" component={BookingScreen}/>
       <Route path="/login" component={LoginScreen}/>
       <Route path="/register" component={RegisterScreen}/>
       <Route path="/calendar_view" component={CalendarViewScreen}/>
