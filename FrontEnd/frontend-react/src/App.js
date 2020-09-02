@@ -19,13 +19,14 @@ import AdminScreen from './components/AdminScreen/AdminScreen';
 import AboutScreen from './components/AboutScreen/AboutScreen';
 import HistoryScreen from './components/HistoryScreen/HistoryScreen';
 
+// need to add a redirect from the landing page to dashboard
+
 function App() {
   return (
     <Router>
     <div className="App">
       <Header/>
       <Route path="/dashboard" component={Dashboard}/>
-      <Redirect from="/" to="/dashboard"/>
       <Route path="/bookings" component={BookingScreen}/>
       <Route path="/login" component={LoginScreen}/>
       <Route path="/register" component={RegisterScreen}/>
