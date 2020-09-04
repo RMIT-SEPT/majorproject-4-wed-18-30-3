@@ -3,10 +3,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import labwed18303.demo.model.Booking;
-import labwed18303.demo.model.Customer;
-import labwed18303.demo.model.Timeslot;
-import labwed18303.demo.model.Worker;
+import labwed18303.demo.model.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +30,9 @@ public class BookingControllerTest {
     @Autowired
     private customerController custController;
 
+    @Autowired
+    private ServiceProvidedController serviceController;
+
     @LocalServerPort
     private int port;
 
@@ -50,6 +50,9 @@ public class BookingControllerTest {
     Timeslot timeslotHasBooking;
     Timeslot timeslotNoBooking;
 
+    ServiceProvided serviceHasBooking;
+    ServiceProvided serviceNoBooking;
+
     Booking completeBooking;
     Booking noWorker;
     Booking wrongWorker;
@@ -57,10 +60,16 @@ public class BookingControllerTest {
     Booking noCustomer;
     Booking wrongTimeslot;
     Booking noTimeslot;
+    Booking noService;
+    Booking wrongService;
+
 
     @BeforeAll
     public void setUp(){
         current = new Date();
+
+        serviceHasBooking = new ServiceProvided(1, "Plow", 30);
+        serviceController.createNewServiceProvided(serviceHasBooking);
 
         workerHasBooking = new Worker(1, "Jims Mowing", "password", "Round the Corner", 140000000);
         wController.createNewPerson(workerHasBooking);
@@ -71,7 +80,7 @@ public class BookingControllerTest {
         timeslotHasBooking = new Timeslot(1, 30, current, current, current);
         timeslotController.createNewTimeslot(timeslotHasBooking);
 
-        completeBooking = new Booking(1, current, current, workerHasBooking, timeslotHasBooking, custHasBooking);
+        completeBooking = new Booking(1, current, current, workerHasBooking, timeslotHasBooking, custHasBooking, serviceHasBooking);
         bookingController.createNewBooking(completeBooking);
     }
 
@@ -88,7 +97,7 @@ public class BookingControllerTest {
 
     @Test
     public void noWorkerShouldNotMatchBooking() throws Exception {
-        noWorker = new Booking(1, current, current, null, timeslotHasBooking, custHasBooking);
+        noWorker = new Booking(1, current, current, null, timeslotHasBooking, custHasBooking, serviceHasBooking);
         assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
                 Booking.class).equals(noWorker));
     }
@@ -96,14 +105,14 @@ public class BookingControllerTest {
     @Test
     public void wrongWorkerShouldNotMatchBooking() throws Exception {
         workerNoBooking = new Worker(2, "Mr Plow", "password", "742 Evergreen Terrace", 123456789);
-        wrongWorker = new Booking(1, current, current,  workerNoBooking, timeslotHasBooking, custHasBooking);
+        wrongWorker = new Booking(1, current, current,  workerNoBooking, timeslotHasBooking, custHasBooking, serviceHasBooking);
         assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
                 Booking.class).equals(wrongWorker));
     }
 
     @Test
     public void noCustomerShouldNotMatchBooking() throws Exception {
-        noCustomer = new Booking(1, current, current, workerHasBooking, timeslotHasBooking, null);
+        noCustomer = new Booking(1, current, current, workerHasBooking, timeslotHasBooking, null, serviceHasBooking);
         assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
                 Booking.class).equals(noCustomer));
     }
@@ -111,14 +120,14 @@ public class BookingControllerTest {
     @Test
     public void wrongCustomerShouldNotMatchBooking() throws Exception {
         custNoBooking = new Customer(2, "Moe Sizlach", "password", "Beside the Church?", 123456789);
-        wrongCustomer = new Booking(1, current, current,  workerHasBooking, timeslotHasBooking, custNoBooking);
+        wrongCustomer = new Booking(1, current, current,  workerHasBooking, timeslotHasBooking, custNoBooking, serviceHasBooking);
         assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
                 Booking.class).equals(wrongCustomer));
     }
 
     @Test
     public void noTimeslotShouldNotMatchBooking() throws Exception {
-        noTimeslot = new Booking(1, current, current,  workerHasBooking, null, custHasBooking);
+        noTimeslot = new Booking(1, current, current,  workerHasBooking, null, custHasBooking, serviceHasBooking);
         assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
                 Booking.class).equals(noTimeslot));
     }
@@ -126,8 +135,24 @@ public class BookingControllerTest {
     @Test
     public void wrongTimeslotShouldNotMatchBooking() throws Exception {
         timeslotNoBooking = new Timeslot(2, 30, current, current, current);
-        wrongTimeslot = new Booking(1, current, current, workerHasBooking, timeslotNoBooking, custHasBooking);
+        wrongTimeslot = new Booking(1, current, current, workerHasBooking, timeslotNoBooking, custHasBooking, serviceHasBooking);
         assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
-                Booking.class).equals(wrongCustomer));
+                Booking.class).equals(wrongTimeslot));
     }
+
+    @Test
+    public void noServiceShouldNotMatchBooking() throws Exception {
+        noService = new Booking(1, current, current, workerHasBooking, timeslotHasBooking, custHasBooking, null);
+        assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
+                Booking.class).equals(noService));
+    }
+
+    @Test
+    public void wrongServiceShouldNotMatchBooking() throws Exception {
+        serviceNoBooking = new ServiceProvided(2, "Hedge Trim", 30);
+        wrongTimeslot = new Booking(1, current, current, workerHasBooking, timeslotHasBooking, custHasBooking, serviceNoBooking);
+        assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
+                Booking.class).equals(wrongService));
+    }
+
 }

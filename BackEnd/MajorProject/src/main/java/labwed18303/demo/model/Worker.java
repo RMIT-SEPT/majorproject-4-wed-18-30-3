@@ -1,16 +1,12 @@
 package labwed18303.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.apache.tomcat.util.json.JSONParser;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 @Entity
-
 public class Worker {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,6 +16,14 @@ public class Worker {
     private String password;
     private String address;
     private int phone;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "worker_services",
+            joinColumns = @JoinColumn(name = "worker_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_provided_id")
+    )
+    private Set<ServiceProvided> services = new HashSet<>();
 
     @OneToMany(
             mappedBy = "worker",
@@ -37,6 +41,15 @@ public class Worker {
         this.password = password;
         this.address = address;
         this.phone = phone;
+    }
+
+    public Worker(long id, String userName, String password, String address, int phone, Set<ServiceProvided> services) {
+        this.id = id;
+        this.userName = userName;
+        this.password = password;
+        this.address = address;
+        this.phone = phone;
+        this.services = services;
     }
 
     public Worker(@JsonProperty("id") String id){
@@ -63,6 +76,14 @@ public class Worker {
         return phone;
     }
 
+    public Set<ServiceProvided> getServices() {
+        return services;
+    }
+
+    public void setServices(Set<ServiceProvided> services) {
+        this.services = services;
+    }
+
     @Override
     public String toString() {
         return "Worker{" +
@@ -71,6 +92,7 @@ public class Worker {
                 ", password='" + password + '\'' +
                 ", address='" + address + '\'' +
                 ", phone=" + phone +
+                ", services=" + services +
                 '}';
     }
 

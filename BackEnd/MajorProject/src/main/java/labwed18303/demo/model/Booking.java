@@ -29,6 +29,10 @@ public class Booking {
     @JsonIgnoreProperties("bookings")
     Customer customer;
 
+    @ManyToOne
+    @JoinColumn(name= "service_id")
+    ServiceProvided service;
+
     @ManyToMany
     @JoinTable(
             name = "booking_timeslots",
@@ -72,13 +76,14 @@ public class Booking {
         this.timeslots = timeslots;
     }
 
-    public Booking(long id, Date created_At, Date updated_At, Worker worker, Timeslot timeslot, Customer customer) {
+    public Booking(long id, Date created_At, Date updated_At, Worker worker, Timeslot timeslot, Customer customer, ServiceProvided service) {
         this.id = id;
         this.created_At = created_At;
         this.updated_At = updated_At;
         this.worker = worker;
         this.timeslots.add(timeslot);
         this.customer = customer;
+        this.service = service;
     }
 
     public Worker getWorker() {
@@ -133,6 +138,14 @@ public class Booking {
         this.updated_At = updated_At;
     }
 
+    public ServiceProvided getService() {
+        return service;
+    }
+
+    public void setService(ServiceProvided service) {
+        this.service = service;
+    }
+
     @Override
     public String toString() {
         return "Booking{" +
@@ -140,6 +153,8 @@ public class Booking {
                 ", created_At=" + created_At +
                 ", updated_At=" + updated_At +
                 ", worker=" + worker +
+                ", customer=" + customer +
+                ", service=" + service +
                 ", timeslots=" + timeslots +
                 '}';
     }
@@ -154,7 +169,7 @@ public class Booking {
             if ((otherObject instanceof Booking)) {
                 Booking other = (Booking) otherObject;
                 if (id == other.getId() &&
-                        Objects.equals(worker, other.getWorker()) && Objects.equals(customer, other.getCustomer()) && timeslots.size() == other.getTimeslots().size()) {
+                        Objects.equals(worker, other.getWorker()) && service.equals(other.getService()) && Objects.equals(customer, other.getCustomer()) && timeslots.size() == other.getTimeslots().size()) {
                     toReturn = true;
                     for (int i = 0; i < timeslots.size() && toReturn ==true; ++i) {
                             toReturn = other.getTimeslots().contains(timeslots.get(i));
