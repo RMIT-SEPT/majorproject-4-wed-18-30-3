@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.tomcat.util.json.JSONParser;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -18,6 +20,13 @@ public class Worker {
     private String password;
     private String address;
     private int phone;
+
+    @OneToMany(
+            mappedBy = "worker",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Booking> bookings = new ArrayList<Booking>();
 
     public Worker() {
     }

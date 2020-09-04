@@ -32,7 +32,7 @@ public class TimeslotControllerTest {
 
     @Test
     public void addTimeslotShouldReturnTimeslot() throws Exception {
-        Timeslot timeslot = new Timeslot(1, 30, null, null, null);
+        Timeslot timeslot = new Timeslot(1, 30, new Date(), new Date(), new Date());
         controller.createNewTimeslot(timeslot);
         assertTrue(this.restTemplate.getForObject("http://localhost:" + port + "/api/timeslot/1",
                 Timeslot.class).equals(timeslot));

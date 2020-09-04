@@ -3,12 +3,10 @@ package labwed18303.demo.web;
 import labwed18303.demo.model.Booking;
 import labwed18303.demo.services.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 
 
 @RestController

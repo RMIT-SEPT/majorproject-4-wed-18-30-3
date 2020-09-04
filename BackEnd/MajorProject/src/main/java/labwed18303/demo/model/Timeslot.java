@@ -3,9 +3,13 @@ package labwed18303.demo.model;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -15,13 +19,19 @@ public class Timeslot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @JsonFormat(pattern = "yyyy-mm-dd-hh-mm")
-    Date date;
-    int duration;
-    @JsonFormat(pattern = "yyyy-mm-dd")
-    Date created_At;
-    @JsonFormat(pattern = "yyyy-mm-dd")
-    Date updated_At;
+    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
+    private Date date;
+    private int duration;
+    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
+    private Date created_At;
+    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
+    private Date updated_At;
+
+    @ManyToMany(
+                    mappedBy = "timeslots"
+            )
+    @JsonIgnoreProperties("timeslots")
+    private List<Booking> bookings = new ArrayList<>();
 
     public Timeslot(){
 
@@ -34,6 +44,15 @@ public class Timeslot {
         this.updated_At = updated_At;
     }
 
+    public Timeslot(long id, int duration, Date date, Date created_At, Date updated_At, List<Booking> bookings){
+        this.id = id;
+        this.duration = duration;
+        this.date = date;
+        this.created_At = created_At;
+        this.updated_At = updated_At;
+        this.bookings = bookings;
+    }
+
     @Override
     public boolean equals(Object other){
         boolean toReturn = false;
@@ -43,11 +62,11 @@ public class Timeslot {
         return toReturn;
     }
 
+    //&& this.date.equals(other.getDate())
 
     public boolean equals(Timeslot other){
         boolean toReturn = false;
-        if ((this.date != null && other.getDate().equals(this.date) || this.date == null && other.getDate() == null)
-                && other.getId()==this.id && this.duration == other.getDuration()){
+        if (((this.compareDate(other.getDate())) || (this.date == null && other.getDate() == null)) && other.getId()==this.id && this.duration == other.getDuration()){
             toReturn = true;
         }
         return toReturn;
@@ -56,6 +75,40 @@ public class Timeslot {
     public Date getDate() {
         return date;
     }
+
+    public List<Booking> getBookings(){
+        return this.bookings;
+    }
+    public void setBookings(List<Booking> bookings) {
+        this.bookings = bookings;
+    }
+
+    public boolean compareDate(Date other){
+        boolean toReturn = false;
+        if(this.date != null && other != null){
+            if(this.date.getYear()==other.getYear()
+                    && this.date.getMonth() == other.getMonth()
+                    && this.date.getDay() == other.getDay()
+                    && this.date.getHours() == other.getHours()
+                    && this.date.getMinutes() == other.getMinutes()){
+                toReturn = true;
+            }
+        }
+        return toReturn;
+    }
+
+    public boolean addBooking(Booking booking){
+        boolean added=false;
+        if(booking != null){
+            if(this.bookings == null){
+                this.bookings = new ArrayList<>();
+            }
+            this.bookings.add(booking);
+            added = true;
+        }
+        return added;
+    }
+
 
     public void setDate(Date date) {
         this.date = date;

@@ -1,9 +1,12 @@
 package labwed18303.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -12,18 +15,45 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @JsonFormat(pattern = "yyyy-mm-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
     Date created_At;
-    @JsonFormat(pattern = "yyyy-mm-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
     Date updated_At;
     @ManyToOne
+    @JoinColumn(name = "worker_id")
+    @JsonIgnoreProperties("bookings")
     Worker worker;
+
     @ManyToOne
-    Timeslot timeslot;
+    @JoinColumn(name = "customer_id")
+    @JsonIgnoreProperties("bookings")
+    Customer customer;
+
+    @ManyToMany
+    @JoinTable(
+            name = "booking_timeslots",
+            joinColumns = @JoinColumn(name = "booking_id"),
+            inverseJoinColumns = @JoinColumn(name = "timeslot_id")
+    )
+    @JsonIgnoreProperties("bookings")
+    List<Timeslot> timeslots = new ArrayList<>();
     //Need array of timeslots, possibly.
 
     public Booking(){
 
+    }
+
+    public Booking(long id, Date created_At, Date updated_At) {
+        this.id = id;
+        this.created_At = created_At;
+        this.updated_At = updated_At;
+    }
+
+    public Booking(long id, Date created_At, Date updated_At, Worker worker) {
+        this.id = id;
+        this.created_At = created_At;
+        this.updated_At = updated_At;
+        this.worker = worker;
     }
 
     public Booking(long id, Date created_At, Date updated_At, Worker worker, Timeslot timeslot) {
@@ -31,7 +61,24 @@ public class Booking {
         this.created_At = created_At;
         this.updated_At = updated_At;
         this.worker = worker;
-        this.timeslot = timeslot;
+        this.timeslots.add(timeslot);
+    }
+
+    public Booking(long id, Date created_At, Date updated_At, Worker worker, List<Timeslot> timeslots){
+        this.id = id;
+        this.created_At = created_At;
+        this.updated_At = updated_At;
+        this.worker = worker;
+        this.timeslots = timeslots;
+    }
+
+    public Booking(long id, Date created_At, Date updated_At, Worker worker, Timeslot timeslot, Customer customer) {
+        this.id = id;
+        this.created_At = created_At;
+        this.updated_At = updated_At;
+        this.worker = worker;
+        this.timeslots.add(timeslot);
+        this.customer = customer;
     }
 
     public Worker getWorker() {
@@ -42,12 +89,24 @@ public class Booking {
         this.worker = worker;
     }
 
-    public Timeslot getTimeslot() {
-        return timeslot;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setTimeslot(Timeslot timeslot) {
-        this.timeslot = timeslot;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public List<Timeslot> getTimeslots() {
+        return timeslots;
+    }
+
+    public void setTimeslots(List<Timeslot> timeslots) {
+        this.timeslots = timeslots;
+    }
+
+    public void addTimeslot(Timeslot toAdd){
+        this.timeslots.add(toAdd);
     }
 
     public long getId() {
@@ -81,22 +140,34 @@ public class Booking {
                 ", created_At=" + created_At +
                 ", updated_At=" + updated_At +
                 ", worker=" + worker +
-                ", timeslot=" + timeslot +
+                ", timeslots=" + timeslots +
                 '}';
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Booking)) return false;
-        Booking booking = (Booking) o;
-        return id == booking.getId() &&
-                Objects.equals(worker, booking.getWorker()) &&
-                timeslot.equals(booking.getTimeslot());
+    public boolean equals(Object otherObject) {
+        boolean toReturn = false;
+        if (this == otherObject){
+            toReturn = true;
+        }
+        else {
+            if ((otherObject instanceof Booking)) {
+                Booking other = (Booking) otherObject;
+                if (id == other.getId() &&
+                        Objects.equals(worker, other.getWorker()) && Objects.equals(customer, other.getCustomer()) && timeslots.size() == other.getTimeslots().size()) {
+                    toReturn = true;
+                    for (int i = 0; i < timeslots.size() && toReturn ==true; ++i) {
+                            toReturn = other.getTimeslots().contains(timeslots.get(i));
+                        }
+                    }
+                }
+            }
+
+        return toReturn;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, worker, timeslot);
+        return Objects.hash(id, worker, timeslots);
     }
 }
