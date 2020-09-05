@@ -2,12 +2,11 @@ package labwed18303.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.lang.NonNull;
+
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 public class Booking {
@@ -17,11 +16,14 @@ public class Booking {
 
     @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
     Date created_At;
+
     @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
     Date updated_At;
+
     @ManyToOne
     @JoinColumn(name = "worker_id")
     @JsonIgnoreProperties("bookings")
+    @NonNull
     Worker worker;
 
     @ManyToOne
@@ -33,14 +35,15 @@ public class Booking {
     @JoinColumn(name= "service_id")
     ServiceProvided service;
 
-    @ManyToMany
+    @NonNull
+    @ManyToOne
     @JoinTable(
             name = "booking_timeslots",
             joinColumns = @JoinColumn(name = "booking_id"),
             inverseJoinColumns = @JoinColumn(name = "timeslot_id")
     )
     @JsonIgnoreProperties("bookings")
-    List<Timeslot> timeslots = new ArrayList<>();
+    Timeslot timeslot;
     //Need array of timeslots, possibly.
 
     public Booking(){
@@ -65,23 +68,16 @@ public class Booking {
         this.created_At = created_At;
         this.updated_At = updated_At;
         this.worker = worker;
-        this.timeslots.add(timeslot);
+        this.timeslot = timeslot;
     }
 
-    public Booking(long id, Date created_At, Date updated_At, Worker worker, List<Timeslot> timeslots){
-        this.id = id;
-        this.created_At = created_At;
-        this.updated_At = updated_At;
-        this.worker = worker;
-        this.timeslots = timeslots;
-    }
 
     public Booking(long id, Date created_At, Date updated_At, Worker worker, Timeslot timeslot, Customer customer, ServiceProvided service) {
         this.id = id;
         this.created_At = created_At;
         this.updated_At = updated_At;
         this.worker = worker;
-        this.timeslots.add(timeslot);
+        this.timeslot = timeslot;
         this.customer = customer;
         this.service = service;
     }
@@ -102,16 +98,12 @@ public class Booking {
         this.customer = customer;
     }
 
-    public List<Timeslot> getTimeslots() {
-        return timeslots;
+    public Timeslot getTimeslot() {
+        return timeslot;
     }
 
-    public void setTimeslots(List<Timeslot> timeslots) {
-        this.timeslots = timeslots;
-    }
-
-    public void addTimeslot(Timeslot toAdd){
-        this.timeslots.add(toAdd);
+    public void setTimeslot(Timeslot timeslot) {
+        this.timeslot = timeslot;
     }
 
     public long getId() {
@@ -155,7 +147,7 @@ public class Booking {
                 ", worker=" + worker +
                 ", customer=" + customer +
                 ", service=" + service +
-                ", timeslots=" + timeslots +
+                ", timeslot=" + timeslot +
                 '}';
     }
 
@@ -169,11 +161,8 @@ public class Booking {
             if ((otherObject instanceof Booking)) {
                 Booking other = (Booking) otherObject;
                 if (id == other.getId() &&
-                        Objects.equals(worker, other.getWorker()) && service.equals(other.getService()) && Objects.equals(customer, other.getCustomer()) && timeslots.size() == other.getTimeslots().size()) {
+                        Objects.equals(worker, other.getWorker()) && service.equals(other.getService()) && Objects.equals(customer, other.getCustomer()) && timeslot.equals(other.getTimeslot())) {
                     toReturn = true;
-                    for (int i = 0; i < timeslots.size() && toReturn ==true; ++i) {
-                            toReturn = other.getTimeslots().contains(timeslots.get(i));
-                        }
                     }
                 }
             }
@@ -183,6 +172,6 @@ public class Booking {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, worker, timeslots);
+        return Objects.hash(id, worker, timeslot);
     }
 }

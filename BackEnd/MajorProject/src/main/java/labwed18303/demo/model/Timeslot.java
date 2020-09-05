@@ -27,14 +27,19 @@ public class Timeslot {
     private Date updated_At;
 
     @ManyToMany(
-                    mappedBy = "timeslots"
+                    mappedBy = "timeslot"
             )
-    @JsonIgnoreProperties("timeslots")
+    @JsonIgnoreProperties("timeslot")
     private List<Booking> bookings = new ArrayList<>();
 
     public Timeslot(){
 
     }
+
+    public Timeslot(long id){
+        this.id = id;
+    }
+
     public Timeslot(long id, int duration, Date date, Date created_At, Date updated_At){
         this.id = id;
         this.duration = duration;
@@ -65,8 +70,10 @@ public class Timeslot {
 
     public boolean equals(Timeslot other){
         boolean toReturn = false;
-        if (((this.compareDate(other.getDate())) || (this.date == null && other.getDate() == null)) && other.getId()==this.id && this.duration == other.getDuration()){
-            toReturn = true;
+        if(other !=null) {
+            if (((this.compareDate(other.getDate())) || (this.date == null && other.getDate() == null)) && other.getId() == this.id && this.duration == other.getDuration()) {
+                toReturn = true;
+            }
         }
         return toReturn;
     }

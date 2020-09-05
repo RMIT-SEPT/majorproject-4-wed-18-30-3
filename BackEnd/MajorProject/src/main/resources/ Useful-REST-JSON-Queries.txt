@@ -1,8 +1,8 @@
 POST localhost:8080/api/timeslot
 {
     "id":"1",
-    "date":"2020-08-30-16-30-00",
-    "duration":"30",
+    "date":"2020-11-30-16-30-00",
+    "duration":30,
     "created_At":"2020-07-30-16-30-00",
     "updated_At":"2020-07-30-16-30-00"
 }
@@ -18,7 +18,7 @@ POST localhost:8080/api/serviceProvided
 {
     "id":"1",
     "name":"plow",
-    "minDuration":"30"
+    "minDuration":30
 }
 
 POST localhost:8080/api/worker
@@ -31,12 +31,23 @@ POST localhost:8080/api/worker
 "services":[{"id":"1", "name":"plow", "minDuration":"30"}]
 }
 
+POST localhost:8000/api/customer
+{
+    "id": 1,
+    "userName": "John",
+    "password": "password",
+    "address": "On the Corner",
+    "phone": 1234567890
+}
+
 POST localhost:8080/api/booking
 {
 "id":"1",
 "created_At":"2020-01-01-00-00-00",
 "updated_At":"2020-08-29-00-00-00",
 "worker":{"id":"1"},
-"timeslot":[{"id":"1"}]
+"timeslot":{"id":"1"},
+"service":{"id":"1"},
+"customer":{"id":"1"}
 }
 

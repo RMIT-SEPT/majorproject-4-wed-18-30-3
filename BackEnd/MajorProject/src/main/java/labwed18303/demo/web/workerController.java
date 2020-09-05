@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/worker")
 public class workerController {
@@ -34,7 +35,7 @@ public class workerController {
     @GetMapping("/all")
     public Iterable<Worker> getAllWorker(){return workerService.findAllWorkers();}
 
-    @DeleteMapping("/{timeslotId}")
+    @DeleteMapping("/{workerId}")
     public ResponseEntity<?> deleteWorker(@PathVariable long workerId){
         workerService.deleteWorkerByIdentifier(workerId);
 
