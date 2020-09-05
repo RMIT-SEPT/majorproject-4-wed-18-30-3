@@ -9,29 +9,28 @@ import CancelButton from './CancelButton';
         // Assumed 15 
 
         var mins = 1000 * 60 * 15;
-
         return new Date(Math.round(date.getTime() / mins) * mins)
+    }
+
+    var config = {
+        headers: {
+            'Content-Type': 'application/json',
+            // 'Access-Control-Allow-Origin:': '*'
+        }
     }
 
     function createBooking(state) {
 
-        var timeslot = state.date.getTime();
-        var service = state.service;
-        var duration = state.service;
-        var worker = state.worker;
-        var customer = state.customer;
-        var group = state.group;
-
-        console.log("test");
-
-        axios.post('https://ae5b398a-4768-4d8f-b24a-0f5aa15a09a0.mock.pstmn.io/bookings', {
-            timeslot: timeslot,
-            service: service,
-            duration: duration,
-            worker: worker,
-            customer: customer,
-            group: group
-        })
+        // axios.post('https://ae5b398a-4768-4d8f-b24a-0f5aa15a09a0.mock.pstmn.io/bookings', {
+        axios.post('localhost:8080/api/booking', {
+            
+            timeslot: state.date.getTime(), // needs to match backend format
+            service: state.service,
+            duration: state.duration,
+            worker: state.worker,
+            customer: state.customer,
+            group: state.group
+        }, config)
         .then(res => {
             console.log(`statusCode: ${res.statusCode}`)
             console.log(res)
@@ -39,12 +38,9 @@ import CancelButton from './CancelButton';
         .catch(error => {
             console.error(error)
         })
-    
     }
     
 class BookingPane extends Component {
-
-
 
     constructor() {
         super()
@@ -55,7 +51,6 @@ class BookingPane extends Component {
             worker: "",
             customer: "",
             group: "",
-            
         }
     }
 
@@ -106,7 +101,7 @@ class BookingPane extends Component {
 
                     <div className="row">
                         <div className="col-sm">
-                           <button onSubmit={createBooking(this.state)} className="btn btn-sm btn-dark" id="navButton">
+                           <button onClick={createBooking(this.state)} className="btn btn-sm btn-dark" id="navButton">
                             Create new booking
                            </button>
                         </div>
