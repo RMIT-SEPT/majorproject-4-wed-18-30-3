@@ -2,6 +2,7 @@ package labwed18303.demo.web;
 
 import labwed18303.demo.exceptions.TimeslotException;
 import labwed18303.demo.model.Timeslot;
+import labwed18303.demo.services.TimeslotService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TimeslotControllerTest {
     @Autowired
     private TimeslotController controller;
+
+    @Autowired
+    private TimeslotService timeslotService;
 
     @LocalServerPort
     private int port;
@@ -87,10 +91,11 @@ public class TimeslotControllerTest {
     }
 
     @Test
-    public void addingExistingDateShouldThrowError() throws Exception{
-        Timeslot toChange = new Timeslot(1, 10, current, current, current);
-        assertThrows(TimeslotException.class, () -> {
-            controller.createNewTimeslot(toChange);
-        });
+    public void addingExistingDateShouldNotChange() throws Exception{
+        Timeslot toChange = new Timeslot(999999, 10, current, current, current);
+        Timeslot duplicate = new Timeslot(999999, 10, current, current, current);
+        assertFalse(
+                timeslotService.saveOrUpdateTimeslot(toChange).equals(duplicate)
+        );
     }
 }

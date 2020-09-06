@@ -21,13 +21,10 @@ public class TimeslotService {
         if(timeslot.getDuration() < 1){
             throw new TimeslotException("Timeslot must have duration");
         }
-        for(Timeslot currentTimeslots : timeslotRepository.findAll()){
-            if(timeslot.getDate().equals(currentTimeslots.getDate())){
-                throw new TimeslotException("A timeslot at that Date already exists");
-            }
-        }
-        if(timeslotRepository.findByDate(timeslot.getDate()) != null && timeslot.getDuration() != timeslotRepository.findByDate(timeslot.getDate()).getDuration()){
-            timeslot.setDuration(timeslotRepository.findByDate(timeslot.getDate()).getDuration());
+        Timeslot existing = timeslotRepository.findByDate(timeslot.getDate());
+        if(existing != null){
+            timeslot.setDuration(existing.getDuration());
+            timeslot.setId(existing.getId());
         }
         return timeslotRepository.save(timeslot);
     }
