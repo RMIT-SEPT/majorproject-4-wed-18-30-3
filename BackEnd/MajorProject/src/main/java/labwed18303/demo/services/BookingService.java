@@ -23,12 +23,16 @@ public class BookingService {
     private ServiceProvidedService serviceService;
 
     public Booking saveOrUpdateBooking(Booking booking) {
+        Timeslot relatedTimeslot = booking.getTimeslot();
         if(booking.getTimeslot()==null ) {
                 throw new BookingException("Booking must have a valid timeslot");
         }
         try{
-            Timeslot timeslot = timeslotService.findByID(booking.getTimeslot().getId());
-            if(timeslot.equals(booking.getTimeslot())==false){
+            if(booking.getTimeslot().getDate() != null) {
+                relatedTimeslot = timeslotService.findByDate(booking.getTimeslot().getDate());
+                booking.setTimeslot(relatedTimeslot);
+            }
+            else{
                 throw new BookingException("Booking must have a valid timeslot");
             }
         }
@@ -48,11 +52,7 @@ public class BookingService {
                 throw new BookingException("Worker does not provide this service");
             }
             Date now = new Date();
-            Timeslot relatedTimeslot = timeslotService.findByID(booking.getTimeslot().getId());
-                if(relatedTimeslot.getDate() == null){
-                    throw new BookingException("Booking must have a valid timeslot");
-                }
-                else if(relatedTimeslot.getDate().before(now)){
+                if(relatedTimeslot.getDate().before(now)){
                     throw new BookingException("Booking must be in the future");
                 }
             }
@@ -80,6 +80,17 @@ public class BookingService {
 
         if(booking == null){
             throw  new  BookingException("Cannot find Booking with ID '"+bookingId+"'. This booking does not exist");
+        }
+        if(booking.getTimeslot() == null || booking.getTimeslot().getDate()==null){
+            throw new BookingException("Booking has no valid with ID '"+bookingId+"'. This booking does not exist");
+        }
+        if(booking.getCustomer() != null){
+            long fortyEightHours = 48*60*60;
+            Date bookingDate = booking.getTimeslot().getDate();
+            long bookingHour = bookingDate.getTime();
+            if (booking.getTimeslot().getDate().getTime() - new Date().getTime() < fortyEightHours) {
+                throw new BookingException("Cannot remove Booking within 48 hours");
+            }
         }
 
         bookingRepository.delete(booking);

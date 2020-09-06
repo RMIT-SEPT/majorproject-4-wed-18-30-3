@@ -3,6 +3,7 @@ package labwed18303.demo.web;
 import labwed18303.demo.exceptions.TimeslotException;
 import labwed18303.demo.model.Timeslot;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,14 +31,18 @@ public class TimeslotControllerTest {
 
     Timeslot timeslot;
     Date current;
+    Date otherDate;
     Date wrongDate;
 
     @BeforeAll
     public void setup(){
         current = new Date();
+        otherDate = new Date(current.getYear()+1, 1, 1);
         wrongDate = new Date(2019, 12,12);
         timeslot = new Timeslot(1, 30, current, current, current);
+        controller.createNewTimeslot(timeslot);
     }
+
 
     @Test
     public void contextLoads() throws Exception {
@@ -46,21 +51,20 @@ public class TimeslotControllerTest {
 
     @Test
     public void addTimeslotShouldNotError(){
+        Timeslot otherTimeslot = new Timeslot(2, 30, otherDate, current, current);
         assertDoesNotThrow(()-> {
-            controller.createNewTimeslot(timeslot);
+            controller.createNewTimeslot(otherTimeslot);
         });
     }
 
     @Test
     public void addTimeslotShouldReturnTimeslot() throws Exception {
-        controller.createNewTimeslot(timeslot);
         assertTrue(this.restTemplate.getForObject("http://localhost:" + port + "/api/timeslot/1",
                 Timeslot.class).equals(timeslot));
     }
 
     @Test
     public void wrongDateShouldNotMatch() throws Exception {
-        controller.createNewTimeslot(timeslot);
         Timeslot wrongDateTimeslot = new Timeslot(1, 30, wrongDate, current, current);
         assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/timeslot/1",
                 Timeslot.class).equals(wrongDateTimeslot));
@@ -83,11 +87,10 @@ public class TimeslotControllerTest {
     }
 
     @Test
-    public void durationCannotBeChanged() throws Exception{
+    public void addingExistingDateShouldThrowError() throws Exception{
         Timeslot toChange = new Timeslot(1, 10, current, current, current);
-        controller.createNewTimeslot(timeslot);
-        controller.createNewTimeslot(toChange);
-        assertTrue(this.restTemplate.getForObject("http://localhost:" + port + "/api/timeslot/1",
-                Timeslot.class).equals(timeslot));
+        assertThrows(TimeslotException.class, () -> {
+            controller.createNewTimeslot(toChange);
+        });
     }
 }

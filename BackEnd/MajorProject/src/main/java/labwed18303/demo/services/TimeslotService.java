@@ -6,6 +6,8 @@ import labwed18303.demo.model.Timeslot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 
 @Service
 public class TimeslotService {
@@ -19,8 +21,13 @@ public class TimeslotService {
         if(timeslot.getDuration() < 1){
             throw new TimeslotException("Timeslot must have duration");
         }
-        if(timeslotRepository.existsById(timeslot.getId()) && timeslot.getDuration() != timeslotRepository.findByid(timeslot.getId()).getDuration()){
-            timeslot.setDuration(timeslotRepository.findByid(timeslot.getId()).getDuration());
+        for(Timeslot currentTimeslots : timeslotRepository.findAll()){
+            if(timeslot.getDate().equals(currentTimeslots.getDate())){
+                throw new TimeslotException("A timeslot at that Date already exists");
+            }
+        }
+        if(timeslotRepository.findByDate(timeslot.getDate()) != null && timeslot.getDuration() != timeslotRepository.findByDate(timeslot.getDate()).getDuration()){
+            timeslot.setDuration(timeslotRepository.findByDate(timeslot.getDate()).getDuration());
         }
         return timeslotRepository.save(timeslot);
     }
@@ -31,6 +38,16 @@ public class TimeslotService {
 
         if(timeslot == null){
             throw new TimeslotException("Timeslot ID '"+timeslotId+"' does not exist");
+        }
+
+        return timeslot;
+    }
+    public Timeslot findByDate(Date timeslotDate){
+
+        Timeslot timeslot = timeslotRepository.findByDate(timeslotDate);
+
+        if(timeslot == null){
+            throw new TimeslotException("Timeslot with Date: '"+timeslotDate+"' does not exist");
         }
 
         return timeslot;

@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/timeslot")
@@ -26,6 +28,14 @@ public class TimeslotController {
     public ResponseEntity<?> getTimeslotById(@PathVariable Long timeslotId){
 
         Timeslot timeslot = timeslotService.findByID(timeslotId);
+
+        return new ResponseEntity<Timeslot>(timeslot, HttpStatus.OK);
+    }
+
+    @GetMapping("/date/{timeslotDate}")
+    public ResponseEntity<?> getTimeslotByDate(@PathVariable Date timeslotDate){
+
+        Timeslot timeslot = timeslotService.findByDate(timeslotDate);
 
         return new ResponseEntity<Timeslot>(timeslot, HttpStatus.OK);
     }

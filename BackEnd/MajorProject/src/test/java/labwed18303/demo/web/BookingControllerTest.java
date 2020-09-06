@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import labwed18303.demo.exceptions.BookingException;
 import labwed18303.demo.model.*;
+import labwed18303.demo.services.BookingService;
+import labwed18303.demo.services.TimeslotService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -34,6 +36,12 @@ public class BookingControllerTest {
 
     @Autowired
     private ServiceProvidedController serviceController;
+
+    @Autowired
+    private TimeslotService timeslotService;
+
+    @Autowired
+    private BookingService bookingService;
 
     @LocalServerPort
     private int port;
@@ -223,8 +231,9 @@ public class BookingControllerTest {
 
     @Test
     public void makePastBookingThrowsError() throws Exception {
-        Date past = new Date(2020, 8, 31);
-        timeslotInPast = new Timeslot(3, 30, past, current, current);
+        Date current = new Date();
+        Date past = new Date(current.getYear(), current.getMonth(), current.getDate(), current.getHours()-1, current.getMinutes());
+        timeslotInPast = new Timeslot(9457, 30, past, current, current);
         timeslotController.createNewTimeslot(timeslotInPast);
         Booking booking = new Booking(1, current, current, workerHasBooking, timeslotInPast, custHasBooking, serviceHasBooking);
         assertThrows(BookingException.class,() -> {
@@ -232,8 +241,32 @@ public class BookingControllerTest {
         });
     }
 
+    @Test
+    public void deleteBookingBefore48ThrowsError(){
+        Date current = new Date();
+        Date under48 = new Date(current.getYear(), current.getMonth(), current.getDate(), current.getHours()+47, current.getMinutes());
+        Timeslot timeslot = new Timeslot(48, 30, under48, current, current);
+        timeslotController.createNewTimeslot(timeslot);
+        Booking booking = new Booking(48, current, current, workerHasBooking, timeslotService.findByDate(timeslot.getDate()), custHasBooking, serviceHasBooking);
+        bookingController.createNewBooking(booking);
+        assertThrows(BookingException.class,() -> {
+            bookingController.deleteBooking(booking.getId());
+        });
+    }
 
-
+    @Test
+    public void deleteBookingAfter48DoesNotThrowError(){
+        Date current = new Date();
+        Date under48 = new Date(current.getYear(), current.getMonth(), current.getDate(), current.getHours()+49, current.getMinutes());
+        Timeslot timeslot = new Timeslot(49, 30, under48, current, current);
+        timeslotController.createNewTimeslot(timeslot);
+        Timeslot upcoming = timeslotService.findByDate(timeslot.getDate());
+        Booking booking = new Booking(49, current, current, workerHasBooking, upcoming, custHasBooking, serviceHasBooking);
+        Booking repoBooking = bookingService.saveOrUpdateBooking(booking);
+        assertDoesNotThrow(() -> {
+            bookingController.deleteBooking(repoBooking.getId());
+        });
+    }
 
 
 }
