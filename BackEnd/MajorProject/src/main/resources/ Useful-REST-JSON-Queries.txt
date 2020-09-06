@@ -46,7 +46,7 @@ POST localhost:8080/api/booking
 "created_At":"2020-01-01-00-00-00",
 "updated_At":"2020-08-29-00-00-00",
 "worker":{"id":"1"},
-"timeslot":{"id":"1"},
+"timeslot":{"date":"2020-11-30-16-30-00"},
 "service":{"id":"1"},
 "customer":{"id":"1"}
 }
