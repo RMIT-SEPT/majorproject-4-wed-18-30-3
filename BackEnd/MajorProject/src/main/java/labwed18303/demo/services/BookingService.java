@@ -22,6 +22,11 @@ public class BookingService {
     @Autowired
     private ServiceProvidedService serviceService;
 
+//    Must have a valid timeslot.
+//    Must have a valid worker.
+//    Can add a booking with no Customer or Service. I.e. A worker availability.
+//    If the booking has a customer, it must have a valid service. -> The service must exist and be a service the associated worker provides.
+//    The booking's timeslot date must be in the future.
     public Booking saveOrUpdateBooking(Booking booking) {
         Timeslot relatedTimeslot = booking.getTimeslot();
         if(booking.getTimeslot()==null ) {
@@ -74,7 +79,8 @@ public class BookingService {
         return bookingRepository.findAll();
     }
 
-
+//    If the booking has no customer, it can be removed.
+//    If it has a customer, i.e. "Cancelling", it cannot be removed if it is less than 48 hours from the booking date.
     public void deleteBookingByIdentifier(Long bookingId){
         Booking booking = bookingRepository.findByid(bookingId);
 

@@ -16,6 +16,11 @@ public class BookingController {
     @Autowired
     private BookingService bookingService;
 
+//    Must have a valid timeslot.
+//    Must have a valid worker.
+//    Can add a booking with no Customer or Service. I.e. A worker availability.
+//    If the booking has a customer, it must have a valid service. -> The service must exist and be a service the associated worker provides.
+//    The booking's timeslot date must be in the future.
     @PostMapping("")
     public ResponseEntity<Booking> createNewBooking(@RequestBody Booking booking)
     {
@@ -33,6 +38,8 @@ public class BookingController {
     @GetMapping("/all")
     public Iterable<Booking> getAllBookings(){return bookingService.findAllBookings();}
 
+//    If the booking has no customer, it can be removed.
+//    If it has a customer, i.e. "Cancelling", it cannot be removed if it is less than 48 hours from the booking date.
     @DeleteMapping("/{bookingId}")
     public ResponseEntity<?> deleteBooking(@PathVariable Long bookingId){
         bookingService.deleteBookingByIdentifier(bookingId);

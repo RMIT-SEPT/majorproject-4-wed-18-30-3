@@ -14,6 +14,8 @@ public class TimeslotService {
     @Autowired
     private TimeslotRepository timeslotRepository;
 
+//    Each timeslot must have a unique Date (currently, this could be a different second, admittedly).
+//    Attempting to add a timeslot with a matching date will return the existing timeslot (not error).
     public Timeslot saveOrUpdateTimeslot(Timeslot timeslot) {
         if(timeslot.getDate() == null){
             throw new TimeslotException("Timeslot must have a date");

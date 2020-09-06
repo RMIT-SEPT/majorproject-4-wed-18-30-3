@@ -17,6 +17,8 @@ public class TimeslotController {
     @Autowired
     private TimeslotService timeslotService;
 
+//    Each timeslot must have a unique Date (currently, this could be a different second, admittedly).
+//    Attempting to add a timeslot with a matching date will return the existing timeslot (not error).
     @PostMapping("")
     public ResponseEntity<Timeslot> createNewTimeslot(@RequestBody Timeslot timeslot){
 
