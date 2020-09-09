@@ -19,17 +19,19 @@ import CancelButton from './CancelButton';
         }
     }
 
-    function createBooking(state) {
+    function createBooking(newBooking) {
 
-        // axios.post('https://ae5b398a-4768-4d8f-b24a-0f5aa15a09a0.mock.pstmn.io/bookings', {
-        axios.post('localhost:8080/api/booking', {
+        console.log(newBooking)
+
+        axios.post('https://ae5b398a-4768-4d8f-b24a-0f5aa15a09a0.mock.pstmn.io/bookings', {
+        // axios.post('http://localhost:8080/api/booking', {
             
-            timeslot: state.date.getTime(), // needs to match backend format
-            service: state.service,
-            duration: state.duration,
-            worker: state.worker,
-            customer: state.customer,
-            group: state.group
+            timeslot: newBooking.timeslot,
+            duration: newBooking.duration,
+            service: newBooking.service,
+            worker: newBooking.worker,
+            customer: newBooking.customer
+
         }, config)
         .then(res => {
             console.log(`statusCode: ${res.statusCode}`)
@@ -45,33 +47,55 @@ class BookingPane extends Component {
     constructor() {
         super()
         this.state = {
-            date: new Date(),
+            date: roundTo(new Date()),
             duration: "",
             service: "",
             worker: "",
             customer: "",
-            group: "",
         }
+
+        this.onChange = this.onChange.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
     }
 
-    onChange = date => this.setState({ date: roundTo(date) })
-    onChange = duration => this.setState({ duration })
-    onChange = service => this.setState({ service })
-    onChange = worker => this.setState({ worker })
+    onChange(e){
+        if (e.name === "date")
+            this.setState({[e.name]: roundTo(e.value)});
+        else
+            this.setState({[e.name]: e.value});
+    }
     
+    onSubmit(e){
+        e.preventDefault();
+
+        // Need to match this with Cams backend format
+        var timeslot = roundTo(this.state.date)
+
+        const newBooking = {
+            timeslot: timeslot,
+            duration: this.state.duration,
+            service: this.state.service,
+            worker: this.state.worker,
+            customer: this.state.customer
+        }
+
+        // Send the POST request
+        createBooking(newBooking);
+    }
+
     render() {
         return (
             <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
                 <br/>    
                 <b>Bookings</b>
                 <br/>   
-                <form>
-                    <p>Select desired start time and date (please note 15 minute minimum duration):</p>
-                    <DateTimePicker onChange={this.onChange} value={roundTo(this.state.date)}/>
+                <form onSubmit={this.onSubmit}>
+                    <p>Select desired start time and date. Actual start time rounded to the closest 15 minutes:</p>
+                    <DateTimePicker onChange={this.onChange} value={this.state.date}/>
                     <br/> <br/>    
                     <div className="form-group">
-                        <label for="duration">Select job duration:</label>
-                        <select className="form-control" value={this.state.duration} onChange={this.onChange}>
+                        <label htmlFor="duration">Select job duration:</label>
+                        <select className="form-control" value={this.state.duration} onChange={this.onChange} name="duration">
                             <option value="15">15 min</option>
                             <option value="30">30 min</option>
                             <option value="45">45 min</option>
@@ -83,7 +107,7 @@ class BookingPane extends Component {
                         </select>
                     </div>
                     <div className="form-group">
-                    <label for="service">Select a service:</label>
+                    <label htmlFor="service">Select a service:</label>
                     <select className="form-control" value={this.state.service} onChange={this.onChange}>
                       <option value="1" >Service 1</option>
                       <option value="2">Service 2</option>
@@ -91,7 +115,7 @@ class BookingPane extends Component {
                     </select>
                     </div>
                     <div className="form-group">
-                    <label for="worker">Select an available worker:</label>
+                    <label htmlFor="worker">Select an available worker:</label>
                     <select className="form-control" value={this.state.worker} onChange={this.onChange}>
                       <option value="1" >Worker 1</option>
                       <option value="2">Worker 2</option>
@@ -101,9 +125,8 @@ class BookingPane extends Component {
 
                     <div className="row">
                         <div className="col-sm">
-                           <button onClick={createBooking(this.state)} className="btn btn-sm btn-dark" id="navButton">
-                            Create new booking
-                           </button>
+                           <input type="submit" className="btn btn-sm btn-dark" id="navButton"/>
+
                         </div>
                         <div className="col-sm">
                             <CancelButton/>
