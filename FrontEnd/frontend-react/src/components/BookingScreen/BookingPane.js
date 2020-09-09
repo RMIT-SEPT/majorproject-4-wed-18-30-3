@@ -18,13 +18,14 @@ import makeAnimated from 'react-select/animated';
 
     }
 
-    var config = {
+    // JSON-specific headers for axios
+    const axiosConfig = {
         headers: {
-            'Content-Type': 'application/json',
-            // 'Access-Control-Allow-Origin:': '*'
+            'Content-Type': 'application/json'
         }
     }
 
+    // Send a create booking POST to bookings endpoint
     function createBooking(newBooking) {
 
         console.log(newBooking)
@@ -38,7 +39,7 @@ import makeAnimated from 'react-select/animated';
             worker: newBooking.worker,
             customer: newBooking.customer
 
-        }, config)
+        }, axiosConfig)
         .then(res => {
             console.log(`statusCode: ${res.statusCode}`)
             console.log(res)
@@ -74,24 +75,28 @@ class BookingPane extends Component {
 
         if (this.state.date == null) {
             alert("Please select a start time and date.")
+            return
         }
         if (this.state.duration == null) {
             alert("Please select a duration.")
+            return
         }
         if (this.state.service == null) {
             alert("Please select a service.")
+            return
         }
         if (this.state.worker == null) {
             alert("Please select a worker.")
+            return
         }            
 
         // Need to match this with Cams backend format
-        var timeslot = roundTo(this.state.date)
+        const timeslot = roundTo(this.state.date)
 
-        // Get this from local React state once login is done
-        var customer = null;
+        // Get this from local React state after login is done
+        const customer = null;
 
-        const newBooking = {
+        var newBooking = {
             timeslot: timeslot,
             duration: this.state.duration.value,
             service: this.state.service.value,
@@ -99,13 +104,15 @@ class BookingPane extends Component {
             customer: customer
         }
 
+        // Do formatting for newBooking here before invoking createBooking()
+
         // Send the POST request
         createBooking(newBooking);
     }
 
     render() {
         const animatedComponents = makeAnimated();
-        var durationOptions = [
+        const durationOptions = [
             { value: 15, label: '15 minutes' },
             { value: 30, label: '30 minutes' },
             { value: 45, label: '45 minutes' },
@@ -116,13 +123,13 @@ class BookingPane extends Component {
             { value: 120, label: '2 hours' },
         ]
 
-        var serviceOptions = [
+        const serviceOptions = [
             { value: 'mowing', label: 'Mowing' },
             { value: 'hedging', label: 'Hedging' },
             { value: 'pool_cleaning', label: 'Pool Cleaning' },
         ]
 
-        var workerOptions = [
+        const workerOptions = [
             { value: 'jim', label: 'Jim' },
             { value: 'tim', label: 'Tim' },
             { value: 'rob', label: 'Rob' },
