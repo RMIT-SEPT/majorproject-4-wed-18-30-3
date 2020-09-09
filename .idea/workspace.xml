@@ -4,7 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="808900f0-4c90-4432-b563-0bb341d9b575" name="Default Changelist" comment="" />
+    <list default="true" id="808900f0-4c90-4432-b563-0bb341d9b575" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrontEnd/frontend-react/src/components/CancelBookingScreen/CancelBookingScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/FrontEnd/frontend-react/src/components/CancelBookingScreen/CancelBookingScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrontEnd/frontend-react/src/components/ProfileScreen/EditProfile.js" beforeDir="false" afterPath="$PROJECT_DIR$/FrontEnd/frontend-react/src/components/ProfileScreen/EditProfile.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FrontEnd/frontend-react/src/components/ProfileScreen/ProfileScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/FrontEnd/frontend-react/src/components/ProfileScreen/ProfileScreen.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -59,7 +64,8 @@
       <workItem from="1597824790953" duration="219000" />
       <workItem from="1598077707905" duration="773000" />
       <workItem from="1598269902982" duration="954000" />
-      <workItem from="1599375877546" duration="976000" />
+      <workItem from="1599375877546" duration="1584000" />
+      <workItem from="1599500746169" duration="48000" />
     </task>
     <servers />
   </component>
