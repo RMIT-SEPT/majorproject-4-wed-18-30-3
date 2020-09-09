@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css"
 
-import {BrowserRouter as Router, Route} from "react-router-dom";
+import {BrowserRouter as Router, Route, Redirect} from "react-router-dom";
 
 import Header from './components/Layout/Header';
 import Footer from './components/Layout/Footer';
@@ -25,6 +25,11 @@ function App() {
     <Router>
     <div className="App">
       <Header/>
+      
+      <Route exact path="/">
+        <Redirect to="/dashboard"/> 
+      </Route>
+
       <Route path="/dashboard" component={Dashboard}/>
       <Route path="/bookings" component={BookingScreen}/>
       <Route path="/login" component={LoginScreen}/>
