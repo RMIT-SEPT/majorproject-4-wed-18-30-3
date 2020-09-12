@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
 
 class Login_Ui extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+          userName: null,
+        };
+    }
     render(){
         return(
             <div className = "Login_Ui">
@@ -20,3 +26,4 @@ class Login_Ui extends React.Component {
         )
     }
 }
+//document.getElementById("username").value
