@@ -4,11 +4,6 @@ import CancelButton from './CancelButton';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 
-    // Round a date object to its nearest minimum increment
-    function formatDate(availability) {
-        return availability
-    }
-
     // Return the current time in backend-friendly format 
     function currentTime() {
         var date = new Date();
@@ -22,9 +17,7 @@ import makeAnimated from 'react-select/animated';
         return dateString
     }
 
-    function refresh() {
-        window.location.reload(false);
-    }
+    function refresh() {window.location.reload(false)}
 
     const capitalise = (string) => {
         if (typeof string !== 'string') return ''
@@ -35,25 +28,25 @@ import makeAnimated from 'react-select/animated';
     const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 
     // Send a create booking request to bookings endpoint
-    function createBooking(newBooking) {
+    async function createBooking(newBooking) {
 
         console.log(newBooking)
-
-        axios.post('http://localhost:8080/api/booking', {
+        return await axios.post('http://localhost:8080/api/booking', {
             id: newBooking.id,
             updated_At: currentTime(),
             worker: newBooking.worker,
             timeslot: newBooking.timeslot,
             service: newBooking.service,
             customer: newBooking.customer
-
         }, axiosConfig)
         .then(res => {
             console.log(`statusCode: ${res.statusCode}`)
             console.log(res)
+            return true
         })
         .catch(error => {
             console.error(error)
+            return false
         })
     }
 
@@ -146,7 +139,11 @@ class BookingPane extends Component {
             optionsWorker: this.loadWorkers(),      
             
             disableWorker: false,
-            disableService: false
+            disableService: false,
+
+            hasSuccess: false,
+            hasFail: false
+            
         }
 
         this.loadWorkers = this.loadWorkers.bind(this);
@@ -158,6 +155,7 @@ class BookingPane extends Component {
     toggleDisableWorker = () => this.setState(prevState => ({disableWorker: !prevState.disableWorker}))
     toggleDisableService = () => this.setState(prevState => ({disableService: !prevState.disableService}))
     onAvailabilityChange = availability => this.setState({ availability })
+    showModal = e => {this.setState({show: !this.state.show})}
 
     async loadWorkers() {
         const options = await getWorkerOptions()
@@ -184,7 +182,7 @@ class BookingPane extends Component {
         }
     } 
 
-    onSubmit(e){
+    async onSubmit(e){
         e.preventDefault();
 
         if (this.state.availability == null) {
@@ -200,77 +198,123 @@ class BookingPane extends Component {
             return
         }            
 
-        // Get this from local React state after login is done
-        const customerId = 1;
+        // Get this from React state/component props after login is done
+        const customerId = 1
 
         // Send the POST request
-        createBooking({
+        const success = await createBooking({
             id: this.state.availability["value"]["id"],
             updated_At: currentTime(),
             worker: {id: this.state.worker.value["id"]},
             timeslot: {date: this.state.availability["value"]["timeslot"]},
             service: {id: this.state.service.value["id"]},
             customer: {id: customerId}
-        });
+        }).then()
+
+        // Set success/fail state, will change what the pane is rendering
+        if (success) {
+            this.setState({hasSuccess: true})
+            this.setState({hasFail: false})
+        } else {
+            this.setState({hasSuccess: false})
+            this.setState({hasFail: true})
+        }
+
+        
     }
 
     render() {
 
         const animatedComponents = makeAnimated();
 
-        return (
-            <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
-                <br/>    
-                <b>Get started by choosing a worker.</b>
-                <br/>   <br/>   
-                <form onSubmit={this.onSubmit}>
+        // Booking input panel
+        if (!this.state.hasSuccess && !this.state.hasFail) { 
+            return (
+                <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
 
-                    <div className="form-group">
-                        <label htmlFor="worker">Select a worker:</label>
-                        <Select name={"worker"} value={this.state.value} options={this.state.optionsWorker}
-                            onChange={this.onWorkerChange} components={animatedComponents} isDisabled={this.state.disableWorker}/>
-                    </div>
-                                      
-                    <div className="form-group">
-                        <label htmlFor="service">Select a service:</label>
-                        <Select name={"service"} value={this.state.value} options={this.state.optionsService}
-                            onChange={this.onServiceChange} components={animatedComponents} isDisabled={this.state.disableService}/>
-                    </div>
+                    <br/>    
+                    <b>Get started by choosing a worker.</b>
+                    <br/>   <br/>   
+                    <form onSubmit={this.onSubmit}>
 
-                    <div className="form-group">
-                        <label htmlFor="availability">Select an available timeslot:</label>
-                        <Select name={"availability"} value={this.state.value} options={this.state.optionsAvailability}
-                            onChange={this.onAvailabilityChange} components={animatedComponents}/>
+                        <div className="form-group">
+                            <label htmlFor="worker">Select a worker:</label>
+                            <Select name={"worker"} value={this.state.value} options={this.state.optionsWorker}
+                                onChange={this.onWorkerChange} components={animatedComponents} isDisabled={this.state.disableWorker}/>
+                        </div>
+                                        
+                        <div className="form-group">
+                            <label htmlFor="service">Select a service:</label>
+                            <Select name={"service"} value={this.state.value} options={this.state.optionsService}
+                                onChange={this.onServiceChange} components={animatedComponents} isDisabled={this.state.disableService}/>
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="availability">Select an available timeslot:</label>
+                            <Select name={"availability"} value={this.state.value} options={this.state.optionsAvailability}
+                                onChange={this.onAvailabilityChange} components={animatedComponents}/>
+                        </div>
+                        
+                        <div className="row">
+                            <div className="col-sm">
+                            <input type="submit" className="btn btn-sm btn-dark" id="navButton"/>
+
+                            </div>
+                            <div className="col-sm">
+                                <CancelButton/>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div className="row-sm">
+                    <br/>
+                        <div className="col-sm">
+                        </div>
+                        
+                        <div className="col-sm">
+                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.refresh}>
+                                Reset
+                            </button>           
+                        </div>
+
+                        <div className="col-sm">
+                            
+                        </div>
                     </div>
-                    
+                </div>
+            )
+
+        // Successful booking
+        }if (this.state.hasSuccess) {
+            return (
+                <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
+                    <br/>    
+                    <b>Booking placed successfully.</b>
+                    <br/><br/>   
+
                     <div className="row">
                         <div className="col-sm">
-                           <input type="submit" className="btn btn-sm btn-dark" id="navButton"/>
-
+                            <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
+                                Make another booking
+                            </button> 
                         </div>
                         <div className="col-sm">
                             <CancelButton/>
                         </div>
                     </div>
-                </form>
+                </div>   
+            )
 
-                <div className="row-sm">
-                <br/>
-                    <div className="col-sm">
-                    </div>
-                    
-                    <div className="col-sm">
-                        <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
-                            Reset
-                        </button>           
-                    </div>
-
-                    <div className="col-sm">
-                         
-                    </div>
-                </div>
-            </div>
-        )
+        // Failed booking
+        } else if (this.state.hasFail) {
+            return (
+                <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
+                    <br/>    
+                    <b>Booking failed. Please try again.</b>
+                    <br/><br/>   
+                </div>   
+            )
+        }
     }
 }
 
