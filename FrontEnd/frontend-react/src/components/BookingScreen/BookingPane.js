@@ -3,19 +3,21 @@ import axios from "axios";
 import CancelButton from './CancelButton';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
+import { Disable } from 'react-disable';
+import { Link } from 'react-router-dom';
 
     // Round a date object to its nearest minimum increment
-    function roundTo(date) {
-        
-        // Change to match min booking duration
-        const minDuration = 15;
+    function formatDate(availability) {
+        return availability
+    }
 
-        if (date != null) {
-            var mins = 1000 * 60 * minDuration;
-            return new Date(Math.round(date.getTime() / mins) * mins)
-        } else 
-            return date
+    function refresh() {
+        window.location.reload(false);
+    }
 
+    const capitalise = (string) => {
+        if (typeof string !== 'string') return ''
+        return string.charAt(0).toUpperCase() + string.slice(1)
     }
 
     // Header config for REST requests
@@ -33,7 +35,6 @@ import makeAnimated from 'react-select/animated';
         axios.post('http://localhost:8080/api/booking', {
             
             timeslot: newBooking.timeslot,
-            duration: newBooking.duration,
             service: newBooking.service,
             worker: newBooking.worker,
             customer: newBooking.customer
@@ -69,85 +70,125 @@ import makeAnimated from 'react-select/animated';
         })
     }
 
-    // Return relevant options depending on selectbox type
-    async function getOptions(selectType) {
+    // Return relevant options depending on selection
+    async function getWorkerOptions() {
+        const wks = await getWorkers().then()
+        var workerOptions = []
+
+        // Get all workers names
+        for (let i = 0; i < wks.length; i++) {               
+            workerOptions.push({
+                value: {id: wks[i]["id"], userName: wks[i]["userName"]},
+                label: capitalise(wks[i]["userName"])})
+        }
+        return workerOptions
+    }
+
+    // Return relevant options depending on selection
+    async function getServiceOptions(component) {
         const avs = await getBookings().then()
         var serviceOptions = []
-        var workerOptions = []
-        var availOptions = []
+        var temp = []
 
-        // Get service offered by selected worker
-        if (selectType == "worker") {
-            for (let i = 0; i < avs.length; i++) {               
-                if (avs[i]["customer"] == null) {
-                    var services = []
-                    if (!services.includes(avs[i]["worker"]["services"]["name"])) {
-                        // Capitalise label string
-                        var nameString = avs[i]["worker"]["userName"]
-                        var capitalised = nameString.charAt(0).toUpperCase() + nameString.slice(1)
-                        serviceOptions.push({value: nameString, label: capitalised})
+        
+        // Get services offered by selected worker
+        for (let i = 0; i < avs.length; i++) {               
+            if (avs[i]["customer"] === null && avs[i]["worker"]["userName"] === component["label"]) {
+                for (let j = 0; j < avs[i]["worker"]["services"].length; j++) {               
+                    var nameString = avs[i]["worker"]["services"][j]["name"]
+                    if (temp.includes(nameString) === false) {
+                        temp.push(nameString)
+                        serviceOptions.push({value: nameString, label: capitalise(nameString)})
                     }
                 }
             }
         }
-
+        return serviceOptions
     }
-    
+
+        // Return relevant options depending on selectbox type
+        async function getAvailabilityOptions(workerName, component) {
+        const avs = await getBookings().then()
+        var availOptions = []
+
+        console.log(workerName)
+        console.log(component)
+
+        // Get services offered by selected worker
+        for (let i = 0; i < avs.length; i++) {               
+            if (avs[i]["customer"] === null && avs[i]["worker"]["userName"] === workerName["value"]["userName"]) {
+                
+                const timeslot = avs[i]["timeslot"]
+                const label = avs[i]["timeslot"]["date"]
+                availOptions.push({value: timeslot, label: label})
+                    
+            }
+        }
+        return availOptions
+    }
+
 class BookingPane extends Component {
 
     constructor() {
         super()
         this.state = {
-            date: roundTo(new Date()),
-            duration: null,
+            availability: null,
             service: null,
             worker: null,
             customer: null,
             customerId: null,
-            optionsWorker: [
-                    {value: "jim", label: "Jim"},
-                    {value: "wendy", label: "Wendy"},
-                    {value: "hector", label: "Hector"}],
-            optionsService: [{value: "none", label: "First select a worker"}],
-            optionsAvailability: [{value: "none", label: "First select a worker"}]
+            
+            optionsService: [{value: "none", label: null}],
+            optionsAvailability: [{value: "none", label: null}],
+            optionsWorker: this.loadWorkers(),      
+            
+            disableWorker: false,
+            disableService: false
+            
         }
 
+        this.loadWorkers = this.loadWorkers.bind(this);
         this.onWorkerChange = this.onWorkerChange.bind(this);
         this.onServiceChange = this.onServiceChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
     }
 
-    // TODO:
-    // 1. User chooses desired start time, 
-    // 2. GET available timeslots and populate service selection with services available at timeslot
-    // 3. User chooses a worker who is available at timeslot
-    // 4. Populate duration seleection based on 
-    
-    onWorkerChange(worker) {
+    toggleDisableWorker = () => this.setState(prevState => ({disableWorker: !prevState.disableWorker}))
+    toggleDisableService = () => this.setState(prevState => ({disableService: !prevState.disableService}))
+    onAvailabilityChange = availability => this.setState({ availability })
+
+    async loadWorkers() {
+        const options = await getWorkerOptions()
+
+        console.log(options)
+        this.setState({optionsWorker: options})
+    }
+
+    async onWorkerChange(worker) {
         this.setState({ worker })
         
         // Populate services with services the worker offers
-        this.setState({options: getOptions("worker")})
-        
-
-
+        const options = await getServiceOptions(worker)
+        this.setState({optionsService: options})
+        this.setState({disableWorker: true})
     }   
 
-    onServiceChange(service) {
+    async onServiceChange(service) {
         this.setState({ service })
+        
+        if (this.state.worker != null) {
+            // Populate timeslots accoring to worker service availablility
+            const options = await getAvailabilityOptions(this.state.worker, service)
+            this.setState({optionsAvailability: options})
+            this.setState({disableService: true})
+        }
     } 
-
-    onTimeslotChange = service => this.setState({ service })
 
     onSubmit(e){
         e.preventDefault();
 
-        if (this.state.date == null) {
-            alert("Please select a start time and date.")
-            return
-        }
-        if (this.state.duration == null) {
-            alert("Please select a duration.")
+        if (this.state.availability == null) {
+            alert("Please select a timeslot.")
             return
         }
         if (this.state.service == null) {
@@ -159,15 +200,11 @@ class BookingPane extends Component {
             return
         }            
 
-        // Need to match this with Cams backend format
-        const timeslot = roundTo(this.state.date)
-
         // Get this from local React state after login is done
         const customer = null;
 
         var newBooking = {
-            timeslot: timeslot,
-            duration: this.state.duration.value,
+            timeslot: formatDate(this.state.availability["label"]),
             service: this.state.service.value,
             worker: this.state.worker.value,
             customer: customer
@@ -182,30 +219,32 @@ class BookingPane extends Component {
     render() {
 
         const animatedComponents = makeAnimated();
-        
+
         return (
             <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
                 <br/>    
-                <b>Bookings</b>
+                <b>Get started by choosing a worker.</b>
                 <br/>   <br/>   
                 <form onSubmit={this.onSubmit}>
 
-                    
                     <div className="form-group">
-                    <label htmlFor="worker">Select a worker:</label>
-                    <Select name={"worker"} value={this.state.value} options={this.state.optionsWorker}
-                        onChange={this.onWorkerChange} components={animatedComponents}/>
+                        <label htmlFor="worker">Select a worker:</label>
+                        <Select name={"worker"} value={this.state.value} options={this.state.optionsWorker}
+                            onChange={this.onWorkerChange} components={animatedComponents} isDisabled={this.state.disableWorker}/>
                     </div>
+                                      
                     <div className="form-group">
                         <label htmlFor="service">Select a service:</label>
                         <Select name={"service"} value={this.state.value} options={this.state.optionsService}
-                            onChange={this.onServiceChange} components={animatedComponents}/>
+                            onChange={this.onServiceChange} components={animatedComponents} isDisabled={this.state.disableService}/>
                     </div>
+
                     <div className="form-group">
-                        <label htmlFor="service">Select an available timeslot:</label>
-                        <Select name={"service"} value={this.state.value} options={this.state.optionsAvailability}
-                            onChange={this.onServiceChange} components={animatedComponents}/>
+                        <label htmlFor="availability">Select an available timeslot:</label>
+                        <Select name={"availability"} value={this.state.value} options={this.state.optionsAvailability}
+                            onChange={this.onAvailabilityChange} components={animatedComponents}/>
                     </div>
+                    
                     <div className="row">
                         <div className="col-sm">
                            <input type="submit" className="btn btn-sm btn-dark" id="navButton"/>
@@ -216,6 +255,22 @@ class BookingPane extends Component {
                         </div>
                     </div>
                 </form>
+
+                <div className="row-sm">
+                <br/>
+                    <div className="col-sm">
+                    </div>
+                    
+                    <div className="col-sm">
+                        <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
+                            Reset
+                        </button>           
+                    </div>
+
+                    <div className="col-sm">
+                         
+                    </div>
+                </div>
             </div>
         )
     }
