@@ -184,13 +184,19 @@ def get_timeslots():
     print(json.dumps(r.json(), indent=2))
 
 
-number_of_timeslots = 1000
+def get_bookings():
+    r = requests.get("http://localhost:8080/api/booking/all")
+    print(json.dumps(r.json(), indent=2))
+
+
+number_of_timeslots = 100
 min_duration = 30
 
-timeslots = add_timeslots(number_of_timeslots, min_duration)
-add_services(services, min_duration)
-add_workers(workers)
-add_customers(customers)
-add_availabilites(timeslots, workers, customers, min_duration)
+# timeslots = add_timeslots(number_of_timeslots, min_duration)
+# add_services(services, min_duration)
+# add_workers(workers)
+# add_customers(customers)
+# add_availabilites(timeslots, workers, customers, min_duration)
 
 # get_timeslots()
+get_bookings()
