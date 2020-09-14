@@ -78,7 +78,7 @@ class RegisterScreen extends Component {
         return(
             <div className = "Register_Ui">
                 <div className = "Heading">
-                    <h1 header> Sign Up</h1>
+                    <h1> Sign Up</h1>
                     <br></br><br></br><br></br><br></br>
                 </div>
                 <div className = "UserName">
