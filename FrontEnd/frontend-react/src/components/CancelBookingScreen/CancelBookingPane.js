@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css"
-
+import axios from "axios";
 
 
 
@@ -10,29 +10,41 @@ class CancelBookingPane extends Component {
         super();
 
         this.state= {
-            bookingid : "",
-            reason :""
+            bookings: []
+            
         }
         
-        this.onChange = this.onChange.bind(this);
-        this.onSubmit = this.onSubmit.bind(this);
+        //this.onChange = this.onChange.bind(this);
+        //this.onSubmit = this.onSubmit.bind(this);
     }
 
-    onChange(e){
-        this.setState({[e.target.name]: e.target.value});
-    }
-
-    onSubmit(e){
-        e.preventDfault();
-        const cancelbooking = {
-            bookingid : this.state.id,
-            reason : this.state.reason
-        }
-
-        console.log(cancelbooking);
-        
+    componentWillMount(){
+        this.getBookings();
 
     }
+
+
+    getBookings(){
+        axios.get(`http://localhost:8080/api/bookings`)
+        .then(response => {
+            this.setState({bookings: response.data},()=> {
+                //console.log(this.state);
+
+            }) 
+        })
+
+    }
+
+
+    onDelete(){
+        let bookingId=this.state.bookings.id;
+        axios.delete(`http://localhost:8080/api/bookings/${bookingId}`)
+        .then(response =>{
+            this.props.history.push('/');
+        })
+    }
+
+    
 
 
 
@@ -42,33 +54,24 @@ class CancelBookingPane extends Component {
    
     
     render() {
+
+        const bookingItems = this.state.bookings.map((booking, i) => {
+            return(
+            <div>
+            <li>{booking.timeslot},{booking.service},{booking.worker},{booking.customer}</li>
+            <button onClick={this.onDelete.bind(this)} className="btn red right">DELETE</button>
+            </div>
+
+            
+            )
+        })
+
+
+
         return (
             <div className="cancel_booking_screen_Cancel_bookingpane" id="cancel_booking_screen_Cancel_bookingpane">
-                <br/>    
-                <b>Please Enter Your Booking ID</b>
-                <div className="form-group">
-                <form>
-                <div><input type="text" className="form-control" placeholder="Unique Person ID" name="bookingid" value={this.state.bookingid} onChange = {this.onChange}/>
+                <h1>Bookings</h1>
 
-                </div>
-                <br/>
-                <div>
-                <label for="cancel-reason">Select Cancel Reason:</label>
-                        <select className="form-control" value={this.state.reason} onChange={this.onChange}>
-                            <option value="Time Conflict5">Time Conflict</option>
-                            <option value="No time available for worker">No time available for worker</option>
-                            <option value="weather reason">weather reason</option>
-                            <option value="60" >1 hour</option>
-                            <option value="75">1 hr 15 min</option>
-                            
-                        </select>
-                </div>
-                </form>
-
-                </div>
-
-
-                <br/>   
 
                 
             </div>
