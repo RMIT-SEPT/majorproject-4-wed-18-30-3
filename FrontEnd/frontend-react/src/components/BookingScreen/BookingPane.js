@@ -312,7 +312,18 @@ class BookingPane extends Component {
                     <br/>    
                     <b>Booking failed. Please try again.</b>
                     <br/><br/>   
-                </div>   
+                
+                <div className="row">
+                    <div className="col-sm">
+                        <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
+                            Make another booking
+                        </button> 
+                    </div>
+                    <div className="col-sm">
+                        <CancelButton/>
+                    </div>
+                </div>
+            </div>  
             )
         }
     }
