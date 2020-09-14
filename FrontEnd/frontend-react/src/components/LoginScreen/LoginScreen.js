@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import {Link} from "react-router-dom";
+//import {Link} from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css"
-import Dashboard from '../Dashboard/Dashboard';
+//import Dashboard from '../Dashboard/Dashboard';
 
 
 class LoginScreen extends Component {
@@ -9,16 +9,17 @@ class LoginScreen extends Component {
         super();
         this.state = {
           userName: null,
-          password: null,
-        };
+          password: null
+        }
     }
     onSubmit(e) {
         e.preventDefault();
-        if(username == null){
+
+        if(this.state.userName == null){
             alert("Please enter a username!")
             return
         }
-        if(password == null){
+        if(this.state.password == null){
             alert("Please enter a password!")
             return
         }
@@ -28,7 +29,7 @@ class LoginScreen extends Component {
         //if its confirmed then this happens
         if(true){
             //set the dashboards user as the login user
-            <Link to="/dashboard"></Link>
+            //<Link to="/dashboard"></Link>
         }
         //user doesnt exist / password incorrect
         else{
@@ -43,11 +44,11 @@ class LoginScreen extends Component {
                     <br></br><br></br><br></br><br></br>
                 </div>
                 <div className = "UserName">
-                <label for="username">Username:</label>
+                <label htmlFor={"username"}>Username:</label>
                 <input type="text" id="username" name="uname" required></input><br></br><br></br>
                 </div>
                 <div className = "Password">
-                <label for="password">Password:</label>
+                <label htmlFor={"password"}>Password:</label>
                 <input type="text" id="password" name="pass" required></input><br></br><br></br>
                 </div>
                 <input type="submit" className="login_Submit" id="navButton"/>
