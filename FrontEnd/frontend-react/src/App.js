@@ -27,7 +27,7 @@ function App() {
       <Header/>
       
       <Route exact path="/">
-        <Redirect to="/dashboard"/> 
+        <Redirect to="/login"/> 
       </Route>
 
       <Route path="/index" component={Dashboard}/>
