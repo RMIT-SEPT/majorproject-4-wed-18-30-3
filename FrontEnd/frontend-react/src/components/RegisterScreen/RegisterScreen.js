@@ -86,31 +86,31 @@ class RegisterScreen extends Component {
                     <br></br><br></br><br></br><br></br>
                 </div>
                 <div className = "UserName">
-                <label for="username">Username:</label>
+                <label htmlFor={"username"}>Username:</label>
                 <input type="text" id="username" name="uname" required></input><br></br><br></br>
                 </div>
                 <div className = "Password">
-                <label for="password">Password:</label>
+                <label htmlFor={"password"}>Password:</label>
                 <input type="text" id="password" name="pass" required></input><br></br><br></br>
                 </div>
                 <div className = "Phone">
-                <label for="phone">Password:</label>
+                <label htmlFor={"phone"}>Password:</label>
                 <input type="text" id="phone" name="phone" required></input><br></br><br></br>
                 </div>
                 <div className = "Address">
-                <label for="address">Password:</label>
+                <label htmlFor={"address"}>Password:</label>
                 <input type="text" id="address" name="address" required></input><br></br><br></br>
                 </div>
                 <div className = "Firstname">
-                <label for="firstName">Password:</label>
+                <label htmlFor={"firstName"}>Password:</label>
                 <input type="text" id="firstName" name="fName" required></input><br></br><br></br>
                 </div>
                 <div className = "Lastname">
-                <label for="lastName">Password:</label>
+                <label htmlFor={"lastName"}>Password:</label>
                 <input type="text" id="lastName" name="lName" required></input><br></br><br></br>
                 </div>
                 <div className="from-user">
-                        <label for="user">Select Type of user:</label>
+                        <label htmlFor={"user"}>Select Type of user:</label>
                         <Select name="user" id="user" value={this.state.userType} options={userTypes} 
                             onChange={this.onTypeChange} components={animatedComponents}/>
                     </div>
