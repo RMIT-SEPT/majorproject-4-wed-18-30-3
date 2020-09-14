@@ -1,5 +1,43 @@
 import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
+import axios from "axios";
+
+var config = {
+    headers: {
+        'Content-Type': 'application/json',
+        // 'Access-Control-Allow-Origin:': '*'
+    }
+}
+
+function editProfile(newProfile) {
+
+    console.log(newProfile)
+
+    //axios.post('https://ae5b398a-4768-4d8f-b24a-0f5aa15a09a0.mock.pstmn.io/bookings', {
+        // should have a users class in BackEnd that store all users(customer,admin,worker) .
+         axios.post('http://localhost:8080/api/users', {
+
+        
+        userName: newProfile.userName,
+        password: newProfile.password,
+        address: newProfile.address,
+        phone: newProfile.phone
+
+    }, config)
+    .then(res => {
+        console.log(`statusCode: ${res.statusCode}`)
+        console.log(res)
+    })
+    .catch(error => {
+        console.error(error)
+    })
+}
+
+
+
+
+
+
 
 class EditProfile extends Component {
 
@@ -7,39 +45,63 @@ class EditProfile extends Component {
         super();
 
         this.state= {
-            id : "",
+
             userName : "",
             password : "",
             address : "",
             phone : ""
         }
         
-        this.onChange = this.onChange.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
     }
 
-    
+    onUserNameChange = userName => this.setState({ userName })
+    onPasswordChange = password => this.setState({ password })
+    onAddressChange = address => this.setState({ address })
+    onPhoneChange = phone => this.setState({ phone })
 
-    onChange(e){
-        this.setState({[e.target.name]: e.target.value});
+    handleInputChange(e) {
+        const target = e.target;
+        const value = target.value;
+        const name = target.name;
+
+        this.setState({
+            [name]: value
+        });
     }
 
+
+
     onSubmit(e){
-
-        console.log(this.value.name.value);
         e.preventDefault();
-        const editPerson = {
-            id : this.state.id,
-            userName : this.state.userName,
-            password : this.state.password,
-            address : this.state.address,
-            phone : this.state.phone
 
+        if (this.state.userName == null) {
+            alert("Please enter your new username.")
         }
+        if (this.state.password == null) {
+            alert("Please enter your new password.")
+        }
+        if (this.state.address == null) {
+            alert("Please enter your new address.")
+        }
+        if (this.state.phone == null) {
+            alert("Please enter your new phone number.")
+        }            
 
-        console.log(editPerson);
+
+        // Get this from local React state once login is done
         
 
+        const newProfile = {
+            userName: this.state.userName,
+            password: this.state.password,
+            address: this.state.address,
+            phone: this.state.phone
+        }
+        console.log(newProfile);
+
+        editProfile(newProfile);
     }
 
  
@@ -53,29 +115,28 @@ class EditProfile extends Component {
               <form onSubmit = {this.onSubmit}>
               <b>Edit Personal Profile</b>
               <div className="form-group">
-                  <input type="text" className="form-control" placeholder="Unique Person ID" name="id" value={this.state.id} onChange = {this.onChange}/>
-
+                  
                  
 
               </div>
               
               <div>
-              <input type="text" className="form-control" placeholder="Name" name="userName" value={this.state.userName} onChange = {this.onChange}/>
+              <input type="text" className="form-control" placeholder="Name" name="userName" value={this.state.userName} onChange = {this.handleInputChange.bind(this)}/>
 
               </div>
               <br></br>
               <div>
-              <input type="text" className="form-control" placeholder="Password" name="password" value={this.state.password} onChange = {this.onChange}/>
+              <input type="text" className="form-control" placeholder="Password" name="password" value={this.state.password} onChange = {this.handleInputChange.bind(this)}/>
 
               </div>
               <br></br>
               <div>
-              <input type="text" className="form-control" placeholder="Address" name="address" value={this.state.address} onChange = {this.onChange}/>
+              <input type="text" className="form-control" placeholder="Address" name="address" value={this.state.address} onChange = {this.handleInputChange.bind(this)}/>
 
               </div>
               <br></br>
               <div>
-              <input type="phone" className="form-control" placeholder="Phone" name="phone" value={this.state.phone} onChange = {this.onChange}/>
+              <input type="phone" className="form-control" placeholder="Phone" name="phone" value={this.state.phone} onChange = {this.handleInputChange.bind(this)}/>
 
               </div>
               <br></br>
