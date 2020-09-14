@@ -3,12 +3,23 @@ import axios from "axios";
 import CancelButton from './CancelButton';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
-import { Disable } from 'react-disable';
-import { Link } from 'react-router-dom';
 
     // Round a date object to its nearest minimum increment
     function formatDate(availability) {
         return availability
+    }
+
+    // Return the current time in backend-friendly format 
+    function currentTime() {
+        var date = new Date();
+        var dateString =
+            date.getUTCFullYear() + "-" +
+            ("0" + (date.getUTCMonth()+1)).slice(-2) + "-" +
+            ("0" + date.getUTCDate()).slice(-2) + "-" +
+            ("0" + date.getUTCHours()).slice(-2) + "-" +
+            ("0" + date.getUTCMinutes()).slice(-2) + "-" +
+            ("0" + date.getUTCSeconds()).slice(-2);
+        return dateString
     }
 
     function refresh() {
@@ -21,11 +32,7 @@ import { Link } from 'react-router-dom';
     }
 
     // Header config for REST requests
-    const axiosConfig = {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }
+    const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 
     // Send a create booking request to bookings endpoint
     function createBooking(newBooking) {
@@ -33,10 +40,11 @@ import { Link } from 'react-router-dom';
         console.log(newBooking)
 
         axios.post('http://localhost:8080/api/booking', {
-            
+            id: newBooking.id,
+            updated_At: currentTime(),
+            worker: newBooking.worker,
             timeslot: newBooking.timeslot,
             service: newBooking.service,
-            worker: newBooking.worker,
             customer: newBooking.customer
 
         }, axiosConfig)
@@ -98,7 +106,7 @@ import { Link } from 'react-router-dom';
                     var nameString = avs[i]["worker"]["services"][j]["name"]
                     if (temp.includes(nameString) === false) {
                         temp.push(nameString)
-                        serviceOptions.push({value: nameString, label: capitalise(nameString)})
+                        serviceOptions.push({value: {id: avs[i]["worker"]["services"][j]["id"], name: nameString}, label: capitalise(nameString)})
                     }
                 }
             }
@@ -111,17 +119,12 @@ import { Link } from 'react-router-dom';
         const avs = await getBookings().then()
         var availOptions = []
 
-        console.log(workerName)
-        console.log(component)
-
         // Get services offered by selected worker
         for (let i = 0; i < avs.length; i++) {               
             if (avs[i]["customer"] === null && avs[i]["worker"]["userName"] === workerName["value"]["userName"]) {
-                
-                const timeslot = avs[i]["timeslot"]
+                const timeslot = {id: avs[i]["timeslot"]["id"], timeslot: avs[i]["timeslot"]["date"]}
                 const label = avs[i]["timeslot"]["date"]
                 availOptions.push({value: timeslot, label: label})
-                    
             }
         }
         return availOptions
@@ -144,7 +147,6 @@ class BookingPane extends Component {
             
             disableWorker: false,
             disableService: false
-            
         }
 
         this.loadWorkers = this.loadWorkers.bind(this);
@@ -159,8 +161,6 @@ class BookingPane extends Component {
 
     async loadWorkers() {
         const options = await getWorkerOptions()
-
-        console.log(options)
         this.setState({optionsWorker: options})
     }
 
@@ -201,19 +201,17 @@ class BookingPane extends Component {
         }            
 
         // Get this from local React state after login is done
-        const customer = null;
-
-        var newBooking = {
-            timeslot: formatDate(this.state.availability["label"]),
-            service: this.state.service.value,
-            worker: this.state.worker.value,
-            customer: customer
-        }
-
-        // Do formatting for newBooking here before invoking createBooking()
+        const customerId = 1;
 
         // Send the POST request
-        createBooking(newBooking);
+        createBooking({
+            id: this.state.availability["value"]["id"],
+            updated_At: currentTime(),
+            worker: {id: this.state.worker.value["id"]},
+            timeslot: {date: this.state.availability["value"]["timeslot"]},
+            service: {id: this.state.service.value["id"]},
+            customer: {id: customerId}
+        });
     }
 
     render() {
