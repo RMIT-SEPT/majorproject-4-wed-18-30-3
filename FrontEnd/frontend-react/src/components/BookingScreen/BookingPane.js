@@ -220,7 +220,6 @@ class BookingPane extends Component {
             this.setState({hasFail: true})
         }
 
-        
     }
 
     render() {
