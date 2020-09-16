@@ -98,7 +98,7 @@ class RegisterScreen extends Component {
             return(
                 <div className = "Register_Ui">
                     <div className = "Heading">
-                        <h1> Sign Up</h1>
+                        <h1>Sign up</h1>
                         <br></br><br></br><br></br><br></br>
                     </div>
                     <form onSubmit={this.onSubmit}>
@@ -131,7 +131,7 @@ class RegisterScreen extends Component {
                             <Select name="user" id="user" value={this.state.userType} options={userTypes}
                                     onChange={this.onTypeChange} components={animatedComponents} required/>
                         </div>
-                        <input type="submit" className="login_Submit" id="navButton"/>
+                        <input type="submit" className="register_Submit" id="navButton"/>
                     </form>
                 </div>
             )

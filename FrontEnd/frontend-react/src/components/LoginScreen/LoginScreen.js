@@ -49,7 +49,7 @@ class LoginScreen extends Component {
         return(
             <div className = "Login_Ui">
                 <div className = "Heading">
-                    <h1> Log in</h1>
+                    <h1>Log in</h1>
                     <br></br><br></br><br></br><br></br>
                 </div>
                 <form onSubmit={this.onSubmit}>
@@ -64,7 +64,6 @@ class LoginScreen extends Component {
                     <input type="submit" className="login_Submit" id="navButton"/>
                 </form>
             </div>
-
             )
         }
     if(this.state.hasSuccess) {
