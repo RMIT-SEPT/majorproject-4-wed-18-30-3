@@ -20,7 +20,7 @@ jobs:
       - checkout
       - run: echo $(pwd)
       - run: (cd /home/circleci/project/BackEnd/MajorProject && chmod +x mvnw)
-      - run: (cd /home/circleci/project/BackEnd/MajorProject && ./mvnw -Dmaven.test.skip=true package)
+      - run: (cd /home/circleci/project/BackEnd/MajorProject && ./mvnw package)
       - run: (cd /home/circleci/project/BackEnd/MajorProject && docker build -t major-project .)
 
 
