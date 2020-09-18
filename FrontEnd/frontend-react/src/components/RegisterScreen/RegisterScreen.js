@@ -28,6 +28,7 @@ class RegisterScreen extends Component {
         this.setState({ userName: Type})
     }
     onTypeChange = userType => this.setState({ userType })
+    refreshPage = () =>  window.location.reload(false);
     async onSubmit(e) {
         e.preventDefault();
         await this.setPassword()
@@ -84,7 +85,6 @@ class RegisterScreen extends Component {
             this.setState({hasSuccess: false})
             this.setState({hasFail: true})
         }
-        //username is taken
 
       }
     render(){
@@ -139,14 +139,23 @@ class RegisterScreen extends Component {
         if(this.state.hasSuccess) {
             return(
                 <Router>
-                    <Route exact path="/">
-                        <Redirect to="/login" component = {LoginScreen}/>
-                    </Route>
+                    <div className = "Register_Ui">
+                        <Redirect to= "/login" component={LoginScreen}/>
+                        <Route path="/login" component={LoginScreen}/>
+                    </div>
                 </Router>
             )
         }
         else if(this.state.hasFail){
             alert("username is taken, please try again!")
+            return(
+                <Router>
+                    <div className = "Register_Ui">
+                        <Redirect to= "/register" component={RegisterScreen}/>
+                        <Route path="/register" component={RegisterScreen}/>
+                    </div>
+                </Router>
+            )
         }
     }
 }
