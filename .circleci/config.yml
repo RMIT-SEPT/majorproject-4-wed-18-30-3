@@ -5,15 +5,26 @@ jobs:
     docker:
       - image: major-project
     steps:
+      - setup_remote_docker
       - checkout
-      - run: ./mvnw test
+      - run:
+          name: Install Docker client
+          command: apk add docker-cli
+          docker build -t major-project
+          ./mvnw test
 
   build:
     docker:
       - image: major-project
     steps:
+      - setup_remote_docker
       - checkout
-      - run: ./mvnw -Dmaven.test.skip=true package
+      - run:
+          name: Install Docker client
+          command: apk add docker-cli
+          docker build -t major-project
+          ./mvnw -Dmaven.test.skip=true package
+
 
 workflows:
   version: 2
