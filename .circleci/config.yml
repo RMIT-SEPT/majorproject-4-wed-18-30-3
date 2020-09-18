@@ -16,8 +16,8 @@ jobs:
     steps:
       - checkout
       - run: echo $(pwd)
-      - run: (cd ../majorproject-4-wed-18-30-3/BackEnd/MajorProject && chmod +x mvnw)
-      - run: (cd ../majorproject-4-wed-18-30-3/BackEnd/MajorProject && /mvnw -Dmaven.test.skip=true package)
+      - run: (cd /home/circleci/project/BackEnd/MajorProject && chmod +x mvnw)
+      - run: (cd /home/circleci/project/BackEnd/MajorProject && /mvnw -Dmaven.test.skip=true package)
       - run: docker build -t major-project .
 
 
