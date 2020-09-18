@@ -5,9 +5,6 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run:
-          name: Install Docker client
-          command: apk add docker-cli
       - run: docker build -t major-project
       - run: ./mvnw test
 
@@ -15,9 +12,6 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run:
-          name: Install Docker client
-          command: apk add docker-cli
       - run: docker build -t major-project
       - run: ./mvnw -Dmaven.test.skip=true package
 
