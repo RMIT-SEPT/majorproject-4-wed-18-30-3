@@ -18,7 +18,6 @@ jobs:
       - run:
           name: Install Docker client
           command: apk add docker-cli
-      - setup_remote_docker
       - run: docker build -t major-project
       - run: ./mvnw -Dmaven.test.skip=true package
 
