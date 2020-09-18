@@ -12,7 +12,7 @@ jobs:
       - run: (cd /home/circleci/project/BackEnd/MajorProject && ./mvnw package)
       - run: (cd /home/circleci/project/BackEnd/MajorProject && docker build -t major-project .)
       - run: docker run --publish 8080:8080 --detach --name project major-project
-      - run: docker exec -d project (cd /home/circleci/project/BackEnd/MajorProject && ./mvnw test)
+      - run: docker exec -d project ./mvnw test
 
   build:
     machine: true
