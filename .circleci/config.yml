@@ -8,8 +8,8 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run: docker build -t major-project .
-      - run: ./mvnw test
+      - run: docker run --publish 8080:8080 --detach --name project major-project
+      - run: docker exec -d project (cd /home/circleci/project/BackEnd/MajorProject && ./mvnw test)
 
   build:
     machine: true
