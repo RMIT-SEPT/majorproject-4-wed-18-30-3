@@ -16,7 +16,7 @@ jobs:
     steps:
       - checkout
       - run: chmod +x mvnw
-      - run: ./mvnw -Dmaven.test.skip=true package
+      - run: (cd majorproject-4-wed-18-30-3/BackEnd/MajorProject && /mvnw -Dmaven.test.skip=true package)
       - run: docker build -t major-project .
 
 
