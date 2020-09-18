@@ -61,18 +61,18 @@ public class TimeslotControllerTest {
         });
     }
 
-    @Test
-    public void addTimeslotShouldReturnTimeslot() throws Exception {
-        assertTrue(this.restTemplate.getForObject("http://localhost:" + port + "/api/timeslot/1",
-                Timeslot.class).equals(timeslot));
-    }
+//    @Test
+//    public void addTimeslotShouldReturnTimeslot() throws Exception {
+//        assertTrue(this.restTemplate.getForObject("http://localhost:" + port + "/api/timeslot/1",
+//                Timeslot.class).equals(timeslot));
+//    }
 
-    @Test
-    public void wrongDateShouldNotMatch() throws Exception {
-        Timeslot wrongDateTimeslot = new Timeslot(1, 30, wrongDate, current, current);
-        assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/timeslot/1",
-                Timeslot.class).equals(wrongDateTimeslot));
-    }
+//    @Test
+//    public void wrongDateShouldNotMatch() throws Exception {
+//        Timeslot wrongDateTimeslot = new Timeslot(1, 30, wrongDate, current, current);
+//        assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/timeslot/1",
+//                Timeslot.class).equals(wrongDateTimeslot));
+//    }
 
     @Test
     public void noDateShouldThrowError() throws Exception {
