@@ -3,6 +3,7 @@ version: 2.0
 jobs:
   test:
     steps:
+      machine: true
       - checkout
       - setup_remote_docker
       - run:
@@ -12,6 +13,7 @@ jobs:
       - run: ./mvnw test
 
   build:
+    machine: true
     steps:
       - checkout
       - setup_remote_docker
