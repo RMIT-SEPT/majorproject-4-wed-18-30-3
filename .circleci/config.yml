@@ -9,13 +9,13 @@ jobs:
     steps:
       - checkout
       - run: docker build -t major-project .
-      - maven test
+      - mvn test
 
   build:
     machine: true
     steps:
       - checkout
-      - maven -Dmaven.test.skip=true package
+      - mvn -Dmaven.test.skip=true package
       - run: docker build -t major-project .
 
 
