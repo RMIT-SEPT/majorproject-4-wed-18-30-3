@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
 import axios from "axios";
 
+
+function refresh() {window.location.reload(false)}
 var config = {
     headers: {
         'Content-Type': 'application/json',
@@ -13,7 +15,9 @@ function editProfile(newProfile) {
 
     console.log(newProfile)
 
+    // this is Sam's postman address
     //axios.post('https://ae5b398a-4768-4d8f-b24a-0f5aa15a09a0.mock.pstmn.io/bookings', {
+
         // should have a users class in BackEnd that store all users(customer,admin,worker) .
          axios.post('http://localhost:8080/api/users', {
 
@@ -51,6 +55,8 @@ class EditProfile extends Component {
             address : "",
             phone : ""
         }
+
+
         
         this.handleInputChange = this.handleInputChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
@@ -140,10 +146,19 @@ class EditProfile extends Component {
 
               </div>
               <br></br>
-              <div>
-              <input type="submit" className="form-control" placeholder="Submit" name="" />
-
-              </div>
+              
+              <div className="row">
+                            <div className="col-sm">
+                                <input type="submit" value="Save" className="btn btn-sm btn-dark" id="navButton"
+                                        />
+                            </div>
+                            <div className="col-sm">
+                            <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}
+                                    >
+                                Cancel Edit
+                            </button>   
+                            </div>
+                        </div>
             </form>
             </div>
         )

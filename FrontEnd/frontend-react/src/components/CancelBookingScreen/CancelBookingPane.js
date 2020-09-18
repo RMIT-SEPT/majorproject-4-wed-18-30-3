@@ -55,9 +55,22 @@ class CancelBookingPane extends Component {
     
     render() {
 
+       
+
+
+        return (
+            <div className="cancel_booking_screen_Cancel_bookingpane" id="cancel_booking_screen_Cancel_bookingpane">
+                <b>timeslot --- service --- worker ---customer</b>
+
+
+                
+            </div>
+        )
+
         const bookingItems = this.state.bookings.map((booking, i) => {
             return(
             <div>
+                <b>timeslot -- service -- worker --customer</b>
             <li>{booking.timeslot},{booking.service},{booking.worker},{booking.customer}</li>
             <button onClick={this.onDelete.bind(this)} className="btn red right">DELETE</button>
             </div>
@@ -65,17 +78,6 @@ class CancelBookingPane extends Component {
             
             )
         })
-
-
-
-        return (
-            <div className="cancel_booking_screen_Cancel_bookingpane" id="cancel_booking_screen_Cancel_bookingpane">
-                <h1>Bookings</h1>
-
-
-                
-            </div>
-        )
     }
 }
 
