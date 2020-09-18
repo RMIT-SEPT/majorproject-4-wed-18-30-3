@@ -5,7 +5,7 @@ services:
     image: springboot-docket-compose-app:1
     build:
       context: ./
-      dockerfile: ../../Dockerfile
+      dockerfile: Dockerfile
     volumes:
       - /data/springboot-docker-compose-app
     ports:
