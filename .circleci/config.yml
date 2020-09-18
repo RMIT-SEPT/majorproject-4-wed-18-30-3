@@ -5,14 +5,14 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run: docker build -t major-project
+      - run: docker build -t major-project .
       - run: ./mvnw test
 
   build:
     machine: true
     steps:
       - checkout
-      - run: docker build -t major-project
+      - run: docker build -t major-project .
       - run: ./mvnw -Dmaven.test.skip=true package
 
 
