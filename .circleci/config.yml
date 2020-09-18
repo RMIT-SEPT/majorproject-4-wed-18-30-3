@@ -2,8 +2,6 @@ version: 2.0
 
 jobs:
   test:
-    docker:
-      - image: major-project
     steps:
       - checkout
       - setup_remote_docker
@@ -14,8 +12,6 @@ jobs:
       - run: ./mvnw test
 
   build:
-    docker:
-      - image: major-project
     steps:
       - checkout
       - setup_remote_docker
