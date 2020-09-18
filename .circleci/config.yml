@@ -15,6 +15,7 @@ jobs:
     machine: true
     steps:
       - checkout
+      - run: chmod +x mvnw
       - run: ./mvnw -Dmaven.test.skip=true package
       - run: docker build -t major-project .
 
