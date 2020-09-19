@@ -15,8 +15,7 @@ jobs:
       - run: docker exec -d project ./mvnw test
       - run: (cd /home/circleci/project/FrontEnd/frontend-react && docker build -t frontend .)
       - run: (cd /home/circleci/project/FrontEnd/frontend-react && docker run -it -d -p 3000:3000 --name frontend-container frontend)
-      - run: (cd /home/circleci/project/FrontEnd/frontend-react && npm test)
-      - run: npm test -- --watchAll=false
+      - run: docker exec frontend-container npm run test -- --watchAll=false
 
   build:
     machine: true
