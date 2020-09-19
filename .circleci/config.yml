@@ -12,10 +12,15 @@ jobs:
       - run: (cd /home/circleci/project/BackEnd/MajorProject && ./mvnw package)
       - run: (cd /home/circleci/project/BackEnd/MajorProject && docker build -t major-project .)
       - run: docker run --publish 8080:8080 --detach --name project major-project
-      - run: docker exec -d project ./mvnw test
+      - run: docker exec project ./mvnw test
       - run: (cd /home/circleci/project/FrontEnd/frontend-react && docker build -t frontend .)
       - run: (cd /home/circleci/project/FrontEnd/frontend-react && docker run -it -d -p 3000:3000 --name frontend-container frontend)
       - run: docker exec frontend-container npm run test -- --watchAll=false
+      - run: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 599570849149.dkr.ecr.us-east-1.amazonaws.com
+      - run: docker tag frontend:latest 599570849149.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+      - run: docker push 599570849149.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+      - run: docker tag major-project:latest 599570849149.dkr.ecr.us-east-1.amazonaws.com/major-project:latest
+      - run: docker push 599570849149.dkr.ecr.us-east-1.amazonaws.com/major-project:latest
 
   build:
     machine: true
