@@ -4,5 +4,6 @@ USER spring:spring
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar
 COPY mvnw ./
+COPY .mvn/ .mvn/
 COPY target/test-classes/ test-classes/
 ENTRYPOINT ["java", "-jar", "app.jar"]
