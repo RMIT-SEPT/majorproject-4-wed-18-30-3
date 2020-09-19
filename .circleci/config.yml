@@ -13,15 +13,19 @@ jobs:
       - run: (cd /home/circleci/project/BackEnd/MajorProject && docker build -t major-project .)
       - run: docker run --publish 8080:8080 --detach --name project major-project
       - run: docker exec -d project ./mvnw test
+      - run: (cd /home/circleci/project/FrontEnd/frontend-react && docker build -t frontend .)
+      - run: (cd /home/circleci/project/FrontEnd/frontend-react && docker run -it -d -p 3000:3000 --name frontend-container frontend)
+      - run: (cd /home/circleci/project/FrontEnd/frontend-react && npm test)
+      - run: npm test -- --watchAll=false
 
   build:
     machine: true
     steps:
       - checkout
-      - run: echo $(pwd)
       - run: (cd /home/circleci/project/BackEnd/MajorProject && chmod +x mvnw)
       - run: (cd /home/circleci/project/BackEnd/MajorProject && ./mvnw package)
       - run: (cd /home/circleci/project/BackEnd/MajorProject && docker build -t major-project .)
+      - run: (cd /home/circleci/project/FrontEnd/frontend-react && docker build -t frontend .)
 
 
 workflows:
