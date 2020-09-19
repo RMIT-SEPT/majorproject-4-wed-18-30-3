@@ -8,6 +8,9 @@ jobs:
     machine: true
     steps:
       - checkout
+      - run: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      - run: unzip awscliv2.zip
+      - run: sudo ./aws/install
       - run: (cd /home/circleci/project/BackEnd/MajorProject && chmod +x mvnw)
       - run: (cd /home/circleci/project/BackEnd/MajorProject && ./mvnw package)
       - run: (cd /home/circleci/project/BackEnd/MajorProject && docker build -t major-project .)
@@ -26,7 +29,6 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run: aws --version
       - run: (cd /home/circleci/project/BackEnd/MajorProject && chmod +x mvnw)
       - run: (cd /home/circleci/project/BackEnd/MajorProject && ./mvnw package)
       - run: (cd /home/circleci/project/BackEnd/MajorProject && docker build -t major-project .)
