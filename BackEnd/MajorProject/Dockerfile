@@ -6,4 +6,5 @@ COPY ${JAR_FILE} app.jar
 COPY mvnw ./
 COPY .mvn/ .mvn/
 COPY target/test-classes/ test-classes/
+COPY pom.xml ./
 ENTRYPOINT ["java", "-jar", "app.jar"]
