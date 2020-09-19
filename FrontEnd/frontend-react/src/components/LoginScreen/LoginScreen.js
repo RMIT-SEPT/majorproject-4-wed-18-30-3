@@ -2,7 +2,23 @@ import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
 import Dashboard from '../Dashboard/Dashboard';
 import {BrowserRouter as Router, Route, Redirect} from "react-router-dom";
-
+async function getUserConfirm(string userName) {
+    const usr = await getUsers().then()
+    const found = true;
+    // Get all workers names
+    for (let i = 0; i < usr.length; i++) {
+        if (usr[i]["user"] == userName) {
+            found = false;
+        }
+    }
+    return found;
+}
+// still needs to be done
+async function getUsers() {
+    //return await axios.get('http://localhost:8080/api/User/all').then(response => {
+    //    return response.data
+})
+}
 class LoginScreen extends Component {
     constructor(props) {
         super(props);
@@ -29,10 +45,7 @@ class LoginScreen extends Component {
             return
         }
         //200 pass, 400 fail
-        // confirmation of user in here
-        //if its confirmed then this happens
-        // const success = await (method)().then()
-        const success = true;
+        const success = await getUserConfirm(thos.state.userName).then()
         if (success) {
             this.setState({hasSuccess: true})
             this.setState({hasFail: false})
