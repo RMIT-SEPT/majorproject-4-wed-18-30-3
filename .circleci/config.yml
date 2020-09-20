@@ -34,13 +34,14 @@ jobs:
       - run: docker tag frontend 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:front_V1   
       - run: docker tag major-project 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:back_V1
       - run: docker push 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project
-      - run: (cd /home/circleci/project/ && ssh -i "sef-keys.pem" ec2-user@ec2-54-89-202-14.compute-1.amazonaws.com)
-      - run: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin http://599570849149.dkr.ecr.us-east-1.amazonaws.com/
-      - run: sudo service docker start
-      - run: docker pull 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:back_V1
-      - run: docker pull 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:front_V1
-      - run: docker run --publish 8080:8080 --detach --name back_v1 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project
-      - run: docker run -it -d -p 80:3000 --name front_V1 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project
+      - run: cd /home/circleci/project/
+      - run: ssh -i "sef-keys.pem" ec2-user@ec2-54-89-202-14.compute-1.amazonaws.com bash -c '\
+                aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin http://599570849149.dkr.ecr.us-east-1.amazonaws.com/
+                sudo service docker start
+                docker pull 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:back_V1
+                docker pull 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:front_V1
+                docker run --publish 8080:8080 --detach --name back_v1 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project
+                docker run -it -d -p 80:3000 --name front_V1 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project'
 
   build:
     machine: true
