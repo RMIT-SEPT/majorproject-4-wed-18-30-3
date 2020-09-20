@@ -34,7 +34,7 @@ jobs:
       - run: docker tag frontend 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:front_V1   
       - run: docker tag major-project 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:back_V1
       - run: docker push 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project
-      - run: (cd /home) && ssh -i "sef-keys.pem" ec2-user@ec2-54-89-202-14.compute-1.amazonaws.com
+      - run: (cd /home/circleci/project/ && ssh -i "sef-keys.pem" ec2-user@ec2-54-89-202-14.compute-1.amazonaws.com)
       - run: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin http://599570849149.dkr.ecr.us-east-1.amazonaws.com/
       - run: sudo service docker start
       - run: docker pull 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:back_V1
