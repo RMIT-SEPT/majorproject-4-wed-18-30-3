@@ -11,9 +11,9 @@ jobs:
       
       # to move to build
       - run: pwd
-      - run: echo "$EC2_KEY" > /home/sef-keys.pem
-      - run: cat /home/sef-keys.pem
-      - run: chmod 400 /home/sef-keys.pem
+      - run: echo "$EC2_KEY" > /home/circleci/project/sef-keys.pem
+      - run: cat /home/circleci/project/sef-keys.pem
+      - run: chmod 400 /home/circleci/project/sef-keys.pem
       - run: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       - run: unzip awscliv2.zip
       - run: sudo ./aws/install
