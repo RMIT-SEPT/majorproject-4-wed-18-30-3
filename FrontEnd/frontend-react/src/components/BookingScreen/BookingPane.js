@@ -52,21 +52,21 @@ import makeAnimated from 'react-select/animated';
 
     // Return an array of all timeslot objects
     async function getTimeslots() {
-        return await axios.get('http://localhost:8080/api/timeslot/all').then(response => {
+        return await axios.get('http://ec2-54-89-202-14.compute-1.amazonaws.com:8080/api/timeslot/all').then(response => {
             return response.data
         })
     }
 
     // Return an array of all booking objects
     async function getBookings() {
-        return await axios.get('http://localhost:8080/api/booking/all').then(response => {
+        return await axios.get('http://ec2-54-89-202-14.compute-1.amazonaws.com:8080/api/booking/all').then(response => {
             return response.data
         })
     }
 
     // Return an array of all worker objects
     async function getWorkers() {
-        return await axios.get('http://localhost:8080/api/worker/all').then(response => {
+        return await axios.get('http://ec2-54-89-202-14.compute-1.amazonaws.com:8080/api/worker/all').then(response => {
             return response.data
         })
     }
