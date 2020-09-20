@@ -4,6 +4,32 @@ import makeAnimated from 'react-select/animated';
 import Select from 'react-select';
 import LoginScreen from '../LoginScreen/LoginScreen'
 import {BrowserRouter as Router, Route, Redirect} from "react-router-dom";
+import axios from "axios";
+
+const axiosConfig = {headers: {'Content-Type': 'application/json'}}
+
+async function getUserConfirm(userName, password, phone, address, firstname, lastname, userType) {
+    console.log(userName, password)
+    return await axios.post('http://localhost:8080/api/User', {
+        userName: userName,
+        password: password,
+        phone: phone,
+        address: address,
+        firstname: firstname,
+        lastname: lastname,
+        userType: userType
+    }, axiosConfig)
+        .then(res => {
+            console.log(`statusCode: ${res.statusCode}`)
+            console.log(res)
+            return true
+        })
+        .catch(error => {
+            console.error(error)
+            return false
+        })
+}
+
 class RegisterScreen extends Component {
     constructor() {
         super();
@@ -25,7 +51,7 @@ class RegisterScreen extends Component {
     setFirstName = () => this.setState({ firstName: document.getElementById("firstName").value})
     setLastName = () => this.setState({ lastName: document.getElementById("lastName").value})
     onTypeChange(Type) {
-        this.setState({ userName: Type})
+        this.setState({ userType: Type})
     }
     onTypeChange = userType => this.setState({ userType })
     refreshPage = () =>  window.location.reload(false);
@@ -76,8 +102,8 @@ class RegisterScreen extends Component {
         }
         // confirmation that username doesnt exist
         //if its confirmed then this happens
-        // const success = await (method)().then()
-        const success = true;
+        const success = await getUserConfirm(this.state.userName, this.state.password, this.state.phone, this.state.address, this.state.firstName, this.state.lastName, this.userType).then()
+        //const success = true;
         if (success) {
             this.setState({hasSuccess: true})
             this.setState({hasFail: false})
