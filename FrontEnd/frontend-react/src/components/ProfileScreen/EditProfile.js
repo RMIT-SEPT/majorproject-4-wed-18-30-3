@@ -3,37 +3,49 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import axios from "axios";
 
 
+ // Header config for REST requests
+ const axiosConfig = {headers: {'Content-Type': 'application/json'}}
+
+
+
 function refresh() {window.location.reload(false)}
-var config = {
-    headers: {
-        'Content-Type': 'application/json',
-        // 'Access-Control-Allow-Origin:': '*'
-    }
+
+
+// Return the specified user
+async function getUser(userId) {
+    return await axios.get('http://localhost:8080/api/'+userId ).then(response => {
+        return response.data;
+    })
 }
 
-function editProfile(newProfile) {
+// Return  user id
+async function getUserID(userId) {
+    const response = await getUser(userId).then();
+
+}
+
+
+
+
+
+async function editProfile(newProfile) {
 
     console.log(newProfile)
-
-    // this is Sam's postman address
-    //axios.post('https://ae5b398a-4768-4d8f-b24a-0f5aa15a09a0.mock.pstmn.io/bookings', {
-
-        // should have a users class in BackEnd that store all users(customer,admin,worker) .
-         axios.post('http://localhost:8080/api/users', {
-
-        
+    return await axios.post('http://localhost:8080/api/edit', {
+        id: newProfile.id,
         userName: newProfile.userName,
         password: newProfile.password,
         address: newProfile.address,
         phone: newProfile.phone
-
-    }, config)
+    }, axiosConfig)
     .then(res => {
         console.log(`statusCode: ${res.statusCode}`)
         console.log(res)
+        return true
     })
     .catch(error => {
         console.error(error)
+        return false
     })
 }
 
@@ -45,22 +57,33 @@ function editProfile(newProfile) {
 
 class EditProfile extends Component {
 
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
 
         this.state= {
 
-            userName : "",
-            password : "",
-            address : "",
-            phone : ""
+            userData: this.loadUserData()
+
         }
 
 
         
         this.handleInputChange = this.handleInputChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.loadUserData = this.loadUserData.bind(this);
     }
+
+
+
+
+     // Load user data 
+     async loadUserData() {
+        console.log(this.props.userId)
+
+        const data = await getUserID(this.props.userId);
+        this.setState({userData: data})
+    }
+
 
     onUserNameChange = userName => this.setState({ userName })
     onPasswordChange = password => this.setState({ password })
@@ -79,6 +102,10 @@ class EditProfile extends Component {
 
 
 
+
+
+async
+
     onSubmit(e){
         e.preventDefault();
 
@@ -93,13 +120,25 @@ class EditProfile extends Component {
         }
         if (this.state.phone == null) {
             alert("Please enter your new phone number.")
-        }            
+        } 
+
+        else{
 
 
-        // Get this from local React state once login is done
+
+      
+
+
+        // Get this from React state/component props after login is done
+
+       
+
+
+        // Send the POST request
         
 
         const newProfile = {
+            id: this.props.userId,
             userName: this.state.userName,
             password: this.state.password,
             address: this.state.address,
@@ -109,6 +148,7 @@ class EditProfile extends Component {
 
         editProfile(newProfile);
     }
+}
 
  
 

@@ -6,7 +6,7 @@ class ProfileButton extends Component {
     render() {
         return (
             <React.Fragment>
-            <Link to="/profile" className="btn btn-sm btn-dark" id="navButton">
+            <Link to="/profile/:i11d" className="btn btn-sm btn-dark" id="navButton">
             View/edit profile
             </Link>
             </React.Fragment>

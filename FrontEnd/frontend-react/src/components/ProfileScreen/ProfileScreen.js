@@ -14,7 +14,8 @@ class ProfileScreen extends Component {
                     </div>
                     <div className="col-sm-9">
                         <br/><br/>
-                        <EditProfile/>
+        
+                        <EditProfile userId={"1"}/>
                     </div>
                 </div>
             </div>
