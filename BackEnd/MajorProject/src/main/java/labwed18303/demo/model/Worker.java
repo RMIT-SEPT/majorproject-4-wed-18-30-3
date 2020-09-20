@@ -12,10 +12,12 @@ public class Worker {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     private long id;
-    private String userName;
-    private String password;
-    private String address;
-    private int phone;
+
+    @OneToOne(
+            cascade = CascadeType.ALL
+    )
+    private User user;
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -35,20 +37,26 @@ public class Worker {
     public Worker() {
     }
 
-    public Worker(long id, String userName, String password, String address, int phone) {
-        this.id = id;
-        this.userName = userName;
-        this.password = password;
-        this.address = address;
-        this.phone = phone;
+    public User getUser(){
+        return user;
+    }
+
+
+    public Worker(String userName, String password, String address, int phone) {
+        user = new User(userName, password, address, phone, UserType.WORKER);
+
     }
 
     public Worker(long id, String userName, String password, String address, int phone, Set<ServiceProvided> services) {
         this.id = id;
-        this.userName = userName;
-        this.password = password;
-        this.address = address;
-        this.phone = phone;
+        user = new User(userName, password, address, phone, UserType.WORKER);
+
+        this.services = services;
+    }
+    public Worker(long id, String userName, String password, String address, int phone) {
+        this.id = id;
+        user = new User(userName, password, address, phone, UserType.WORKER);
+
         this.services = services;
     }
 
@@ -59,22 +67,22 @@ public class Worker {
     public long getId() {
         return id;
     }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public int getPhone() {
-        return phone;
-    }
+//
+//    public String getUserName() {
+//        return userName;
+//    }
+//
+//    public String getPassword() {
+//        return password;
+//    }
+//
+//    public String getAddress() {
+//        return address;
+//    }
+//
+//    public int getPhone() {
+//        return phone;
+//    }
 
     public Set<ServiceProvided> getServices() {
         return services;
@@ -84,31 +92,31 @@ public class Worker {
         this.services = services;
     }
 
-    @Override
-    public String toString() {
-        return "Worker{" +
-                "id=" + id +
-                ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
-                ", address='" + address + '\'' +
-                ", phone=" + phone +
-                ", services=" + services +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Worker)) return false;
-        Worker worker = (Worker) o;
-        return id == worker.getId() &&
-                phone == worker.getPhone() &&
-                userName.equals(worker.getUserName()) &&
-                address.equals(worker.getAddress());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, userName, address, phone);
-    }
+//    @Override
+//    public String toString() {
+//        return "Worker{" +
+//                "id=" + id +
+//                ", userName='" + userName + '\'' +
+//                ", password='" + password + '\'' +
+//                ", address='" + address + '\'' +
+//                ", phone=" + phone +
+//                ", services=" + services +
+//                '}';
+//    }
+//
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (!(o instanceof Worker)) return false;
+//        Worker worker = (Worker) o;
+//        return id == worker.getId() &&
+//                phone == worker.getPhone() &&
+//                userName.equals(worker.getUserName()) &&
+//                address.equals(worker.getAddress());
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(id, userName, address, phone);
+//    }
 }

@@ -12,7 +12,7 @@ public interface WorkerRepository extends CrudRepository<Worker,Long> {
     @Override
     Iterable<Worker> findAllById(Iterable<Long> iterable);
 
-    Worker findByUserName(String userName);
+   // Worker findByUserName(String userName);
 
     Worker findByid(Long id);
 

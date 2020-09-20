@@ -32,7 +32,7 @@ public class BookingControllerTest {
     private TimeslotController timeslotController;
 
     @Autowired
-    private customerController custController;
+    private CustomerController custController;
 
     @Autowired
     private ServiceProvidedController serviceController;
@@ -92,7 +92,7 @@ public class BookingControllerTest {
         workerHasBooking = new Worker(1, "Jims Mowing", "password", "Round the Corner", 140000000, services);
         wController.createNewPerson(workerHasBooking);
 
-        custHasBooking = new Customer(1, "John", "password", "On the Corner", 1234567890);
+        //custHasBooking = new Customer(1, "John", "password", "On the Corner", 1234567890);
         custController.createNewPerson(custHasBooking);
 
         timeslotHasBooking = new Timeslot(1, 30, future, current, current);
@@ -148,7 +148,7 @@ public class BookingControllerTest {
 
     @Test
     public void wrongCustomerShouldNotMatchBooking() throws Exception {
-        custNoBooking = new Customer(2, "Moe Sizlach", "password", "Beside the Church?", 123456789);
+        //custNoBooking = new Customer(2, "Moe Sizlach", "password", "Beside the Church?", 123456789);
         wrongCustomer = new Booking(1, current, current,  workerHasBooking, timeslotHasBooking, custNoBooking, serviceHasBooking);
         assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
                 Booking.class).equals(wrongCustomer));

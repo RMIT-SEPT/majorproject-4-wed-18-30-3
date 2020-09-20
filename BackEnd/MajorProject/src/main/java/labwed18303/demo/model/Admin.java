@@ -7,35 +7,27 @@ import javax.persistence.*;
 public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private long id;
-    private String userName;
-    private String password;
-    private String address;
-    private int phone;
+
+    @OneToOne(
+            cascade = CascadeType.ALL
+    )
+    private User user;
+
 
     public Admin() {
-
     }
 
-    public long getId() {
+    public Admin(String name, String password, String address, int phone) {
+        user = new User(name, password, address, phone, UserType.ADMIN);
+    }
+
+    public long getId(){
         return id;
     }
 
-    public String getUserName() {
-        return userName;
+    public User getUser(){
+        return user;
     }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public int getPhone() {
-        return phone;
-    }
-
 }
+
