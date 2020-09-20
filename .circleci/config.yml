@@ -8,10 +8,18 @@ jobs:
     machine: true
     steps:
       - checkout
+      
+      # to move to build
+      - run: pwd
+      - run: echo "$EC2_KEY" > /home/sef-keys.pem
+      - run: cat /home/sef-keys.pem
+      - run: chmod 400 /home/sef-keys.pem
       - run: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
       - run: unzip awscliv2.zip
       - run: sudo ./aws/install
       - run: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 599570849149.dkr.ecr.us-east-1.amazonaws.com
+      
+      # leave in test
       - run: (cd /home/circleci/project/BackEnd/MajorProject && chmod +x mvnw)
       - run: (cd /home/circleci/project/BackEnd/MajorProject && ./mvnw package)
       - run: (cd /home/circleci/project/BackEnd/MajorProject && docker build -t major-project .)
@@ -20,9 +28,19 @@ jobs:
       - run: (cd /home/circleci/project/FrontEnd/frontend-react && docker build -t frontend .)
       - run: (cd /home/circleci/project/FrontEnd/frontend-react && docker run -it -d -p 3000:3000 --name frontend-container frontend)
       - run: docker exec frontend-container npm run test -- --watchAll=false
+      
+      
+      # to move to build
       - run: docker tag frontend 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:front_V1   
       - run: docker tag major-project 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:back_V1
       - run: docker push 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project
+      - run: (cd /home) && ssh -i "sef-keys.pem" ec2-user@ec2-54-89-202-14.compute-1.amazonaws.com
+      - run: aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin http://599570849149.dkr.ecr.us-east-1.amazonaws.com/
+      - run: sudo service docker start
+      - run: docker pull 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:back_V1
+      - run: docker pull 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:front_V1
+      - run: docker run --publish 8080:8080 --detach --name back_v1 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project
+      - run: docker run -it -d -p 80:3000 --name front_V1 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project
 
   build:
     machine: true
@@ -32,6 +50,7 @@ jobs:
       - run: (cd /home/circleci/project/BackEnd/MajorProject && ./mvnw package)
       - run: (cd /home/circleci/project/BackEnd/MajorProject && docker build -t major-project .)
       - run: (cd /home/circleci/project/FrontEnd/frontend-react && docker build -t frontend .)
+
 
 
 workflows:
