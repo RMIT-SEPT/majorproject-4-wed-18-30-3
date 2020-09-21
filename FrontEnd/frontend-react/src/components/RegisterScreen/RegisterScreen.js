@@ -9,7 +9,6 @@ import axios from "axios";
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 
 async function getUserConfirm(userName, password, phone, address, firstname, lastname, userType) {
-    console.log(userName, password)
     return await axios.post('http://localhost:8080/api/User', {
         userName: userName,
         password: password,
@@ -20,12 +19,9 @@ async function getUserConfirm(userName, password, phone, address, firstname, las
         userType: userType
     }, axiosConfig)
         .then(res => {
-            console.log(`statusCode: ${res.statusCode}`)
-            console.log(res)
             return true
         })
         .catch(error => {
-            console.error(error)
             return false
         })
 }
@@ -34,15 +30,20 @@ class RegisterScreen extends Component {
     constructor() {
         super();
         this.state = {
-          userName: null,
-          password: null,
-          phone: null,
-          address: null,
-          firstName: null,
-          lastName: null,
-          userType:null,
+            userName: null,
+            password: null,
+            phone: null,
+            address: null,
+            firstName: null,
+            lastName: null,
+            userType: null,
+            userTypes: [
+                { value: '0', label: 'Customer' },
+                { value: '1', label: 'Admin' },
+                { value: '2', label: 'Worker' },]
         };
         this.onSubmit = this.onSubmit.bind(this);
+        this.onTypeChange = this.onTypeChange.bind(this);
     }
     setUsername = () => this.setState({ userName: document.getElementById("username").value})
     setPassword = () => this.setState({ password: document.getElementById("password").value})
@@ -53,8 +54,6 @@ class RegisterScreen extends Component {
     onTypeChange(Type) {
         this.setState({ userType: Type})
     }
-    onTypeChange = userType => this.setState({ userType })
-    refreshPage = () =>  window.location.reload(false);
     async onSubmit(e) {
         e.preventDefault();
         await this.setPassword()
@@ -115,11 +114,6 @@ class RegisterScreen extends Component {
       }
     render(){
         const animatedComponents = makeAnimated();
-        const userTypes = [
-            { value: 'Customer', label: 'Customer' },
-            { value: 'Worker', label: 'Worker' },
-            { value: 'Admin', label: 'Admin' },
-        ]
         if (!this.state.hasSuccess && !this.state.hasFail) {
             return(
                 <div className = "Register_Ui">
@@ -154,7 +148,7 @@ class RegisterScreen extends Component {
                         </div>
                         <div className="form-user">
                             <label htmlFor={"user"}>Select Type of user:</label>
-                            <Select name="user" id="user" value={this.state.userType} options={userTypes}
+                            <Select name="user" id="user" value={this.state.userType} options={this.state.userTypes}
                                     onChange={this.onTypeChange} components={animatedComponents} required/>
                         </div>
                         <input type="submit" className="register_Submit" id="navButton"/>

@@ -7,18 +7,14 @@ import axios from "axios";
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 
 async function getUserConfirm(userName, password) {
-    console.log(userName, password)
     return await axios.post('http://localhost:8080/api/User', {
         userName: userName,
         password: password
     }, axiosConfig)
         .then(res => {
-            console.log(`statusCode: ${res.statusCode}`)
-            console.log(res)
             return true
         })
         .catch(error => {
-            console.error(error)
             return false
         })
 }
@@ -49,7 +45,6 @@ class LoginScreen extends Component {
         }
         //200 pass, 400 fail
         const success = await getUserConfirm(this.state.userName, this.state.password).then()
-        console.log(success)
         //const success = true;
         if (success) {
             this.setState({hasSuccess: true})
