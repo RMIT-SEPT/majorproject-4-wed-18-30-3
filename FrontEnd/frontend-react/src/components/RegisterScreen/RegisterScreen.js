@@ -9,7 +9,7 @@ import axios from "axios";
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 
 async function getUserConfirm(userName, password, phone, address, firstname, lastname, userType) {
-    return await axios.post('http://localhost:8080/api/User', {
+    return await axios.post('http://ec2-100-26-21-128.compute-1.amazonaws.com:8080/api/User', {
         userName: userName,
         password: password,
         phone: phone,
@@ -119,7 +119,7 @@ class RegisterScreen extends Component {
                 <div className = "Register_Ui">
                     <div className = "Heading">
                         <h1>Sign up</h1>
-                        <br></br><br></br><br></br><br></br>
+                        <br></br><br></br><br></br>
                     </div>
                     <form onSubmit={this.onSubmit}>
                         <div className = "UserName">
@@ -147,12 +147,24 @@ class RegisterScreen extends Component {
                             <input type="text" id="lastName" name="lName" required></input><br></br><br></br>
                         </div>
                         <div className="form-user">
-                            <label htmlFor={"user"}>Select Type of user:</label>
-                            <Select name="user" id="user" value={this.state.userType} options={this.state.userTypes}
-                                    onChange={this.onTypeChange} components={animatedComponents} required/>
+                        <label htmlFor={"user"}>Select Type of user:</label>
+                        <div className="row">
+                            <div className="col-sm"></div>
+                            <div className="col-sm">
+                                <Select name="user" id="user" value={this.state.userType} options={this.state.userTypes}
+                                        onChange={this.onTypeChange} components={animatedComponents} required/>
+                            </div>
+                            <div className="col-sm"></div>
                         </div>
-                        <input type="submit" className="register_Submit" id="navButton"/>
-                    </form>
+                        </div><br/>
+                        <div className="row">
+                            <div className="col-sm"></div>
+                            <div className="col-sm">
+                                <input type="submit" className="btn btn-sm btn-dark" id="navButton"/>
+                            </div>
+                            <div className="col-sm"></div>
+                        </div>
+                        </form>
                 </div>
             )
         }

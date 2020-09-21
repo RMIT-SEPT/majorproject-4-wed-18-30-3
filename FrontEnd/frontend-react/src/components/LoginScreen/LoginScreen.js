@@ -71,7 +71,14 @@ class LoginScreen extends Component {
                         <label htmlFor={"password"}>Password:</label>
                         <input type="password" id="password" name="pass" required></input><br></br><br></br>
                     </div>
-                    <input type="submit" className="login_Submit" id="navButton"/>
+
+                    <div className="row">
+                        <div className="col-sm"></div>    
+                        <div className="col-sm">
+                            <input type="submit" className="btn btn-sm btn-dark" id="navButton"/>
+                        </div>
+                        <div className="col-sm"></div>    
+                    </div>
                 </form>
             </div>
             )
