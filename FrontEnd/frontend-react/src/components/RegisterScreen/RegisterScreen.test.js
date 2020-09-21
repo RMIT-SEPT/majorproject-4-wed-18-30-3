@@ -154,13 +154,13 @@ describe('<RegisterScreen/>', function() {
     });
 });
 
-describe('<RegisterScreen/>', function() {
-    it('renders button submit', function() {
-        const wrapper = shallow(
-            <RegisterScreen>
-                <input type="submit" className="register_Submit" id="navButton"/>
-            </RegisterScreen>
-        );
-        expect(wrapper.contains(<input type="submit" className="register_Submit" id="navButton"/>)).to.equal(true);
-    });
-});
+// describe('<RegisterScreen/>', function() {
+//     it('renders button submit', function() {
+//         const wrapper = shallow(
+//             <RegisterScreen>
+//                 <input type="submit" className="register_Submit" id="navButton"/>
+//             </RegisterScreen>
+//         );
+//         expect(wrapper.contains(<input type="submit" className="register_Submit" id="navButton"/>)).to.equal(true);
+//     });
+// });
