@@ -2,13 +2,25 @@ import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
 import Dashboard from '../Dashboard/Dashboard';
 import {BrowserRouter as Router, Route, Redirect} from "react-router-dom";
-//import Header from '../Layout/Header';
-//import Footer from '../Layout/Footer';
-//import NavPane from '../Layout/NavPane';
+import axios from "axios";
 
+const axiosConfig = {headers: {'Content-Type': 'application/json'}}
+
+async function getUserConfirm(userName, password) {
+    return await axios.post('http://localhost:8080/api/User', {
+        userName: userName,
+        password: password
+    }, axiosConfig)
+        .then(res => {
+            return true
+        })
+        .catch(error => {
+            return false
+        })
+}
 class LoginScreen extends Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             userName: null,
             password: null,
@@ -19,7 +31,6 @@ class LoginScreen extends Component {
     }
     setUsername = () => this.setState({ userName: document.getElementById("username").value})
     setPassword = () => this.setState({ password: document.getElementById("password").value})
-
     async onSubmit(e) {
         e.preventDefault();
         await this.setPassword()
@@ -32,10 +43,9 @@ class LoginScreen extends Component {
             alert("Please enter a password!")
             return
         }
-        // confirmation of user in here
-        //if its confirmed then this happens
-        // const success = await (method)().then()
-        const success = true;
+        //200 pass, 400 fail
+        const success = await getUserConfirm(this.state.userName, this.state.password).then()
+        //const success = true;
         if (success) {
             this.setState({hasSuccess: true})
             this.setState({hasFail: false})
@@ -69,14 +79,27 @@ class LoginScreen extends Component {
     if(this.state.hasSuccess) {
         return(
         <Router>
-            <Route exact path="/">
-                <Redirect to="/dashboard" component = {Dashboard}/>
-            </Route>
+            <div className = "Login_Ui">
+                <Redirect to= "/dashboard" render={(props) => (
+                    <Dashboard {...props} userName={this.state.userName} />
+                )}/>
+                <Route path="/dashboard" render={(props) => (
+                    <Dashboard {...props} userName={this.state.userName} />
+                )}/>
+            </div>
         </Router>
         )
     }
     else if(this.state.hasFail){
         alert("Password or Username incorrect!")
+        return(
+            <Router>
+                <div className = "Login_Ui">
+                    <Redirect to= "/login" component={LoginScreen}/>
+                    <Route path="/login" component={LoginScreen} />
+                </div>
+            </Router>
+        )
     }
     }
 }

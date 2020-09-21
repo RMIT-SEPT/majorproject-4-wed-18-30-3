@@ -4,19 +4,46 @@ import makeAnimated from 'react-select/animated';
 import Select from 'react-select';
 import LoginScreen from '../LoginScreen/LoginScreen'
 import {BrowserRouter as Router, Route, Redirect} from "react-router-dom";
+import axios from "axios";
+
+const axiosConfig = {headers: {'Content-Type': 'application/json'}}
+
+async function getUserConfirm(userName, password, phone, address, firstname, lastname, userType) {
+    return await axios.post('http://localhost:8080/api/User', {
+        userName: userName,
+        password: password,
+        phone: phone,
+        address: address,
+        firstname: firstname,
+        lastname: lastname,
+        userType: userType
+    }, axiosConfig)
+        .then(res => {
+            return true
+        })
+        .catch(error => {
+            return false
+        })
+}
+
 class RegisterScreen extends Component {
     constructor() {
         super();
         this.state = {
-          userName: null,
-          password: null,
-          phone: null,
-          address: null,
-          firstName: null,
-          lastName: null,
-          userType:null,
+            userName: null,
+            password: null,
+            phone: null,
+            address: null,
+            firstName: null,
+            lastName: null,
+            userType: null,
+            userTypes: [
+                { value: '0', label: 'Customer' },
+                { value: '1', label: 'Admin' },
+                { value: '2', label: 'Worker' },]
         };
         this.onSubmit = this.onSubmit.bind(this);
+        this.onTypeChange = this.onTypeChange.bind(this);
     }
     setUsername = () => this.setState({ userName: document.getElementById("username").value})
     setPassword = () => this.setState({ password: document.getElementById("password").value})
@@ -25,9 +52,8 @@ class RegisterScreen extends Component {
     setFirstName = () => this.setState({ firstName: document.getElementById("firstName").value})
     setLastName = () => this.setState({ lastName: document.getElementById("lastName").value})
     onTypeChange(Type) {
-        this.setState({ userName: Type})
+        this.setState({ userType: Type})
     }
-    onTypeChange = userType => this.setState({ userType })
     async onSubmit(e) {
         e.preventDefault();
         await this.setPassword()
@@ -75,8 +101,8 @@ class RegisterScreen extends Component {
         }
         // confirmation that username doesnt exist
         //if its confirmed then this happens
-        // const success = await (method)().then()
-        const success = true;
+        const success = await getUserConfirm(this.state.userName, this.state.password, this.state.phone, this.state.address, this.state.firstName, this.state.lastName, this.userType).then()
+        //const success = true;
         if (success) {
             this.setState({hasSuccess: true})
             this.setState({hasFail: false})
@@ -84,16 +110,10 @@ class RegisterScreen extends Component {
             this.setState({hasSuccess: false})
             this.setState({hasFail: true})
         }
-        //username is taken
 
       }
     render(){
         const animatedComponents = makeAnimated();
-        const userTypes = [
-            { value: 'Customer', label: 'Customer' },
-            { value: 'Worker', label: 'Worker' },
-            { value: 'Admin', label: 'Admin' },
-        ]
         if (!this.state.hasSuccess && !this.state.hasFail) {
             return(
                 <div className = "Register_Ui">
@@ -128,7 +148,7 @@ class RegisterScreen extends Component {
                         </div>
                         <div className="form-user">
                             <label htmlFor={"user"}>Select Type of user:</label>
-                            <Select name="user" id="user" value={this.state.userType} options={userTypes}
+                            <Select name="user" id="user" value={this.state.userType} options={this.state.userTypes}
                                     onChange={this.onTypeChange} components={animatedComponents} required/>
                         </div>
                         <input type="submit" className="register_Submit" id="navButton"/>
@@ -139,14 +159,23 @@ class RegisterScreen extends Component {
         if(this.state.hasSuccess) {
             return(
                 <Router>
-                    <Route exact path="/">
-                        <Redirect to="/login" component = {LoginScreen}/>
-                    </Route>
+                    <div className = "Register_Ui">
+                        <Redirect to= "/login" component={LoginScreen}/>
+                        <Route path="/login" component={LoginScreen}/>
+                    </div>
                 </Router>
             )
         }
         else if(this.state.hasFail){
             alert("username is taken, please try again!")
+            return(
+                <Router>
+                    <div className = "Register_Ui">
+                        <Redirect to= "/register" component={RegisterScreen}/>
+                        <Route path="/register" component={RegisterScreen}/>
+                    </div>
+                </Router>
+            )
         }
     }
 }
