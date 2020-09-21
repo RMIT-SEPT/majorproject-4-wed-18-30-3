@@ -3,7 +3,8 @@ import DashboardLinkButton from './DashboardLinkButton'
 import BookingLinkButton from './BookingLinkButton';
 import ProfileButton from './ProfileButton';
 import AdminPortalButton from './AdminPortalButton';
-import CancelBookingButton from './CancelBookingButton';
+import ContextualButtonPane from './ContextualButtonPane';
+
 class NavPane extends Component {
     render() {
         return (
@@ -19,8 +20,7 @@ class NavPane extends Component {
                 <br/><br/>
                 <AdminPortalButton/>
                 <br/><br/>
-                <CancelBookingButton/>
-                <br/><br/>
+                <ContextualButtonPane/>
             </div>
         )
     }

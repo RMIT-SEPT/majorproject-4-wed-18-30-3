@@ -26,6 +26,14 @@ function App() {
     <Router>
     <div className="App">
       <Header/>
+      
+      <Route exact path="/">
+        <Redirect to="/login"/> 
+      </Route>
+
+      <Route path="/index" component={Dashboard}/>
+      <Route path="/main" component={Dashboard}/>
+      <Route path="/home" component={Dashboard}/>
       <Route path="/dashboard" component={Dashboard}/>
       <Route path="/bookings" component={BookingScreen}/>
       <Route path="/login" component={LoginScreen}/>

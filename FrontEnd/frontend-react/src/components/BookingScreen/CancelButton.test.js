@@ -12,4 +12,4 @@ describe('CancelButton render test', function() {
     const content = "Cancel";
     expect(wrapper.contains(content)).to.equal(true);
   });
-}); 
+});

@@ -12,4 +12,4 @@ describe('AdminPortalButton render test', function() {
     const content = "Admin Portal";
     expect(wrapper.contains(content)).to.equal(true);
   });
-}); 
+});

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import "bootstrap/dist/css/bootstrap.min.css"
+//import "bootstrap/dist/css/bootstrap.min.css"
 import NavPane from '../Layout/NavPane'
 import EditProfile from './EditProfile'
 

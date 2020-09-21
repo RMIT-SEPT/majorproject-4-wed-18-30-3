@@ -1,122 +1,330 @@
 import React, { Component } from 'react'
-import DateTimePicker from 'react-datetime-picker'
 import axios from "axios";
 import CancelButton from './CancelButton';
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
 
-    function roundTo(date) {
-        
-        // Change final number to match min booking duration
-        // Assumed 15 
-
-        var mins = 1000 * 60 * 15;
-
-        return new Date(Math.round(date.getTime() / mins) * mins)
+    // Return the current time in backend-friendly format 
+    function currentTime() {
+        var date = new Date();
+        var dateString =
+            date.getUTCFullYear() + "-" +
+            ("0" + (date.getUTCMonth()+1)).slice(-2) + "-" +
+            ("0" + date.getUTCDate()).slice(-2) + "-" +
+            ("0" + date.getUTCHours()).slice(-2) + "-" +
+            ("0" + date.getUTCMinutes()).slice(-2) + "-" +
+            ("0" + date.getUTCSeconds()).slice(-2);
+        return dateString
     }
 
-    function createBooking(state) {
+    function refresh() {window.location.reload(false)}
 
-        var timeslot = state.date.getTime();
-        var service = state.service;
-        var duration = state.service;
-        var worker = state.worker;
-        var customer = state.customer;
-        var group = state.group;
+    const capitalise = (string) => {
+        if (typeof string !== 'string') return ''
+        return string.charAt(0).toUpperCase() + string.slice(1)
+    }
 
-        console.log("test");
+    // Header config for REST requests
+    const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 
-        axios.post('https://ae5b398a-4768-4d8f-b24a-0f5aa15a09a0.mock.pstmn.io/bookings', {
-            timeslot: timeslot,
-            service: service,
-            duration: duration,
-            worker: worker,
-            customer: customer,
-            group: group
-        })
+    // Send a create booking request to bookings endpoint
+    async function createBooking(newBooking) {
+
+        console.log(newBooking)
+        return await axios.post('http://ec2-100-26-21-128.compute-1.amazonaws.com:8080/api/booking', {
+            id: newBooking.id,
+            updated_At: currentTime(),
+            worker: newBooking.worker,
+            timeslot: newBooking.timeslot,
+            service: newBooking.service,
+            customer: newBooking.customer
+        }, axiosConfig)
         .then(res => {
             console.log(`statusCode: ${res.statusCode}`)
             console.log(res)
+            return true
         })
         .catch(error => {
             console.error(error)
+            return false
         })
-    
     }
-    
+
+    // Return an array of all timeslot objects
+    async function getTimeslots() {
+        return await axios.get('http://ec2-100-26-21-128.compute-1.amazonaws.com:8080/api/timeslot/all').then(response => {
+            return response.data
+        })
+    }
+
+    // Return an array of all booking objects
+    async function getBookings() {
+        return await axios.get('http://ec2-100-26-21-128.compute-1.amazonaws.com:8080/api/booking/all').then(response => {
+            return response.data
+        })
+    }
+
+    // Return an array of all worker objects
+    async function getWorkers() {
+        return await axios.get('http://ec2-100-26-21-128.compute-1.amazonaws.com:8080/api/worker/all').then(response => {
+            return response.data
+        })
+    }
+
+    // Return relevant options depending on selection
+    async function getWorkerOptions() {
+        const wks = await getWorkers().then()
+        var workerOptions = []
+
+        // Get all workers names
+        for (let i = 0; i < wks.length; i++) {               
+            workerOptions.push({
+                value: {id: wks[i]["id"], userName: wks[i]["userName"]},
+                label: capitalise(wks[i]["userName"])})
+        }
+        return workerOptions
+    }
+
+    // Return relevant options depending on selection
+    async function getServiceOptions(component) {
+        const avs = await getBookings().then()
+        var serviceOptions = []
+        var temp = []
+
+        
+        // Get services offered by selected worker
+        for (let i = 0; i < avs.length; i++) {               
+            if (avs[i]["customer"] === null && avs[i]["worker"]["userName"] === component["label"]) {
+                for (let j = 0; j < avs[i]["worker"]["services"].length; j++) {               
+                    var nameString = avs[i]["worker"]["services"][j]["name"]
+                    if (temp.includes(nameString) === false) {
+                        temp.push(nameString)
+                        serviceOptions.push({value: {id: avs[i]["worker"]["services"][j]["id"], name: nameString}, label: capitalise(nameString)})
+                    }
+                }
+            }
+        }
+        return serviceOptions
+    }
+
+        // Return relevant options depending on selectbox type
+        async function getAvailabilityOptions(workerName, component) {
+        const avs = await getBookings().then()
+        var availOptions = []
+
+        // Get services offered by selected worker
+        for (let i = 0; i < avs.length; i++) {               
+            if (avs[i]["customer"] === null && avs[i]["worker"]["userName"] === workerName["value"]["userName"]) {
+                const timeslot = {id: avs[i]["timeslot"]["id"], timeslot: avs[i]["timeslot"]["date"]}
+                const label = avs[i]["timeslot"]["date"]
+                availOptions.push({value: timeslot, label: label})
+            }
+        }
+        return availOptions
+    }
+
 class BookingPane extends Component {
-
-
 
     constructor() {
         super()
         this.state = {
-            date: new Date(),
-            duration: "",
-            service: "",
-            worker: "",
-            customer: "",
-            group: "",
+            availability: null,
+            service: null,
+            worker: null,
+            customer: null,
+            customerId: null,
+            
+            optionsService: [{value: "none", label: null}],
+            optionsAvailability: [{value: "none", label: null}],
+            optionsWorker: this.loadWorkers(),      
+            
+            disableWorker: false,
+            disableService: false,
+
+            hasSuccess: false,
+            hasFail: false
             
         }
+
+        this.loadWorkers = this.loadWorkers.bind(this);
+        this.onWorkerChange = this.onWorkerChange.bind(this);
+        this.onServiceChange = this.onServiceChange.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
     }
 
-    onChange = date => this.setState({ date: roundTo(date) })
-    onChange = duration => this.setState({ duration })
-    onChange = service => this.setState({ service })
-    onChange = worker => this.setState({ worker })
-    
+    toggleDisableWorker = () => this.setState(prevState => ({disableWorker: !prevState.disableWorker}))
+    toggleDisableService = () => this.setState(prevState => ({disableService: !prevState.disableService}))
+    onAvailabilityChange = availability => this.setState({ availability })
+    showModal = e => {this.setState({show: !this.state.show})}
+
+    async loadWorkers() {
+        const options = await getWorkerOptions()
+        this.setState({optionsWorker: options})
+    }
+
+    async onWorkerChange(worker) {
+        this.setState({ worker })
+        
+        // Populate services with services the worker offers
+        const options = await getServiceOptions(worker)
+        this.setState({optionsService: options})
+        this.setState({disableWorker: true})
+    }   
+
+    async onServiceChange(service) {
+        this.setState({ service })
+        
+        if (this.state.worker != null) {
+            // Populate timeslots accoring to worker service availablility
+            const options = await getAvailabilityOptions(this.state.worker, service)
+            this.setState({optionsAvailability: options})
+            this.setState({disableService: true})
+        }
+    } 
+
+    async onSubmit(e){
+        e.preventDefault();
+
+        if (this.state.availability == null) {
+            alert("Please select a timeslot.")
+            return
+        }
+        if (this.state.service == null) {
+            alert("Please select a service.")
+            return
+        }
+        if (this.state.worker == null) {
+            alert("Please select a worker.")
+            return
+        }            
+
+        // Get this from React state/component props after login is done
+        const customerId = 1
+
+        // Send the POST request
+        const success = await createBooking({
+            id: this.state.availability["value"]["id"],
+            updated_At: currentTime(),
+            worker: {id: this.state.worker.value["id"]},
+            timeslot: {date: this.state.availability["value"]["timeslot"]},
+            service: {id: this.state.service.value["id"]},
+            customer: {id: customerId}
+        }).then()
+
+        // Set success/fail state, will change what the pane is rendering
+        if (success) {
+            this.setState({hasSuccess: true})
+            this.setState({hasFail: false})
+        } else {
+            this.setState({hasSuccess: false})
+            this.setState({hasFail: true})
+        }
+
+    }
+
     render() {
-        return (
-            <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
-                <br/>    
-                <b>Bookings</b>
-                <br/>   
-                <form>
-                    <p>Select desired start time and date (please note 15 minute minimum duration):</p>
-                    <DateTimePicker onChange={this.onChange} value={roundTo(this.state.date)}/>
-                    <br/> <br/>    
-                    <div className="form-group">
-                        <label for="duration">Select job duration:</label>
-                        <select className="form-control" value={this.state.duration} onChange={this.onChange}>
-                            <option value="15">15 min</option>
-                            <option value="30">30 min</option>
-                            <option value="45">45 min</option>
-                            <option value="60" >1 hour</option>
-                            <option value="75">1 hr 15 min</option>
-                            <option value="90">1 hr 30 min</option>
-                            <option value="105">1 hr 45 min</option>
-                            <option value="120">2 hours</option>
-                        </select>
+
+        const animatedComponents = makeAnimated();
+
+        // Booking input panel
+        if (!this.state.hasSuccess && !this.state.hasFail) { 
+            return (
+                <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
+
+                    <br/>    
+                    <b>Get started by choosing a worker.</b>
+                    <br/>   <br/>   
+                    <form onSubmit={this.onSubmit}>
+
+                        <div className="form-group">
+                            <label htmlFor="worker">Select a worker:</label>
+                            <Select name={"worker"} value={this.state.value} options={this.state.optionsWorker}
+                                onChange={this.onWorkerChange} components={animatedComponents} isDisabled={this.state.disableWorker}/>
+                        </div>
+                                        
+                        <div className="form-group">
+                            <label htmlFor="service">Select a service:</label>
+                            <Select name={"service"} value={this.state.value} options={this.state.optionsService}
+                                onChange={this.onServiceChange} components={animatedComponents} isDisabled={this.state.disableService}/>
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="availability">Select an available timeslot:</label>
+                            <Select name={"availability"} value={this.state.value} options={this.state.optionsAvailability}
+                                onChange={this.onAvailabilityChange} components={animatedComponents}/>
+                        </div>
+                        
+                        <div className="row">
+                            <div className="col-sm">
+                            <input type="submit" className="btn btn-sm btn-dark" id="navButton"/>
+
+                            </div>
+                            <div className="col-sm">
+                                <CancelButton/>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div className="row-sm">
+                    <br/>
+                        <div className="col-sm">
+                        </div>
+                        
+                        <div className="col-sm">
+                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.refresh}>
+                                Reset
+                            </button>           
+                        </div>
+
+                        <div className="col-sm">
+                            
+                        </div>
                     </div>
-                    <div className="form-group">
-                    <label for="service">Select a service:</label>
-                    <select className="form-control" value={this.state.service} onChange={this.onChange}>
-                      <option value="1" >Service 1</option>
-                      <option value="2">Service 2</option>
-                      <option value="3">Service 3</option>
-                    </select>
-                    </div>
-                    <div className="form-group">
-                    <label for="worker">Select an available worker:</label>
-                    <select className="form-control" value={this.state.worker} onChange={this.onChange}>
-                      <option value="1" >Worker 1</option>
-                      <option value="2">Worker 2</option>
-                      <option value="3">Worker 3</option>
-                    </select>
-                    </div>
+                </div>
+            )
+
+        // Successful booking
+        }if (this.state.hasSuccess) {
+            return (
+                <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
+                    <br/>    
+                    <b>Booking placed successfully.</b>
+                    <br/><br/>   
 
                     <div className="row">
                         <div className="col-sm">
-                           <button onSubmit={createBooking(this.state)} className="btn btn-sm btn-dark" id="navButton">
-                            Create new booking
-                           </button>
+                            <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
+                                Make another booking
+                            </button> 
                         </div>
                         <div className="col-sm">
                             <CancelButton/>
                         </div>
                     </div>
-                </form>
-            </div>
-        )
+                </div>   
+            )
+
+        // Failed booking
+        } else if (this.state.hasFail) {
+            return (
+                <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
+                    <br/>    
+                    <b>Booking failed. Please try again.</b>
+                    <br/><br/>   
+                
+                <div className="row">
+                    <div className="col-sm">
+                        <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
+                            Make another booking
+                        </button> 
+                    </div>
+                    <div className="col-sm">
+                        <CancelButton/>
+                    </div>
+                </div>
+            </div>  
+            )
+        }
     }
 }
 
