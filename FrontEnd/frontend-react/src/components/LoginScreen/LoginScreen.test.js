@@ -56,13 +56,13 @@ describe('<LoginScreen/>', function() {
         expect(wrapper.contains(<input type="password" id="password" name="pass" required></input>)).to.equal(true);
     });
 });
-describe('<LoginScreen/>', function() {
-    it('renders button submit', function() {
-        const wrapper = shallow(
-            <LoginScreen>
-                <input type="submit" className="login_Submit" id="navButton"/>
-            </LoginScreen>
-        );
-        expect(wrapper.contains(<input type="submit" className="login_Submit" id="navButton"/>)).to.equal(true);
-    });
-});
+// describe('<LoginScreen/>', function() {
+//     it('renders button submit', function() {
+//         const wrapper = shallow(
+//             <LoginScreen>
+//                 <input type="submit" className="login_Submit" id="navButton"/>
+//             </LoginScreen>
+//         );
+//         expect(wrapper.contains(<input type="submit" className="login_Submit" id="navButton"/>)).to.equal(true);
+//     });
+// });
