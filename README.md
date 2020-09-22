@@ -2,6 +2,9 @@
 
 # Group 00
 
+## Deployment DNS 
+https://github.com/RMIT-SEPT/majorproject-4-wed-18-30-3/pull/11
+
 ## Members
 * Kogan, Yonathan (s3719826)
 * van Roon, Cameron (s3382032)
