@@ -13,7 +13,7 @@ function refresh() {window.location.reload(false)}
 
 // Return the specified user
 async function getUser(userId) {
-    return await axios.get('http://localhost:8080/api/'+userId ).then(response => {
+    return await axios.get('http://ec2-34-204-47-86.compute-1.amazonaws.com:8080/api/'+userId ).then(response => {
         return response.data;
     })
 }
@@ -31,7 +31,7 @@ async function getUserID(userId) {
 async function editProfile(newProfile) {
 
     console.log(newProfile)
-    return await axios.post('http://localhost:8080/api/edit', {
+    return await axios.post('http://ec2-34-204-47-86.compute-1.amazonaws.com:8080/api/edit', {
         id: newProfile.id,
         userName: newProfile.userName,
         password: newProfile.password,
