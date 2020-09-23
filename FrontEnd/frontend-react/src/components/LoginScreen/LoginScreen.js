@@ -7,7 +7,7 @@ import axios from "axios";
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 
 async function getUserConfirm(userName, password) {
-    return await axios.post('http://localhost:8080/api/User', {
+    return await axios.post('http://ec2-34-204-47-86.compute-1.amazonaws.com:8080/api/User', {
         userName: userName,
         password: password
     }, axiosConfig)

@@ -3,7 +3,7 @@
 # Group 00
 
 ## Deployment DNS 
-https://github.com/RMIT-SEPT/majorproject-4-wed-18-30-3/pull/11
+http://ec2-34-204-47-86.compute-1.amazonaws.com:3000/login
 
 ## Members
 * Kogan, Yonathan (s3719826)
