@@ -4,6 +4,8 @@ import CancelButton from './CancelButton';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 
+    const DNS_URI = "http://localhost:8080"
+
     // Return the current time in backend-friendly format 
     function currentTime() {
         var date = new Date();
@@ -31,7 +33,7 @@ import makeAnimated from 'react-select/animated';
     async function createBooking(newBooking) {
 
         console.log(newBooking)
-        return await axios.post('http://ec2-34-204-47-86.compute-1.amazonaws.com:8080/api/booking', {
+        return await axios.post(DNS_URI + '/api/booking', {
             id: newBooking.id,
             updated_At: currentTime(),
             worker: newBooking.worker,
@@ -52,21 +54,21 @@ import makeAnimated from 'react-select/animated';
 
     // Return an array of all timeslot objects
     async function getTimeslots() {
-        return await axios.get('http://ec2-34-204-47-86.compute-1.amazonaws.com:8080/api/timeslot/all').then(response => {
+        return await axios.get(DNS_URI + '/api/timeslot/all').then(response => {
             return response.data
         })
     }
 
     // Return an array of all booking objects
     async function getBookings() {
-        return await axios.get('http://ec2-34-204-47-86.compute-1.amazonaws.com:8080/api/booking/all').then(response => {
+        return await axios.get(DNS_URI + '/booking/all').then(response => {
             return response.data
         })
     }
 
     // Return an array of all worker objects
     async function getWorkers() {
-        return await axios.get('http://ec2-34-204-47-86.compute-1.amazonaws.com:8080/api/worker/all').then(response => {
+        return await axios.get(DNS_URI + '/worker/all').then(response => {
             return response.data
         })
     }
@@ -271,7 +273,7 @@ class BookingPane extends Component {
                         </div>
                         
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.refresh}>
+                            <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
                                 Reset
                             </button>           
                         </div>
