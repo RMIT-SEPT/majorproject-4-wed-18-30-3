@@ -23,10 +23,10 @@ public class CustomerController {
 
 
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getCustomerById(@PathVariable Long id){
+    @GetMapping("/{userName}")
+    public ResponseEntity<?> getCustomerById(@PathVariable String userName){
 
-        Customer customer = customerService.findByCustomerID(id);
+        Customer customer = customerService.findByUserName(userName);
 
         return new ResponseEntity<Customer>(customer, HttpStatus.OK);
     }

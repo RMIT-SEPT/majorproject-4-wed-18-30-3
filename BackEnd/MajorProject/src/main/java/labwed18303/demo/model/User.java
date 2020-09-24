@@ -1,5 +1,7 @@
 package labwed18303.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 
 @Entity
@@ -13,11 +15,20 @@ public class User {
     protected String address;
     protected int phone;
 
-    @OneToOne
+    @OneToOne(
+            mappedBy = "user"
+    )
+    @JsonIgnoreProperties("user")
     private Customer customer;
-    @OneToOne
+    @OneToOne(
+            mappedBy = "user"
+    )
+    @JsonIgnoreProperties("user")
     private Admin admin;
-    @OneToOne
+    @OneToOne(
+            mappedBy = "user"
+    )
+    @JsonIgnoreProperties("user")
     private Worker worker;
 
     private UserType userType;
@@ -38,6 +49,9 @@ public class User {
         return this.id;
     }
 
+    public void setUserType(UserType userType) {
+        this.userType = userType;
+    }
 
     public String getUserName() {
         return userName;
@@ -71,7 +85,28 @@ public class User {
         return phone;
     }
 
-    public UserType getUserType(){
+    public UserType getUserType(){ return userType; }
 
-        return userType; }
+    public User updateUser(User user){
+        if(this.password != user.getPassword()){
+            if(user.getPassword() != null) {
+                this.password = user.getPassword();
+            }
+        }
+
+        if(this.address != user.getAddress()){
+            if(user.getAddress() != null) {
+                this.address = user.getAddress();
+            }
+        }
+
+        if(this.phone != user.getPhone()){
+            if(user.getPhone() != 0) {
+                this.phone = user.getPhone();
+            }
+        }
+        return this;
+    }
+
+
 }

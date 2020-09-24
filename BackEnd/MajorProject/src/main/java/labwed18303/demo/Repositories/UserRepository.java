@@ -14,4 +14,7 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     User findByid(long id);
 
+    @Override
+    Iterable<User> findAll();
+
 }

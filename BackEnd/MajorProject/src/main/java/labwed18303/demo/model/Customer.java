@@ -14,9 +14,14 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    private String userName;
+
     @OneToOne(
             cascade = CascadeType.ALL
+            //mappedBy = "customer"
+
     )
+    @JsonIgnoreProperties("customer")
     private User user;
 
     @OneToMany(
@@ -44,10 +49,17 @@ public class Customer {
         return id;
     }
 
-    public String getUserName(){
-        return this.user.getUserName();
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<Booking> getBookings() {
+        return bookings;
+    }
 
     @Override
     public boolean equals(Object o) {

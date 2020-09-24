@@ -23,22 +23,32 @@ POST localhost:8080/api/serviceProvided
 
 POST localhost:8080/api/worker
 {
-"id":"1",
-"userName":"Jim from Jim's Mowing",
-"password":"password",
-"address":"Just Round the Corner",
-"phone":"1234567890",
+"user" : {
+    "userName":"Jim from Jim's Mowing",
+    "password":"password",
+    "address":"Just Round the Corner",
+    "phone":"1234567890",
+    "userType": "WORKER"
+},
+
 "services":[{"id":"1", "name":"plow", "minDuration":"30"}]
+
 }
 
-POST localhost:8000/api/customer
-{
-    "id": 1,
-    "userName": "John",
-    "password": "password",
-    "address": "On the Corner",
-    "phone": 1234567890
-}
+
+
+
+POST localhost:8080/api/customer
+    {
+    "user" : {
+        "userName":"Jimqwd Jim's Mowing",
+        "password":"password",
+        "address":"Just Round the Corner",
+        "phone":"1234567890",
+        "userType": 0
+        }
+
+    }
 
 POST localhost:8080/api/booking
 {
