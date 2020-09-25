@@ -22,15 +22,15 @@ public class ServiceProvidedController {
         return new ResponseEntity<ServiceProvided>(serviceProvided1, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{serviceProvidedId}")
-    public ResponseEntity<?> getServiceProvidedById(@PathVariable Long serviceProvidedId){
+    @GetMapping("/{serviceProvidedName}")
+    public ResponseEntity<?> getServiceProvidedByName(@PathVariable String serviceName){
 
-        ServiceProvided serviceProvided = serviceProvidedService.findByID(serviceProvidedId);
+        ServiceProvided serviceProvided = serviceProvidedService.findByName(serviceName);
 
         return new ResponseEntity<ServiceProvided>(serviceProvided, HttpStatus.OK);
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public Iterable<ServiceProvided> getAllServiceProvided(){return serviceProvidedService.findAllServiceProvided();}
 
     @DeleteMapping("/{serviceProvidedId}")

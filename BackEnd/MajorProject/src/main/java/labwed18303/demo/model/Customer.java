@@ -67,13 +67,11 @@ public class Customer {
         if (!(o instanceof Customer)) return false;
         Customer customer = (Customer) o;
         return id == customer.getId() &&
-                user.getPhone() == customer.getUser().getPhone() &&
-                user.getUserName().equals(customer.getUser().getUserName()) &&
-                Objects.equals(user.getAddress(), customer.getUser().getAddress());
+                user.equals(customer.getUser());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user.getUserName(), user.getPassword(), user.getAddress(), user.getPhone());
+        return Objects.hash(user);
     }
 }

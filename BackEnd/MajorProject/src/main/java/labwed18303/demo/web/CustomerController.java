@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/customer")
 public class CustomerController {
@@ -21,6 +22,10 @@ public class CustomerController {
         return new ResponseEntity<Customer>(customer1, HttpStatus.FOUND);
     }
 
+    @GetMapping("")
+    public Iterable<Customer> findAllCustomers(){
+        return customerService.findAllCustomers();
+    }
 
 
     @GetMapping("/{userName}")

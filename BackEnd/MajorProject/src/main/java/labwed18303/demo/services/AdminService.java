@@ -4,6 +4,7 @@ import labwed18303.demo.Repositories.AdminRepository;
 import labwed18303.demo.exceptions.BookingException;
 import labwed18303.demo.model.Admin;
 import labwed18303.demo.model.Booking;
+import labwed18303.demo.model.Customer;
 import labwed18303.demo.model.UserType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,10 @@ public class AdminService {
 
         admin.getUser().setUserType(UserType.ADMIN);
         return adminRepository.save(admin);
+    }
+
+    public Iterable<Admin> findAllAdmins(){
+        return adminRepository.findAll();
     }
 
     public Admin findByUserName(String userName){

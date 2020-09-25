@@ -160,8 +160,10 @@ public class Booking {
         else {
             if ((otherObject instanceof Booking)) {
                 Booking other = (Booking) otherObject;
-                if (id == other.getId() &&
-                        Objects.equals(worker, other.getWorker()) && service.equals(other.getService()) && Objects.equals(customer, other.getCustomer()) && timeslot.equals(other.getTimeslot())) {
+                if (Objects.equals(worker, other.getWorker()) &&
+                        ((service == null && other.getService() == null) || (service != null && service.equals(other.getService())))
+                        && ((customer == null && other.getCustomer() ==null) || (customer != null && Objects.equals(customer, other.getCustomer())))
+                        && ((timeslot == null && other.getTimeslot() == null) || (timeslot != null && timeslot.equals(other.getTimeslot())))) {
                     toReturn = true;
                     }
                 }
@@ -172,6 +174,6 @@ public class Booking {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, worker, timeslot);
+        return Objects.hash(worker, timeslot);
     }
 }

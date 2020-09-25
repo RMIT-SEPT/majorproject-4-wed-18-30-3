@@ -3,6 +3,7 @@ package labwed18303.demo.services;
 import labwed18303.demo.Repositories.CustomerRepository;
 import labwed18303.demo.Repositories.UserRepository;
 import labwed18303.demo.exceptions.UserException;
+import labwed18303.demo.model.Booking;
 import labwed18303.demo.model.Customer;
 import labwed18303.demo.model.User;
 import labwed18303.demo.model.UserType;
@@ -31,6 +32,9 @@ public class CustomerService {
         return customerRepository.save(customer);
     }
 
+    public Iterable<Customer> findAllCustomers(){
+        return customerRepository.findAll();
+    }
 
 
     public Customer findByUserName(String userName){

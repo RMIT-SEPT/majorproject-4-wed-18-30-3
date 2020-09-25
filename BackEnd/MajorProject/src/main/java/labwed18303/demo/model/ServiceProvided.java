@@ -1,5 +1,7 @@
 package labwed18303.demo.model;
 
+import com.sun.istack.NotNull;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,8 +13,10 @@ public class ServiceProvided {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    String name;
-    int minDuration;
+
+    @NotNull
+    private String name;
+    private int minDuration;
 
     public ServiceProvided(){
 
@@ -53,13 +57,12 @@ public class ServiceProvided {
         if (this == o) return true;
         if (!(o instanceof ServiceProvided)) return false;
         ServiceProvided that = (ServiceProvided) o;
-        return id == that.getId() &&
-                minDuration == that.getMinDuration() &&
+        return minDuration == that.getMinDuration() &&
                 name.equals(that.getName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, minDuration);
+        return Objects.hash(name, minDuration);
     }
 }

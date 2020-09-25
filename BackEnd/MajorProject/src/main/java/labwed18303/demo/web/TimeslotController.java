@@ -42,7 +42,7 @@ public class TimeslotController {
         return new ResponseEntity<Timeslot>(timeslot, HttpStatus.OK);
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public Iterable<Timeslot> getAllTimeslot(){return timeslotService.findAllTimeslots();}
 
     @DeleteMapping("/{timeslotId}")

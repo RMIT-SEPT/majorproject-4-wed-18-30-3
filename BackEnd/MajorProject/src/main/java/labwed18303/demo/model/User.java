@@ -3,6 +3,7 @@ package labwed18303.demo.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class User {
@@ -108,5 +109,21 @@ public class User {
         return this;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return id == user.getId() &&
+                phone == user.getPhone() &&
+                userName.equals(user.getUserName()) &&
+                password.equals(user.getPassword()) &&
+                address.equals(user.getAddress()) &&
+                userType == user.getUserType();
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, userName, password, address, phone, userType);
+    }
 }

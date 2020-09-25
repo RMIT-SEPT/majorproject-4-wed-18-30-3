@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
@@ -21,6 +22,11 @@ public class AdminController {
         Admin admin1 =  adminService.saveOrUpdateAdmin(admin);
 
         return new ResponseEntity<Admin>(admin1, HttpStatus.CREATED);
+    }
+    
+    @GetMapping("")
+    public Iterable<Admin> getAllAdmins(){
+        return adminService.findAllAdmins();
     }
 
     @GetMapping("/{userName}")
