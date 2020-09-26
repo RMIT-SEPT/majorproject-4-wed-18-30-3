@@ -2,31 +2,66 @@ import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
 import makeAnimated from 'react-select/animated';
 import Select from 'react-select';
-import LoginScreen from '../LoginScreen/LoginScreen'
-import {BrowserRouter as Router, Route, Redirect} from "react-router-dom";
 import axios from "axios";
 
+const DNS_URI = "http://localhost:8080"
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 
-async function getUserConfirm(userName, password, phone, address, firstname, lastname, userType) {
-    return await axios.post('http://ec2-100-26-21-128.compute-1.amazonaws.com:8080/api/User', {
-        userName: userName,
-        password: password,
-        phone: phone,
-        address: address,
-        firstname: firstname,
-        lastname: lastname,
-        userType: userType
+async function createWorker(userName, password, phone, address, userType) {
+    return await axios.post(DNS_URI + '/api/worker', {
+        "user": {
+            "userName": userName, 
+            "password": password, 
+            "address": address,
+            "phone": phone,
+            "userType": userType},
+        "services": [{}],
+        "companyName": " "
     }, axiosConfig)
         .then(res => {
-            return true
+            return [true, res.status]
         })
         .catch(error => {
-            return false
+            return [false, error.response.status]
+        })
+}
+
+async function createAdmin(userName, password, phone, address, userType) {
+    return await axios.post(DNS_URI + '/api/admin', {
+        "user": {
+            "userName": userName, 
+            "password": password, 
+            "address": address,
+            "phone": phone,
+            "userType": userType}
+    }, axiosConfig)
+        .then(res => {
+            return [true, res.status]
+        })
+        .catch(error => {
+            return [false, error.response.status]
+        })
+}
+
+async function createCustomer(userName, password, phone, address, userType) {
+    return await axios.post(DNS_URI + '/api/customer', {
+        "user": {
+            "userName": userName, 
+            "password": password, 
+            "address": address,
+            "phone": phone,
+            "userType": userType}
+    }, axiosConfig)
+        .then(res => {
+            return [true, res.status]
+        })
+        .catch(error => {
+            return [false, error.response.status]
         })
 }
 
 class RegisterScreen extends Component {
+   
     constructor() {
         super();
         this.state = {
@@ -37,31 +72,28 @@ class RegisterScreen extends Component {
             firstName: null,
             lastName: null,
             userType: null,
+            hasSuccess: false,
+            hasFail: false,
+            response: null,
+            errorMessage: "",
+            successMessage: "",
             userTypes: [
-                { value: '0', label: 'Customer' },
-                { value: '1', label: 'Admin' },
-                { value: '2', label: 'Worker' },]
+                {value: 'CUSTOMER', label: 'Customer'},
+                {value: 'ADMIN', label: 'Admin'},
+                {value: 'WORKER', label: 'Worker'},]
         };
+
         this.onSubmit = this.onSubmit.bind(this);
+        this.onChange = this.onChange.bind(this);
         this.onTypeChange = this.onTypeChange.bind(this);
     }
-    setUsername = () => this.setState({ userName: document.getElementById("username").value})
-    setPassword = () => this.setState({ password: document.getElementById("password").value})
-    setPhone = () => this.setState({ phone: document.getElementById("phone").value})
-    setAddress = () => this.setState({ address: document.getElementById("address").value})
-    setFirstName = () => this.setState({ firstName: document.getElementById("firstName").value})
-    setLastName = () => this.setState({ lastName: document.getElementById("lastName").value})
-    onTypeChange(Type) {
-        this.setState({ userType: Type})
-    }
+    
+    onChange(e){this.setState({[e.target.name]: e.target.value})}
+    onTypeChange(Type) {this.setState({ userType: Type})}
+
     async onSubmit(e) {
         e.preventDefault();
-        await this.setPassword()
-        await this.setUsername()
-        await this.setPhone()
-        await this.setAddress()
-        await this.setFirstName()
-        await this.setLastName()
+
         if(this.state.userName == null){
             alert("Please enter a username!")
             return
@@ -99,19 +131,37 @@ class RegisterScreen extends Component {
             alert("Please select what type of user you are!")
             return
         }
-        // confirmation that username doesnt exist
-        //if its confirmed then this happens
-        const success = await getUserConfirm(this.state.userName, this.state.password, this.state.phone, this.state.address, this.state.firstName, this.state.lastName, this.userType).then()
-        //const success = true;
-        if (success) {
-            this.setState({hasSuccess: true})
-            this.setState({hasFail: false})
-        } else {
-            this.setState({hasSuccess: false})
-            this.setState({hasFail: true})
+
+        if (this.state.userType['value'] === "CUSTOMER") {
+            const success = await createCustomer(this.state.userName, this.state.password, 
+                this.state.phone, this.state.address, this.state.userType["value"]).then()            
+            this.setState({response: success[1]})
+            console.log(this.state.response)
+
+        } else if (this.state.userType['value'] === "ADMIN") {
+            const success = await createAdmin(this.state.userName, this.state.password, 
+                this.state.phone, this.state.address, this.state.userType["value"]).then()
+            this.setState({response: success[1]})
+            console.log(this.state.response)
+
+        } else if (this.state.userType['value'] === "WORKER") {
+            const success = await createWorker(this.state.userName, this.state.password, 
+                this.state.phone, this.state.address, this.state.userType["value"]).then()
+            this.setState({response: success[1]})
+            console.log(this.state.response)
+
         }
 
-      }
+        if (this.state.response >= 200 && this.state.response <= 302) {
+            this.setState({successMessage: "User successfully created. Log in to get started."})
+            this.setState({errorMessage: ""})
+        } else {
+            this.setState({errorMessage: "Account creation failed, please check your details and try again."})
+            this.setState({successMessage: ""})
+        }
+        
+    }
+
     render(){
         const animatedComponents = makeAnimated();
         if (!this.state.hasSuccess && !this.state.hasFail) {
@@ -119,36 +169,116 @@ class RegisterScreen extends Component {
                 <div className = "Register_Ui">
                     <div className = "Heading">
                         <h1>Sign up</h1>
-                        <br></br><br></br><br></br>
+                        <br></br>
+                        <b><font color="red">{this.state.errorMessage}</font></b>
+                        <b><font color="green">{this.state.successMessage}</font></b>
+                        <br></br><br></br>
                     </div>
                     <form onSubmit={this.onSubmit}>
-                        <div className = "UserName">
-                            <label htmlFor={"username"}>Username:</label>
-                            <input type="text" id="username" name="uname" required></input><br></br><br></br>
-                        </div>
-                        <div className = "Password">
-                            <label htmlFor={"password"}>Password:</label>
-                            <input type="password" id="password" name="pass" required></input><br></br><br></br>
-                        </div>
-                        <div className = "Phone">
-                            <label htmlFor={"phone"}>Phone:</label>
-                            <input type="number" id="phone" name="phone" required></input><br></br><br></br>
-                        </div>
-                        <div className = "Address">
-                            <label htmlFor={"address"}>Address:</label>
-                            <input type="text" id="address" name="address" required></input><br></br><br></br>
-                        </div>
-                        <div className = "Firstname">
-                            <label htmlFor={"firstName"}>First Name:</label>
-                            <input type="text" id="firstName" name="fName" required></input><br></br><br></br>
-                        </div>
-                        <div className = "Lastname">
-                            <label htmlFor={"lastName"}>Last Name:</label>
-                            <input type="text" id="lastName" name="lName" required></input><br></br><br></br>
-                        </div>
-                        <div className="form-user">
-                        <label htmlFor={"user"}>Select Type of user:</label>
+
                         <div className="row">
+                            <div className="col-sm"></div>    
+                            <div className="col-sm">
+                                <div className = "form-group">
+                                    <input type="text" className="form-control"
+                                        placeholder="Username"
+                                        id="userName"
+                                        name="userName"
+                                        value={this.state.value}
+                                        onChange={this.onChange}>
+                                    </input>
+                                    </div>    
+                                </div>
+                            <div className="col-sm"></div>
+                        </div>
+                        
+                        <div className="row">
+                            <div className="col-sm"></div>    
+                            <div className="col-sm">
+                                <div className = "form-group">
+                                    <input type="password" className="form-control"
+                                        placeholder="Password"
+                                        id="password"
+                                        name="password"
+                                        value={this.state.value}
+                                        onChange={this.onChange}>
+                                    </input>                          
+                                    </div>    
+                                </div>
+                            <div className="col-sm"></div>
+                        </div>  
+                        
+                        <div className="row">
+                            <div className="col-sm"></div>    
+                            <div className="col-sm">
+                                <div className = "form-group">
+                                    <input type="text" className="form-control"
+                                        placeholder="Phone"
+                                        id="phone"
+                                        name="phone"
+                                        value={this.state.value}
+                                        onChange={this.onChange}>
+                                    </input>
+                                    </div>
+                                </div>    
+                            <div className="col-sm"></div>
+                        </div>
+                        
+                                
+                        <div className="row">
+                            <div className="col-sm"></div>    
+                            <div className="col-sm">
+                                <div className = "form-group">
+                                    <input type="text" className="form-control"
+                                        placeholder="Address"
+                                        id="address"
+                                        name="address"
+                                        value={this.state.value}
+                                        onChange={this.onChange}>
+                                    </input>
+                                    </div>
+                                </div>    
+                            <div className="col-sm"></div>
+                        </div>
+
+                        <div className="row">
+                            <div className="col-sm"></div>    
+                            <div className="col-sm">
+                                <div className = "form-group">
+                                    <input type="text" className="form-control"
+                                        placeholder="Firstname"
+                                        id="firstName"
+                                        name="firstName"
+                                        value={this.state.value}
+                                        onChange={this.onChange}>
+                                    </input>
+                                    </div>
+                                </div>    
+                            <div className="col-sm"></div>
+                        </div>
+
+
+                        <div className="row">
+                            <div className="col-sm"></div>    
+                            <div className="col-sm">
+                                <div className = "form-group">
+                                    <input type="text" className="form-control"
+                                        placeholder="Lastname"
+                                        id="lastName"
+                                        name="lastName"
+                                        value={this.state.value}
+                                        onChange={this.onChange}>
+                                    </input>
+                                    </div>
+                                </div>    
+                            <div className="col-sm"></div>
+                        </div>
+
+
+                        <div className="form-user">
+                        <label htmlFor={"user"}>Select user type:</label>
+                        <div className="row">
+                        
                             <div className="col-sm"></div>
                             <div className="col-sm">
                                 <Select name="user" id="user" value={this.state.userType} options={this.state.userTypes}
@@ -166,27 +296,6 @@ class RegisterScreen extends Component {
                         </div>
                         </form>
                 </div>
-            )
-        }
-        if(this.state.hasSuccess) {
-            return(
-                <Router>
-                    <div className = "Register_Ui">
-                        <Redirect to= "/login" component={LoginScreen}/>
-                        <Route path="/login" component={LoginScreen}/>
-                    </div>
-                </Router>
-            )
-        }
-        else if(this.state.hasFail){
-            alert("username is taken, please try again!")
-            return(
-                <Router>
-                    <div className = "Register_Ui">
-                        <Redirect to= "/register" component={RegisterScreen}/>
-                        <Route path="/register" component={RegisterScreen}/>
-                    </div>
-                </Router>
             )
         }
     }

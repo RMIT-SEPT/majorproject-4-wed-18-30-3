@@ -3,6 +3,9 @@ import axios from "axios";
 import CancelButton from './CancelButton';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
+import { Link } from 'react-router-dom';
+
+    const DNS_URI = "http://localhost:8080"
 
     // Return the current time in backend-friendly format 
     function currentTime() {
@@ -31,8 +34,7 @@ import makeAnimated from 'react-select/animated';
     async function createBooking(newBooking) {
 
         console.log(newBooking)
-        return await axios.post('http://ec2-34-204-47-86.compute-1.amazonaws.com:8080/api/booking', {
-            id: newBooking.id,
+        return await axios.post(DNS_URI + '/api/booking', {
             updated_At: currentTime(),
             worker: newBooking.worker,
             timeslot: newBooking.timeslot,
@@ -52,21 +54,21 @@ import makeAnimated from 'react-select/animated';
 
     // Return an array of all timeslot objects
     async function getTimeslots() {
-        return await axios.get('http://ec2-34-204-47-86.compute-1.amazonaws.com:8080/api/timeslot/all').then(response => {
+        return await axios.get(DNS_URI + '/api/timeslot').then(response => {
             return response.data
         })
     }
 
     // Return an array of all booking objects
     async function getBookings() {
-        return await axios.get('http://ec2-34-204-47-86.compute-1.amazonaws.com:8080/api/booking/all').then(response => {
+        return await axios.get(DNS_URI + '/api/booking').then(response => {
             return response.data
         })
     }
 
     // Return an array of all worker objects
     async function getWorkers() {
-        return await axios.get('http://ec2-34-204-47-86.compute-1.amazonaws.com:8080/api/worker/all').then(response => {
+        return await axios.get(DNS_URI + '/api/worker').then(response => {
             return response.data
         })
     }
@@ -79,8 +81,8 @@ import makeAnimated from 'react-select/animated';
         // Get all workers names
         for (let i = 0; i < wks.length; i++) {               
             workerOptions.push({
-                value: {id: wks[i]["id"], userName: wks[i]["userName"]},
-                label: capitalise(wks[i]["userName"])})
+                value: {id: wks[i]["user"]["userName"], userName: wks[i]["user"]["userName"]},
+                label: capitalise(wks[i]["user"]["userName"])})
         }
         return workerOptions
     }
@@ -91,10 +93,11 @@ import makeAnimated from 'react-select/animated';
         var serviceOptions = []
         var temp = []
 
+        console.log(avs)
         
         // Get services offered by selected worker
         for (let i = 0; i < avs.length; i++) {               
-            if (avs[i]["customer"] === null && avs[i]["worker"]["userName"] === component["label"]) {
+            if (avs[i]["customer"] === null && avs[i]["worker"]["user"]["userName"] === component["label"]) {
                 for (let j = 0; j < avs[i]["worker"]["services"].length; j++) {               
                     var nameString = avs[i]["worker"]["services"][j]["name"]
                     if (temp.includes(nameString) === false) {
@@ -114,7 +117,7 @@ import makeAnimated from 'react-select/animated';
 
         // Get services offered by selected worker
         for (let i = 0; i < avs.length; i++) {               
-            if (avs[i]["customer"] === null && avs[i]["worker"]["userName"] === workerName["value"]["userName"]) {
+            if (avs[i]["customer"] === null && avs[i]["worker"]["user"]["userName"] === workerName["value"]["userName"]) {
                 const timeslot = {id: avs[i]["timeslot"]["id"], timeslot: avs[i]["timeslot"]["date"]}
                 const label = avs[i]["timeslot"]["date"]
                 availOptions.push({value: timeslot, label: label})
@@ -132,7 +135,7 @@ class BookingPane extends Component {
             service: null,
             worker: null,
             customer: null,
-            customerId: null,
+            customerId: "Jo",
             
             optionsService: [{value: "none", label: null}],
             optionsAvailability: [{value: "none", label: null}],
@@ -198,17 +201,13 @@ class BookingPane extends Component {
             return
         }            
 
-        // Get this from React state/component props after login is done
-        const customerId = 1
-
         // Send the POST request
         const success = await createBooking({
-            id: this.state.availability["value"]["id"],
             updated_At: currentTime(),
-            worker: {id: this.state.worker.value["id"]},
+            worker: {user: {userName: this.state.worker.label}},
             timeslot: {date: this.state.availability["value"]["timeslot"]},
-            service: {id: this.state.service.value["id"]},
-            customer: {id: customerId}
+            service: {name: this.state.service.value["name"]},
+            customer: {user: {userName: this.state.customerId}}
         }).then()
 
         // Set success/fail state, will change what the pane is rendering
@@ -271,7 +270,7 @@ class BookingPane extends Component {
                         </div>
                         
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.refresh}>
+                            <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
                                 Reset
                             </button>           
                         </div>
@@ -290,7 +289,8 @@ class BookingPane extends Component {
                     <br/>    
                     <b>Booking placed successfully.</b>
                     <br/><br/>   
-
+                    <Link to="/weekly_view">View your bookings.</Link>
+                    <br/><br/>  
                     <div className="row">
                         <div className="col-sm">
                             <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>

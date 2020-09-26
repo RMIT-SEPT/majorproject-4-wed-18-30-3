@@ -1,188 +1,159 @@
 import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
 import axios from "axios";
+import { connect } from 'react-redux'
 
 
- // Header config for REST requests
- const axiosConfig = {headers: {'Content-Type': 'application/json'}}
-
-
-
+const DNS_URI = "http://localhost:8080"
+const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 function refresh() {window.location.reload(false)}
 
-
-// Return the specified user
-async function getUser(userId) {
-    return await axios.get('http://ec2-34-204-47-86.compute-1.amazonaws.com:8080/api/'+userId ).then(response => {
+async function getUser(userName) {
+    return await axios.get(DNS_URI + '/'+ userName ).then(response => {
         return response.data;
     })
 }
 
-// Return  user id
-async function getUserID(userId) {
-    const response = await getUser(userId).then();
-
-}
-
-
-
-
-
 async function editProfile(newProfile) {
 
-    console.log(newProfile)
-    return await axios.post('http://ec2-34-204-47-86.compute-1.amazonaws.com:8080/api/edit', {
-        id: newProfile.id,
+    // console.log(newProfile)
+    return await axios.put(DNS_URI + '/api/user', {
+        id: newProfile.userId,
         userName: newProfile.userName,
         password: newProfile.password,
         address: newProfile.address,
-        phone: newProfile.phone
+        phone: newProfile.phone,
+        userType: newProfile.userType
     }, axiosConfig)
     .then(res => {
-        console.log(`statusCode: ${res.statusCode}`)
-        console.log(res)
-        return true
+        console.log(`statusCode: ${res.status}`)
+        console.log(res.data)
+        return [true, res.status]
     })
     .catch(error => {
-        console.error(error)
-        return false
+        console.log(error.message)
+        return [false, error.response.status]
     })
 }
-
-
-
-
-
-
 
 class EditProfile extends Component {
 
     constructor(props){
-        super(props);
+        super();
 
-        this.state= {
-
-            userData: this.loadUserData()
-
+        this.state = {
+            id: 4,
+            userName: null,
+            password: null,
+            address: null,
+            phone: null,
+            userType: "CUSTOMER",
+            response: null,
+            errorMessage: "",
+            successMessage: "",
         }
-
-
         
-        this.handleInputChange = this.handleInputChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
-        this.loadUserData = this.loadUserData.bind(this);
+        this.onChange = this.onChange.bind(this);
     }
 
-
-
-
-     // Load user data 
-     async loadUserData() {
-        console.log(this.props.userId)
-
-        const data = await getUserID(this.props.userId);
-        this.setState({userData: data})
+    onChange(e){
+        this.setState({[e.target.name]: e.target.value});
     }
 
-
-    onUserNameChange = userName => this.setState({ userName })
-    onPasswordChange = password => this.setState({ password })
-    onAddressChange = address => this.setState({ address })
-    onPhoneChange = phone => this.setState({ phone })
-
-    handleInputChange(e) {
-        const target = e.target;
-        const value = target.value;
-        const name = target.name;
-
-        this.setState({
-            [name]: value
-        });
-    }
-
-
-
-
-
-async
-
-    onSubmit(e){
+    async onSubmit(e){
         e.preventDefault();
 
         if (this.state.userName == null) {
             alert("Please enter your new username.")
-        }
+            return
+        } 
         if (this.state.password == null) {
             alert("Please enter your new password.")
+            return
         }
         if (this.state.address == null) {
             alert("Please enter your new address.")
+            return
         }
         if (this.state.phone == null) {
             alert("Please enter your new phone number.")
+            return
         } 
-
-        else{
-
-
-
-      
-
-
-        // Get this from React state/component props after login is done
-
-       
-
-
-        // Send the POST request
-        
-
+  
         const newProfile = {
-            id: this.props.userId,
+            userId: this.state.userId,
             userName: this.state.userName,
             password: this.state.password,
             address: this.state.address,
-            phone: this.state.phone
+            phone: this.state.phone,
+            userType: this.state.userType
         }
-        console.log(newProfile);
 
-        editProfile(newProfile);
+        const success = await editProfile(newProfile);
+        this.setState({response: success[1]})
+
+        if (this.state.response >= 200 && this.state.response <= 302) {
+            this.setState({successMessage: "User successfully modified."})
+            this.setState({errorMessage: ""})
+        } else {
+            this.setState({errorMessage: "User edit failed, please check your details and try again."})
+            this.setState({successMessage: ""})
+        }
     }
-}
-
- 
-
 
 
     render() {
         return (
             <div className="profile_screen_editprofile" id="profile_screen_editprofile">
                 
-              <form onSubmit = {this.onSubmit}>
+              
               <b>Edit Personal Profile</b>
+              <br/>
+              <b><font color="red">{this.state.errorMessage}</font></b>
+              <b><font color="green">{this.state.successMessage}</font></b>
+              <br/><br/>
+    
+
+              <form onSubmit = {this.onSubmit}>
               <div className="form-group">
                   
-                 
-
               </div>
               
               <div>
-              <input type="text" className="form-control" placeholder="Name" name="userName" value={this.state.userName} onChange = {this.handleInputChange.bind(this)}/>
+              <input type="text" className="form-control" 
+                    placeholder="Name" 
+                    name="userName" 
+                    value={this.state.value} 
+                    onChange = {this.onChange}/>
 
               </div>
               <br></br>
               <div>
-              <input type="text" className="form-control" placeholder="Password" name="password" value={this.state.password} onChange = {this.handleInputChange.bind(this)}/>
+              <input type="text" className="form-control"
+                    placeholder="Password" 
+                    name="password"
+                    value={this.state.value}
+                    onChange = {this.onChange}/>
 
               </div>
               <br></br>
               <div>
-              <input type="text" className="form-control" placeholder="Address" name="address" value={this.state.address} onChange = {this.handleInputChange.bind(this)}/>
+              <input type="text" className="form-control" 
+                    placeholder="Address" 
+                    name="address" 
+                    value={this.state.value} 
+                    onChange = {this.onChange}/>
 
               </div>
               <br></br>
               <div>
-              <input type="phone" className="form-control" placeholder="Phone" name="phone" value={this.state.phone} onChange = {this.handleInputChange.bind(this)}/>
+              <input type="phone"
+                    className="form-control" 
+                    placeholder="Phone"     
+                    name="phone" 
+                    value={this.state.value} 
+                    onChange = {this.onChange}/>
 
               </div>
               <br></br>
@@ -205,4 +176,15 @@ async
     }
 }
 
-export default EditProfile;
+const mapStateToProps = state => {
+    return { user: state.user }
+}
+
+const mapDispatchToProps = dispatch => {
+    return { dispatch }
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(EditProfile)
