@@ -1,4 +1,13 @@
 import { createStore } from 'redux'
+import { persistStore } from 'redux-persist'
+import { persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
+
+const persistConfig = {
+    key: 'root',
+    storage,
+    whitelist: ['currentUser']
+}
 
 const initialState = {
     user: [{
@@ -20,6 +29,9 @@ const reducer = (state = initialState, action) => {
     return state
 }
 
-const store = createStore(reducer)
+const newReducer = persistReducer(persistConfig, reducer)
 
-export default store
+export const store = createStore(newReducer)
+export const persistor = persistStore(store)
+
+export default {store, persistor}
