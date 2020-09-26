@@ -54,21 +54,21 @@ import makeAnimated from 'react-select/animated';
 
     // Return an array of all timeslot objects
     async function getTimeslots() {
-        return await axios.get(DNS_URI + '/api/timeslot/all').then(response => {
+        return await axios.get(DNS_URI + '/api/timeslot').then(response => {
             return response.data
         })
     }
 
     // Return an array of all booking objects
     async function getBookings() {
-        return await axios.get(DNS_URI + '/booking/all').then(response => {
+        return await axios.get(DNS_URI + '/api/booking').then(response => {
             return response.data
         })
     }
 
     // Return an array of all worker objects
     async function getWorkers() {
-        return await axios.get(DNS_URI + '/worker/all').then(response => {
+        return await axios.get(DNS_URI + '/api/worker').then(response => {
             return response.data
         })
     }
@@ -81,8 +81,8 @@ import makeAnimated from 'react-select/animated';
         // Get all workers names
         for (let i = 0; i < wks.length; i++) {               
             workerOptions.push({
-                value: {id: wks[i]["id"], userName: wks[i]["userName"]},
-                label: capitalise(wks[i]["userName"])})
+                value: {id: wks[i]["user"]["userName"], userName: wks[i]["user"]["userName"]},
+                label: capitalise(wks[i]["user"]["userName"])})
         }
         return workerOptions
     }
@@ -93,10 +93,11 @@ import makeAnimated from 'react-select/animated';
         var serviceOptions = []
         var temp = []
 
+        console.log(avs)
         
         // Get services offered by selected worker
         for (let i = 0; i < avs.length; i++) {               
-            if (avs[i]["customer"] === null && avs[i]["worker"]["userName"] === component["label"]) {
+            if (avs[i]["customer"] === null && avs[i]["worker"]["user"]["userName"] === component["label"]) {
                 for (let j = 0; j < avs[i]["worker"]["services"].length; j++) {               
                     var nameString = avs[i]["worker"]["services"][j]["name"]
                     if (temp.includes(nameString) === false) {
@@ -116,7 +117,7 @@ import makeAnimated from 'react-select/animated';
 
         // Get services offered by selected worker
         for (let i = 0; i < avs.length; i++) {               
-            if (avs[i]["customer"] === null && avs[i]["worker"]["userName"] === workerName["value"]["userName"]) {
+            if (avs[i]["customer"] === null && avs[i]["worker"]["user"]["userName"] === workerName["value"]["userName"]) {
                 const timeslot = {id: avs[i]["timeslot"]["id"], timeslot: avs[i]["timeslot"]["date"]}
                 const label = avs[i]["timeslot"]["date"]
                 availOptions.push({value: timeslot, label: label})
@@ -205,7 +206,6 @@ class BookingPane extends Component {
 
         // Send the POST request
         const success = await createBooking({
-            id: this.state.availability["value"]["id"],
             updated_At: currentTime(),
             worker: {id: this.state.worker.value["id"]},
             timeslot: {date: this.state.availability["value"]["timeslot"]},
