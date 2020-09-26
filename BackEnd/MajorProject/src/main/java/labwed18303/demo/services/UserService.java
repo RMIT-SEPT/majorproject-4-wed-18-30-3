@@ -17,6 +17,9 @@ public class UserService {
 
 
     public void checkNullValue(User user){
+        if(user == null){
+            throw new UserException("Invalid user");
+        }
         if(user.getUserName() == null){
             throw new UserException("username can't be null");
         }else if(user.getPassword() == null){
