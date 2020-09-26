@@ -1,7 +1,5 @@
 package labwed18303.demo.model;
 
-
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -26,7 +24,7 @@ public class Timeslot {
     @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
     private Date updated_At;
 
-    @ManyToMany(
+    @OneToMany(
                     mappedBy = "timeslot"
             )
     @JsonIgnoreProperties("timeslot")
@@ -41,7 +39,6 @@ public class Timeslot {
     }
 
     public Timeslot(long id, int duration, Date date, Date created_At, Date updated_At){
-        this.id = id;
         this.duration = duration;
         this.date = date;
         this.created_At = created_At;
@@ -49,7 +46,6 @@ public class Timeslot {
     }
 
     public Timeslot(long id, int duration, Date date, Date created_At, Date updated_At, List<Booking> bookings){
-        this.id = id;
         this.duration = duration;
         this.date = date;
         this.created_At = created_At;
@@ -66,12 +62,10 @@ public class Timeslot {
         return toReturn;
     }
 
-    //&& this.date.equals(other.getDate())
-
     public boolean equals(Timeslot other){
         boolean toReturn = false;
         if(other !=null) {
-            if (((this.compareDate(other.getDate())) || (this.date == null && other.getDate() == null)) && other.getId() == this.id && this.duration == other.getDuration()) {
+            if (((this.compareDate(other.getDate())) || (this.date == null && other.getDate() == null)) && this.duration == other.getDuration()) {
                 toReturn = true;
             }
         }

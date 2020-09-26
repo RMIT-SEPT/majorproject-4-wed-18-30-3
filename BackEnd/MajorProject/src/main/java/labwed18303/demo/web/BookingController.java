@@ -35,7 +35,15 @@ public class BookingController {
         return new ResponseEntity<Booking>(booking, HttpStatus.OK);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/search")
+    public ResponseEntity<?> getBookingByTimeslotWorker(@RequestBody Booking booking){
+
+        Booking foundBooking = bookingService.findByTimeslotWorker(booking);
+
+        return new ResponseEntity<Booking>(foundBooking, HttpStatus.OK);
+    }
+
+    @GetMapping("")
     public Iterable<Booking> getAllBookings(){return bookingService.findAllBookings();}
 
 //    If the booking has no customer, it can be removed.

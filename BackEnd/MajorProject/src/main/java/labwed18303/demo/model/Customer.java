@@ -12,48 +12,53 @@ import java.util.Objects;
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private long id;
+
     private String userName;
-    private String password;
-    private String address;
-    private int phone;
+
+    @OneToOne(
+            cascade = CascadeType.ALL
+            //mappedBy = "customer"
+
+    )
+    @JsonIgnoreProperties("customer")
+    private User user;
+
     @OneToMany(
             mappedBy = "customer",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+
     @JsonIgnoreProperties("customer")
     private List<Booking> bookings = new ArrayList<>();
+
     public Customer() {
-
-    }
-    public Customer(long id, String userName, String password, String address, int phone) {
-        this.id = id;
-        this.userName = userName;
-        this.password = password;
-        this.address = address;
-        this.phone = phone;
     }
 
-    public long getId() {
+    public Customer(String name, String password, String address, int phone){
+        user = new User(name, password, address, phone, UserType.CUSTOMER);
+    }
+
+
+    public User getUser(){
+        return user;
+    }
+
+    public long getId(){
         return id;
     }
 
-    public String getUserName() {
-        return userName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getPassword() {
-        return password;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public int getPhone() {
-        return phone;
+    public List<Booking> getBookings() {
+        return bookings;
     }
 
     @Override
@@ -62,13 +67,11 @@ public class Customer {
         if (!(o instanceof Customer)) return false;
         Customer customer = (Customer) o;
         return id == customer.getId() &&
-                phone == customer.getPhone() &&
-                userName.equals(customer.getUserName()) &&
-                Objects.equals(address, customer.address);
+                user.equals(customer.getUser());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userName, password, address, phone);
+        return Objects.hash(user);
     }
 }

@@ -10,6 +10,8 @@ public interface ServiceProvidedRepository extends CrudRepository<ServiceProvide
     @Override
     Iterable<ServiceProvided> findAllById(Iterable<Long> iterable);
 
+    ServiceProvided findByName(String name);
+
     ServiceProvided findByid(Long id);
 
 

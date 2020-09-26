@@ -3,9 +3,7 @@ package labwed18303.demo.services;
 import labwed18303.demo.Repositories.BookingRepository;
 import labwed18303.demo.exceptions.BookingException;
 import labwed18303.demo.exceptions.TimeslotException;
-import labwed18303.demo.model.Booking;
-import labwed18303.demo.model.Timeslot;
-import labwed18303.demo.model.Worker;
+import labwed18303.demo.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,15 +19,19 @@ public class BookingService {
     private WorkerService workerService;
     @Autowired
     private ServiceProvidedService serviceService;
+    @Autowired
+    private CustomerService customerService;
 
 //    Must have a valid timeslot.
 //    Must have a valid worker.
 //    Can add a booking with no Customer or Service. I.e. A worker availability.
-//    If the booking has a customer, it must have a valid service. -> The service must exist and be a service the associated worker provides.
+//    If the booking has a customer:
+//    Tou cannot change the customer.
+//    It must have a valid service. -> The service must exist and be a service the associated worker provides.
 //    The booking's timeslot date must be in the future.
     public Booking saveOrUpdateBooking(Booking booking) {
         Timeslot relatedTimeslot = booking.getTimeslot();
-        if(booking.getTimeslot()==null ) {
+        if(booking.getTimeslot()==null || booking.getTimeslot().getDate() == null) {
                 throw new BookingException("Booking must have a valid timeslot");
         }
         try{
@@ -44,22 +46,63 @@ public class BookingService {
         catch(TimeslotException e){
             throw new BookingException(e.getMessage());
         }
-        if(booking.getWorker()==null){
+        Worker savedWorker = null;
+        if(booking.getWorker()!=null && booking.getWorker().getUser()!=null && booking.getWorker().getUser().getUserName() != null){
+            savedWorker = workerService.findByUserName(booking.getWorker().getUser().getUserName());
+            if(savedWorker != null){
+                booking.setWorker(savedWorker);
+            }
+            else{
+                throw new BookingException("Booking must have a valid worker");
+            }
+        }
+        else{
             throw new BookingException("Booking must have a valid worker");
         }
+        Booking savedBooking = findByTimeslotWorker(booking);
+        if(savedBooking!= null){
+            booking.setId(savedBooking.getId());
+        }
         if(booking.getCustomer() != null){
-            if(booking.getService() == null) {
-                throw new BookingException("Booking must have a service");
-            }
-            Worker worker = workerService.findById(booking.getWorker().getId());
-            if(worker.getServices().isEmpty() == true
-                    || worker.getServices().contains(serviceService.findByID(booking.getService().getId()))==false){
-                throw new BookingException("Worker does not provide this service");
-            }
-            Date now = new Date();
-                if(relatedTimeslot.getDate().before(now)){
-                    throw new BookingException("Booking must be in the future");
+            Customer savedCustomer = null;
+            if(booking.getCustomer().getUser() != null ||
+                booking.getCustomer().getUser().getUserName() != null){
+                    savedCustomer = customerService.findByUserName(booking.getCustomer().getUser().getUserName());
+                    if(savedBooking != null && savedBooking.getCustomer() != null){
+                        if(booking.getCustomer().equals(savedBooking.getCustomer())==false){
+                            throw new BookingException("Booking already taken");
+                        }
+                    }
+                    if(savedCustomer != null) {
+                        booking.setCustomer(savedCustomer);
+                    }
+                    else{
+                        throw new BookingException("Customer not valid");
+                    }
                 }
+                else{
+                    throw new BookingException("Customer not valid");
+                }
+                if(booking.getService() != null && booking.getService().getName() != null ) {
+                    ServiceProvided savedService = serviceService.findByName(booking.getService().getName());
+                    if(savedService != null) {
+                        booking.setService(savedService);
+                    }
+                    else{
+                        throw new BookingException("Booking must have a service");
+                    }
+                }
+                else{
+                    throw new BookingException("Booking must have a service");
+                }
+                if(booking.getWorker().getServices() == null || booking.getWorker().getServices().isEmpty() == true
+                        || booking.getWorker().getServices().contains(booking.getService())==false){
+                    throw new BookingException("Worker does not provide this service");
+                }
+                Date now = new Date();
+                    if(relatedTimeslot.getDate().before(now)){
+                        throw new BookingException("Booking must be in the future");
+                    }
             }
         return bookingRepository.save(booking);
     }
@@ -93,13 +136,24 @@ public class BookingService {
         if(booking.getCustomer() != null){
             long fortyEightHours = 48*60*60;
             Date bookingDate = booking.getTimeslot().getDate();
-            long bookingHour = bookingDate.getTime();
             if (booking.getTimeslot().getDate().getTime() - new Date().getTime() < fortyEightHours) {
                 throw new BookingException("Cannot remove Booking within 48 hours");
             }
         }
 
         bookingRepository.delete(booking);
+    }
+
+    public Booking findByTimeslotWorker(Booking booking) {
+        if(booking.getTimeslot() == null  || booking.getTimeslot().getDate() == null
+                || booking.getWorker() == null || booking.getWorker().getUser() == null || booking.getWorker().getUser().getUserName() == null){
+            throw new BookingException("Provided Booking does not contain either Timeslot or valid Worker");
+        }
+
+        Timeslot timeslot = timeslotService.findByDate(booking.getTimeslot().getDate());
+        Worker worker = workerService.findByUserName(booking.getWorker().getUser().getUserName());
+
+        return bookingRepository.findByTimeslotAndWorker(timeslot, worker);
     }
 }
 

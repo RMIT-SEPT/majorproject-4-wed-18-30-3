@@ -1,11 +1,11 @@
-package labwed18303.demo.web;
+package labwed18303.demo.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import labwed18303.demo.exceptions.BookingException;
 import labwed18303.demo.model.*;
-import labwed18303.demo.services.BookingService;
-import labwed18303.demo.services.TimeslotService;
+import labwed18303.demo.services.*;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -21,24 +21,19 @@ import java.util.Set;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class BookingControllerTest {
-    @Autowired
-    private BookingController bookingController;
+public class BookingServiceTest {
 
     @Autowired
-    private workerController wController;
-
-    @Autowired
-    private TimeslotController timeslotController;
-
-    @Autowired
-    private customerController custController;
-
-    @Autowired
-    private ServiceProvidedController serviceController;
+    private WorkerService workerService;
 
     @Autowired
     private TimeslotService timeslotService;
+
+    @Autowired
+    private CustomerService custService;
+
+    @Autowired
+    private ServiceProvidedService serviceService;
 
     @Autowired
     private BookingService bookingService;
@@ -51,6 +46,7 @@ public class BookingControllerTest {
 
     Date current;
     Date future;
+    Date wrong;
 
     Worker workerHasBooking;
     Worker workerNoBooking;
@@ -82,42 +78,43 @@ public class BookingControllerTest {
     @BeforeAll
     public void setUp(){
         current = new Date();
-        future = new Date(2020,11,21);
+        future = new Date(current.getYear()+1, 1, 1);
+        wrong = new Date(current.getYear()+1, 2, 1);
 
 
         serviceHasBooking = new ServiceProvided(1, "Plow", 30);
-        serviceController.createNewServiceProvided(serviceHasBooking);
+        serviceService.saveOrUpdateServiceProvided(serviceHasBooking);
         services.add(serviceHasBooking);
+        workerHasBooking = new Worker("Test Worker", "password", "Round the Corner", 140000000, services, "Jim's Mowing");
+        workerService.saveOrUpdateWorker(workerHasBooking);
 
-        workerHasBooking = new Worker(1, "Jims Mowing", "password", "Round the Corner", 140000000, services);
-        wController.createNewPerson(workerHasBooking);
-
-        custHasBooking = new Customer(1, "John", "password", "On the Corner", 1234567890);
-        custController.createNewPerson(custHasBooking);
+        custHasBooking = new Customer("Test Customer", "password", "On the Corner", 1234567890);
+        custService.saveOrUpdateCustomer(custHasBooking);
 
         timeslotHasBooking = new Timeslot(1, 30, future, current, current);
-        timeslotController.createNewTimeslot(timeslotHasBooking);
+        timeslotService.saveOrUpdateTimeslot(timeslotHasBooking);
 
         completeBooking = new Booking(1, current, current, workerHasBooking, timeslotHasBooking, custHasBooking, serviceHasBooking);
-        bookingController.createNewBooking(completeBooking);
+        bookingService.saveOrUpdateBooking(completeBooking);
     }
 
     //Sanity Check
     @Test
     public void contextLoads() throws Exception {
-        assertThat(bookingController).isNotNull();
+        assertThat(bookingService).isNotNull();
     }
 
     //Successfully Create Check:
     @Test
     public void addBookingNoError() throws Exception {
         assertDoesNotThrow(()-> {
-            bookingController.createNewBooking(completeBooking);
+            bookingService.saveOrUpdateBooking(completeBooking);
         });
     }
 
     @Test
     public void addBookingShouldMatchGetBooking() throws Exception {
+        bookingService.saveOrUpdateBooking(completeBooking);
         assertTrue(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
                 Booking.class).equals(completeBooking));
     }
@@ -127,13 +124,12 @@ public class BookingControllerTest {
     @Test
     public void noWorkerShouldNotMatchBooking() throws Exception {
         noWorker = new Booking(1, current, current, null, timeslotHasBooking, custHasBooking, serviceHasBooking);
-        assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
-                Booking.class).equals(noWorker));
+        assertFalse(this.bookingService.findByBookingIdentifier((long)1).equals(noWorker));
     }
 
     @Test
     public void wrongWorkerShouldNotMatchBooking() throws Exception {
-        workerNoBooking = new Worker(2, "Mr Plow", "password", "742 Evergreen Terrace", 123456789);
+        workerNoBooking = new Worker("Mr Plow", "password", "742 Evergreen Terrace", 123456789, "Jim's Mowing");
         wrongWorker = new Booking(1, current, current,  workerNoBooking, timeslotHasBooking, custHasBooking, serviceHasBooking);
         assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
                 Booking.class).equals(wrongWorker));
@@ -148,7 +144,7 @@ public class BookingControllerTest {
 
     @Test
     public void wrongCustomerShouldNotMatchBooking() throws Exception {
-        custNoBooking = new Customer(2, "Moe Sizlach", "password", "Beside the Church?", 123456789);
+        //custNoBooking = new Customer(2, "Moe Sizlach", "password", "Beside the Church?", 123456789);
         wrongCustomer = new Booking(1, current, current,  workerHasBooking, timeslotHasBooking, custNoBooking, serviceHasBooking);
         assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
                 Booking.class).equals(wrongCustomer));
@@ -156,7 +152,7 @@ public class BookingControllerTest {
 
     @Test
     public void noTimeslotShouldNotMatchBooking() throws Exception {
-        bookingController.createNewBooking(completeBooking);
+        bookingService.saveOrUpdateBooking(completeBooking);
         noTimeslot = new Booking(1, current, current,  workerHasBooking, null, custHasBooking, serviceHasBooking);
         assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
                 Booking.class).equals(noTimeslot));
@@ -165,7 +161,7 @@ public class BookingControllerTest {
 
     @Test
     public void wrongTimeslotShouldNotMatchBooking() throws Exception {
-        timeslotNoBooking = new Timeslot(2, 30, future, current, current);
+        timeslotNoBooking = new Timeslot(2, 30, wrong, current, current);
         wrongTimeslot = new Booking(1, current, current, workerHasBooking, timeslotNoBooking, custHasBooking, serviceHasBooking);
         assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
                 Booking.class).equals(wrongTimeslot));
@@ -191,7 +187,7 @@ public class BookingControllerTest {
     public void noTimeslotShouldThrowError() throws Exception {
         noTimeslot = new Booking(1, current, current,  workerHasBooking, null, custHasBooking, serviceHasBooking);
         assertThrows(BookingException.class,() -> {
-            bookingController.createNewBooking(noTimeslot);
+            bookingService.saveOrUpdateBooking(noTimeslot);
         });
     }
 
@@ -199,7 +195,7 @@ public class BookingControllerTest {
     public void noWorkerShouldThrowError() throws Exception {
         noWorker = new Booking(1, current, current, null, timeslotHasBooking, custHasBooking, serviceHasBooking);
         assertThrows(BookingException.class, () -> {
-            bookingController.createNewBooking(noWorker);
+            bookingService.saveOrUpdateBooking(noWorker);
         });
     }
 
@@ -207,7 +203,7 @@ public class BookingControllerTest {
     public void availabilityShouldNotThrow() throws Exception {
         Booking availability = new Booking(2, current, current, workerHasBooking, timeslotHasBooking);
         assertDoesNotThrow(()-> {
-            bookingController.createNewBooking(availability);
+            bookingService.saveOrUpdateBooking(availability);
         });
     }
 
@@ -215,17 +211,17 @@ public class BookingControllerTest {
     public void noServiceShouldThrowError() throws Exception {
         noWorker = new Booking(1, current, current, workerHasBooking, timeslotHasBooking, custHasBooking, null);
         assertThrows(BookingException.class, () -> {
-            bookingController.createNewBooking(noWorker);
+            bookingService.saveOrUpdateBooking(noWorker);
         });
     }
 
     @Test
     public void wrongServiceShouldThrowError() throws Exception {
         ServiceProvided wrongService = new ServiceProvided(2, "Trim", 30);
-        serviceController.createNewServiceProvided(wrongService);
+        serviceService.saveOrUpdateServiceProvided(wrongService);
         noWorker = new Booking(1, current, current, workerHasBooking, timeslotHasBooking, custHasBooking, wrongService);
         assertThrows(BookingException.class, () -> {
-            bookingController.createNewBooking(noWorker);
+            bookingService.saveOrUpdateBooking(noWorker);
         });
     }
 
@@ -234,10 +230,10 @@ public class BookingControllerTest {
         Date current = new Date();
         Date past = new Date(current.getYear(), current.getMonth(), current.getDate(), current.getHours()-1, current.getMinutes());
         timeslotInPast = new Timeslot(9457, 30, past, current, current);
-        timeslotController.createNewTimeslot(timeslotInPast);
+        timeslotService.saveOrUpdateTimeslot(timeslotInPast);
         Booking booking = new Booking(1, current, current, workerHasBooking, timeslotInPast, custHasBooking, serviceHasBooking);
         assertThrows(BookingException.class,() -> {
-            bookingController.createNewBooking(booking);
+            bookingService.saveOrUpdateBooking(booking);
         });
     }
 
@@ -246,11 +242,11 @@ public class BookingControllerTest {
         Date current = new Date();
         Date under48 = new Date(current.getYear(), current.getMonth(), current.getDate(), current.getHours()+47, current.getMinutes());
         Timeslot timeslot = new Timeslot(48, 30, under48, current, current);
-        timeslotController.createNewTimeslot(timeslot);
+        timeslotService.saveOrUpdateTimeslot(timeslot);
         Booking booking = new Booking(48, current, current, workerHasBooking, timeslotService.findByDate(timeslot.getDate()), custHasBooking, serviceHasBooking);
-        bookingController.createNewBooking(booking);
+        bookingService.saveOrUpdateBooking(booking);
         assertThrows(BookingException.class,() -> {
-            bookingController.deleteBooking(booking.getId());
+            bookingService.deleteBookingByIdentifier(booking.getId());
         });
     }
 
@@ -259,12 +255,12 @@ public class BookingControllerTest {
         Date current = new Date();
         Date under48 = new Date(current.getYear(), current.getMonth(), current.getDate(), current.getHours()+49, current.getMinutes());
         Timeslot timeslot = new Timeslot(49, 30, under48, current, current);
-        timeslotController.createNewTimeslot(timeslot);
+        timeslotService.saveOrUpdateTimeslot(timeslot);
         Timeslot upcoming = timeslotService.findByDate(timeslot.getDate());
         Booking booking = new Booking(49, current, current, workerHasBooking, upcoming, custHasBooking, serviceHasBooking);
         Booking repoBooking = bookingService.saveOrUpdateBooking(booking);
         assertDoesNotThrow(() -> {
-            bookingController.deleteBooking(repoBooking.getId());
+            bookingService.deleteBookingByIdentifier(repoBooking.getId());
         });
     }
 

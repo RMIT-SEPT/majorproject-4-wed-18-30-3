@@ -13,6 +13,9 @@ public class ServiceProvidedService {
     private ServiceProvidedRepository serviceProvidedRepository;
 
     public ServiceProvided saveOrUpdateServiceProvided(ServiceProvided serviceProvided) {
+        if(serviceProvidedRepository.findByName(serviceProvided.getName())!= null){
+            throw new ServiceProvidedException("Service with this name already exists");
+        }
         return serviceProvidedRepository.save(serviceProvided);
     }
 
@@ -30,7 +33,7 @@ public class ServiceProvidedService {
     public Iterable<ServiceProvided> findAllServiceProvided(){
         return serviceProvidedRepository.findAll();
     }
-
+    public ServiceProvided findByName(String name){return serviceProvidedRepository.findByName(name);}
 
     public void deleteServiceProvidedByIdentifier(Long serviceId){
         ServiceProvided serviceProvided = serviceProvidedRepository.findByid(serviceId);

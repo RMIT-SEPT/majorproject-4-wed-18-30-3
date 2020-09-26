@@ -1,6 +1,7 @@
 package labwed18303.demo.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.util.*;
@@ -12,10 +13,12 @@ public class Worker {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
     private long id;
+
     private String userName;
-    private String password;
-    private String address;
-    private int phone;
+
+
+    @NonNull
+    private String companyName;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -32,48 +35,47 @@ public class Worker {
     )
     private List<Booking> bookings = new ArrayList<Booking>();
 
+    @OneToOne(
+            cascade = CascadeType.ALL
+            //mappedBy = "worker"
+
+    )
+    @JsonIgnoreProperties("worker")
+    private User user;
+
+
     public Worker() {
     }
 
-    public Worker(long id, String userName, String password, String address, int phone) {
-        this.id = id;
-        this.userName = userName;
-        this.password = password;
-        this.address = address;
-        this.phone = phone;
+    public Worker(User user){
+        this.user = user;
     }
 
-    public Worker(long id, String userName, String password, String address, int phone, Set<ServiceProvided> services) {
-        this.id = id;
-        this.userName = userName;
-        this.password = password;
-        this.address = address;
-        this.phone = phone;
+    public Worker(String userName, String password, String address, int phone, Set<ServiceProvided> services, String companyName){
+        this.user = new User(userName, password, address, phone, UserType.WORKER);
         this.services = services;
+        this.companyName = companyName;
     }
 
-    public Worker(@JsonProperty("id") String id){
-        this.id = Integer.parseInt(id);
+    public Worker(String userName, String password, String address, int phone, String companyName){
+        this.user = new User(userName, password, address, phone, UserType.WORKER);
+        this.companyName = companyName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return user;
     }
 
     public long getId() {
         return id;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public int getPhone() {
-        return phone;
     }
 
     public Set<ServiceProvided> getServices() {
@@ -84,16 +86,13 @@ public class Worker {
         this.services = services;
     }
 
-    @Override
-    public String toString() {
-        return "Worker{" +
-                "id=" + id +
-                ", userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
-                ", address='" + address + '\'' +
-                ", phone=" + phone +
-                ", services=" + services +
-                '}';
+    @NonNull
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(@NonNull String companyName) {
+        this.companyName = companyName;
     }
 
     @Override
@@ -102,13 +101,14 @@ public class Worker {
         if (!(o instanceof Worker)) return false;
         Worker worker = (Worker) o;
         return id == worker.getId() &&
-                phone == worker.getPhone() &&
-                userName.equals(worker.getUserName()) &&
-                address.equals(worker.getAddress());
+                user.equals(worker.getUser()) &&
+                companyName.equals(worker.getCompanyName());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userName, address, phone);
+        return Objects.hash(user, companyName);
     }
 }
+
+
