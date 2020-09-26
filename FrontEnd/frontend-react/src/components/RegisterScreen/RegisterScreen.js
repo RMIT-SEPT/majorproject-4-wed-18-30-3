@@ -9,61 +9,57 @@ import axios from "axios";
 const DNS_URI = "http://localhost:8080"
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 
-async function createUser(userName, password, phone, address, userType) {
+async function createWorker(userName, password, phone, address, userType) {
+    return await axios.post(DNS_URI + '/api/worker', {
+        "user": {
+            "userName": userName, 
+            "password": password, 
+            "address": address,
+            "phone": phone,
+            "userType": userType},
+        "services": [{}],
+        "companyName": " "
+    }, axiosConfig)
+        .then(res => {
+            return [true, res.status]
+        })
+        .catch(error => {
+            return [false, error.response.status]
+        })
+}
 
-    // Set the endpoint according to userType
-    var endpoint = null
-    let newUser
-    if (userType === "CUSTOMER") {
-        endpoint = "customer"
-        newUser = { 
-            user: {
-                userName: userName, 
-                password: password, 
-                address: address,
-                phone: phone,
-                userType: userType}}
-    
-    } else if (userType === "ADMIN") {
-    endpoint = "admin"
-    newUser = { 
-        user: {
-            userName: userName, 
-            password: password, 
-            address: address,
-            phone: phone,
-            userType: userType}}
-    
-    } else if (userType === "WORKER") {
-        endpoint = "worker"
-        newUser = { 
-            user: {
-                userName: userName, 
-                password: password, 
-                address: address,
-                phone: phone,
-                userType: userType},
-            services: {},
-            companyName: ""}
-    } else {
-        console.log("User type error.")
-    }
+async function createAdmin(userName, password, phone, address, userType) {
+    return await axios.post(DNS_URI + '/api/admin', {
+        "user": {
+            "userName": userName, 
+            "password": password, 
+            "address": address,
+            "phone": phone,
+            "userType": userType}
+    }, axiosConfig)
+        .then(res => {
+            return [true, res.status]
+        })
+        .catch(error => {
+            return [false, error.response.status]
+        })
+}
 
-    if (endpoint != null) {
-        
-        console.log(newUser)
-        // console.log(DNS_URI + '/api/' + endpoint)
-
-        return await axios.post(DNS_URI + '/api/' + endpoint, {
-            newUser
-        }, axiosConfig)
-            .then(res => {
-                return [true, res]
-            })
-            .catch(error => {
-                return [false, error]
-            })
-    }
+async function createCustomer(userName, password, phone, address, userType) {
+    return await axios.post(DNS_URI + '/api/customer', {
+        "user": {
+            "userName": userName, 
+            "password": password, 
+            "address": address,
+            "phone": phone,
+            "userType": userType}
+    }, axiosConfig)
+        .then(res => {
+            return [true, res.status]
+        })
+        .catch(error => {
+            return [false, error.response.status]
+        })
 }
 
 class RegisterScreen extends Component {
@@ -78,20 +74,25 @@ class RegisterScreen extends Component {
             firstName: null,
             lastName: null,
             userType: null,
+            hasSuccess: false,
+            hasFail: false,
+            response: null,
+            errorMessage: "",
+            successMessage: "",
             userTypes: [
-                { value: 'CUSTOMER', label: 'Customer' },
-                { value: 'ADMIN', label: 'Admin' },
-                { value: 'WORKER', label: 'Worker' },]
+                {value: 'CUSTOMER', label: 'Customer'},
+                {value: 'ADMIN', label: 'Admin'},
+                {value: 'WORKER', label: 'Worker'},]
         };
+
         this.onSubmit = this.onSubmit.bind(this);
         this.onChange = this.onChange.bind(this);
         this.onTypeChange = this.onTypeChange.bind(this);
     }
     
     onChange(e){this.setState({[e.target.name]: e.target.value})}
-
     onTypeChange(Type) {this.setState({ userType: Type})}
-    
+
     async onSubmit(e) {
         e.preventDefault();
 
@@ -133,19 +134,34 @@ class RegisterScreen extends Component {
             return
         }
 
-        const success = await createUser(this.state.userName, this.state.password, 
-            this.state.phone, this.state.address, this.state.userType["value"]).then()
+        if (this.state.userType['value'] === "CUSTOMER") {
+            const success = await createCustomer(this.state.userName, this.state.password, 
+                this.state.phone, this.state.address, this.state.userType["value"]).then()            
+            this.setState({response: success[1]})
+            console.log(this.state.response)
 
-        console.log(success[0], success[1])
+        } else if (this.state.userType['value'] === "ADMIN") {
+            const success = await createAdmin(this.state.userName, this.state.password, 
+                this.state.phone, this.state.address, this.state.userType["value"]).then()
+            this.setState({response: success[1]})
+            console.log(this.state.response)
 
-        // if (success[0]) {
-        //     this.setState({hasSuccess: true})
-        //     this.setState({hasFail: false})
-        // } else {
-        //     this.setState({hasSuccess: false})
-        //     this.setState({hasFail: true})
-        // }
+        } else if (this.state.userType['value'] === "WORKER") {
+            const success = await createWorker(this.state.userName, this.state.password, 
+                this.state.phone, this.state.address, this.state.userType["value"]).then()
+            this.setState({response: success[1]})
+            console.log(this.state.response)
 
+        }
+
+        if (this.state.response >= 200 && this.state.response <= 302) {
+            this.setState({successMessage: "User successfully created. Click Sign in to get started."})
+            this.setState({errorMessage: ""})
+        } else {
+            this.setState({errorMessage: "Account creation failed, please check your details and try again."})
+            this.setState({successMessage: ""})
+        }
+        
     }
 
     render(){
@@ -155,7 +171,10 @@ class RegisterScreen extends Component {
                 <div className = "Register_Ui">
                     <div className = "Heading">
                         <h1>Sign up</h1>
-                        <br></br><br></br><br></br>
+                        <br></br>
+                        <b><font color="red">{this.state.errorMessage}</font></b>
+                        <b><font color="green">{this.state.successMessage}</font></b>
+                        <br></br><br></br>
                     </div>
                     <form onSubmit={this.onSubmit}>
 
@@ -259,7 +278,7 @@ class RegisterScreen extends Component {
 
 
                         <div className="form-user">
-                        <label htmlFor={"user"}>Select Type of user:</label>
+                        <label htmlFor={"user"}>Select user type:</label>
                         <div className="row">
                         
                             <div className="col-sm"></div>
@@ -279,27 +298,6 @@ class RegisterScreen extends Component {
                         </div>
                         </form>
                 </div>
-            )
-        }
-        if(this.state.hasSuccess) {
-            return(
-                <Router>
-                    <div className = "Register_Ui">
-                        <Redirect to= "/login" component={LoginScreen}/>
-                        <Route path="/login" component={LoginScreen}/>
-                    </div>
-                </Router>
-            )
-        }
-        else if(this.state.hasFail){
-            alert("username is taken, please try again!")
-            return(
-                <Router>
-                    <div className = "Register_Ui">
-                        <Redirect to= "/register" component={RegisterScreen}/>
-                        <Route path="/register" component={RegisterScreen}/>
-                    </div>
-                </Router>
             )
         }
     }
