@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
 import makeAnimated from 'react-select/animated';
 import Select from 'react-select';
-import LoginScreen from '../LoginScreen/LoginScreen'
-import {BrowserRouter as Router, Route, Redirect} from "react-router-dom";
 import axios from "axios";
 
 const DNS_URI = "http://localhost:8080"
@@ -155,7 +153,7 @@ class RegisterScreen extends Component {
         }
 
         if (this.state.response >= 200 && this.state.response <= 302) {
-            this.setState({successMessage: "User successfully created. Click Sign in to get started."})
+            this.setState({successMessage: "User successfully created. Log in to get started."})
             this.setState({errorMessage: ""})
         } else {
             this.setState({errorMessage: "Account creation failed, please check your details and try again."})
