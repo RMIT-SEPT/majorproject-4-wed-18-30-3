@@ -20,7 +20,8 @@ workers = [
             "address": "Just Round the Corner", "phone": "1234567890",
             "userType": "WORKER"},
         "services": [
-            {"id": 1, "name": "mowing", "minDuration": 60}]},
+            {"name": "mowing", "minDuration": 60}],
+        "companyName": "Jim's Mowing"},
 
     {
         "user": {
@@ -28,7 +29,8 @@ workers = [
             "address": "Wendy's House", "phone": "1234567890",
             "userType": "WORKER"},
         "services": [
-            {"id": 3, "name": "massage", "minDuration": 60}]},
+            {"name": "massage", "minDuration": 60}],
+        "companyName": "Wendy's Wonderful Massage"},
 
     {
         "user": {
@@ -36,23 +38,32 @@ workers = [
             "address": "A friends house", "phone": "1234567890",
             "userType": "WORKER"},
         "services": [
-            {"id": 4, "name": "pool cleaning", "minDuration": 60}]}]
+            {"name": "pool cleaning", "minDuration": 60}],
+        "companyName": "Dave's pool services"}]
+
+admins = [
+    {
+        "user": {
+            "userName": "Trev", "password": "123",
+            "address": "Big T's place", "phone": "1234567890",
+            "userType": "ADMIN"}
+    }]
 
 customers = [
     {
         "user": {
             "userName": "Jo", "password": "123", "address": "Round the Corner",
-            "phone": "1234567890", "userType": 0}},
+            "phone": "1234567890", "userType": "CUSTOMER"}},
 
     {
         "user": {
             "userName": "Mary", "password": "123", "address": "Up the street",
-            "phone": "1234567890", "userType": 0}},
+            "phone": "1234567890", "userType": "CUSTOMER"}},
 
     {
         "user": {
             "userName": "Bob", "password": "123", "address": "Down the lane",
-            "phone": "1234567890", "userType": 0}}]
+            "phone": "1234567890", "userType": "CUSTOMER"}}]
 
 
 def add_timeslots(n: int, min_duration: int, start_timestamp=None):
@@ -132,9 +143,32 @@ def add_workers(workers: list):
                 "address": i["user"]["address"],
                 "phone": i["user"]["phone"],
                 "userType": i["user"]["userType"]},
-            "services": i["services"]}
+            "services": i["services"],
+            "companyName": i["companyName"]}
 
         r = requests.post(url + "/api/worker", json=payload)
+        print("Response", r.status_code, r.json())
+
+
+def add_admins(admins: list):
+    """
+    Batch-add admins to backend
+
+    Args:
+        workers: list of admin dictionaries
+    """
+
+    for i in admins:
+
+        payload = {
+            "user": {
+                "userName": i["user"]["userName"],
+                "password": i["user"]["password"],
+                "address": i["user"]["address"],
+                "phone": i["user"]["phone"],
+                "userType": i["user"]["userType"]}}
+
+        r = requests.post(url + "/api/admin", json=payload)
         print("Response", r.status_code, r.json())
 
 
@@ -179,21 +213,22 @@ def add_availabilites(timeslots: list, workers: list, customers: list, min_durat
     for timeslot in timeslots:
 
         # Randomly select a worker and customer
-        worker_id = random.randint(1, len(workers))
-        customer_id = random.choice(customers)
+        worker_name = random.choice(workers)["user"]["userName"]
+        print(worker_name)
+        customer = random.choice(customers)
 
         payload = {
-            'id': str(booking_id),
+            # 'id': str(booking_id),
             # 'created_At': now.strftime("%Y-%m-%d-%H-%M-%S"),
             # 'updated_At': now.strftime("%Y-%m-%d-%H-%M-%S"),
-            'worker': {"id": worker_id},
+            'worker': {"user": {"userName": worker_name}},
             'timeslot': {"date": timeslot},
             # 'service': {"id": str(worker["services"][0]["id"])},
             # 'customer': {"id": str(customer["id"])},
         }
         booking_id += 1
         r = requests.post(url + "/api/booking", json=payload)
-        print("Response", r.status_code, r.json()["timeslot"])
+        print("Response", r.status_code, r.json())
         # print(payload)
         # print(json.dumps(payload))
 
@@ -220,7 +255,7 @@ def get_customers(customers):
         print("Response", r.status_code, r.json())
 
 
-number_of_timeslots = 1000
+number_of_timeslots = 100
 min_duration = 30
 url = "http://localhost:8080"
 # url = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
@@ -228,8 +263,10 @@ url = "http://localhost:8080"
 timeslots = add_timeslots(number_of_timeslots, min_duration)
 add_services(services, min_duration)
 add_workers(workers)
+add_admins(admins)
 add_customers(customers)
 add_availabilites(timeslots, workers, customers, min_duration)
+
 
 # get_timeslots()
 # get_bookings()
