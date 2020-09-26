@@ -3,6 +3,7 @@ import axios from "axios";
 import CancelButton from './CancelButton';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
+import { Link } from 'react-router-dom';
 
     const DNS_URI = "http://localhost:8080"
 
@@ -34,7 +35,6 @@ import makeAnimated from 'react-select/animated';
 
         console.log(newBooking)
         return await axios.post(DNS_URI + '/api/booking', {
-            id: newBooking.id,
             updated_At: currentTime(),
             worker: newBooking.worker,
             timeslot: newBooking.timeslot,
@@ -135,7 +135,7 @@ class BookingPane extends Component {
             service: null,
             worker: null,
             customer: null,
-            customerId: null,
+            customerId: "Jo",
             
             optionsService: [{value: "none", label: null}],
             optionsAvailability: [{value: "none", label: null}],
@@ -201,16 +201,13 @@ class BookingPane extends Component {
             return
         }            
 
-        // Get this from React state/component props after login is done
-        const customerId = 1
-
         // Send the POST request
         const success = await createBooking({
             updated_At: currentTime(),
-            worker: {id: this.state.worker.value["id"]},
+            worker: {user: {userName: this.state.worker.label}},
             timeslot: {date: this.state.availability["value"]["timeslot"]},
-            service: {id: this.state.service.value["id"]},
-            customer: {id: customerId}
+            service: {name: this.state.service.value["name"]},
+            customer: {user: {userName: this.state.customerId}}
         }).then()
 
         // Set success/fail state, will change what the pane is rendering
@@ -292,7 +289,8 @@ class BookingPane extends Component {
                     <br/>    
                     <b>Booking placed successfully.</b>
                     <br/><br/>   
-
+                    <Link to="/weekly_view">View your bookings.</Link>
+                    <br/><br/>  
                     <div className="row">
                         <div className="col-sm">
                             <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
