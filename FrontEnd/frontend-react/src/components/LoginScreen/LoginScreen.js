@@ -32,6 +32,7 @@ class LoginScreen extends Component {
             address: null,
             phone: null,
             userType: null,
+            token: null,
             hasSuccess: false,
             hasFail: false,
         }
@@ -61,6 +62,7 @@ class LoginScreen extends Component {
             this.setState({address: success[1].data["address"]})
             this.setState({phone: success[1].data["phone"]})
             this.setState({userType: success[1].data["userType"]})
+            this.setState({token: success[1].data["token"]})
             this.setState({hasSuccess: true})
             this.setState({hasFail: false})
         } else {
@@ -115,7 +117,6 @@ class LoginScreen extends Component {
                         <div className="col-sm"></div>
                     </div>
 
-
                     <div className="row">
                         <div className="col-sm"></div>    
                         <div className="col-sm">
@@ -138,7 +139,8 @@ class LoginScreen extends Component {
                         password={this.state.password}
                         address={this.state.address}
                         phone={this.state.phone}
-                        userType={this.state.userType}/>
+                        userType={this.state.userType}
+                        token={this.state.token}/>
                 )}/>
                 <Route path="/dashboard" render={(props) => (
                     <Dashboard {...props}
@@ -147,7 +149,8 @@ class LoginScreen extends Component {
                         password={this.state.password}
                         address={this.state.address}
                         phone={this.state.phone}
-                        userType={this.state.userType}/>
+                        userType={this.state.userType}
+                        token={this.state.token}/>
                 )}/>
             </div>
         </Router>

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
 import NavPane from '../Layout/NavPane'
 import { connect } from 'react-redux'
+import store from '../../store'
 
 
 class Dashboard extends Component {
@@ -15,6 +16,7 @@ class Dashboard extends Component {
         this.storeLoginToken()
     }
 
+    // Store user login details in Redux state, as passed in from the login component
     storeLoginToken() {
         this.props.dispatch({
             type: "LOGIN",
@@ -23,15 +25,19 @@ class Dashboard extends Component {
                 'userName': this.props.userName,
                 'password': this.props.password,
                 'address': this.props.address, 
-                'phone':this.props.phone,
-                'userType': this.props.userType
+                'phone': this.props.phone,
+                'userType': this.props.userType,
+                'token': this.props.token
             }
         })
+
+        // TODO: persist state between refreshes/redirects
+
     }
 
     render() {
         
-        // Always use the final element in user state history
+        // Ue the most recent element state history
         const index = this.props.user.length - 1
 
         return (
