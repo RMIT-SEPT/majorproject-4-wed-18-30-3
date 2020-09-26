@@ -3,7 +3,6 @@ import axios from "axios";
 import CancelButton from './CancelButton';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
-import { Link } from 'react-router-dom';
 
     const DNS_URI = "http://localhost:8080"
 
@@ -136,7 +135,7 @@ class BookingPane extends Component {
             service: null,
             worker: null,
             customer: null,
-            customerId: "Jo",
+            customerId: null,
             
             optionsService: [{value: "none", label: null}],
             optionsAvailability: [{value: "none", label: null}],
@@ -202,13 +201,16 @@ class BookingPane extends Component {
             return
         }            
 
+        // Get this from React state/component props after login is done
+        const customerId = 1
+
         // Send the POST request
         const success = await createBooking({
             updated_At: currentTime(),
-            worker: {user: {userName: this.state.worker.value["userName"]}},
+            worker: {id: this.state.worker.value["id"]},
             timeslot: {date: this.state.availability["value"]["timeslot"]},
-            service: {name: this.state.service.value["name"]},
-            customer: {user: {userName: this.state.customerId}}
+            service: {id: this.state.service.value["id"]},
+            customer: {id: customerId}
         }).then()
 
         // Set success/fail state, will change what the pane is rendering
@@ -289,9 +291,6 @@ class BookingPane extends Component {
                 <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
                     <br/>    
                     <b>Booking placed successfully.</b>
-                    <br/><br/>   
-
-                    <Link to={"/weeky_view"}>View your bookings.</Link>
                     <br/><br/>   
 
                     <div className="row">
