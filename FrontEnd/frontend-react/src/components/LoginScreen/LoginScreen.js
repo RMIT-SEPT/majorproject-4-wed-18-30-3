@@ -4,49 +4,63 @@ import Dashboard from '../Dashboard/Dashboard';
 import {BrowserRouter as Router, Route, Redirect} from "react-router-dom";
 import axios from "axios";
 
+const DNS_URI = "http://localhost:8080"
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 
 async function getUserConfirm(userName, password) {
-    return await axios.post('http://ec2-34-204-47-86.compute-1.amazonaws.com:8080/api/User', {
+    return await axios.post(DNS_URI + '/api/user', {
         userName: userName,
         password: password
     }, axiosConfig)
         .then(res => {
-            return true
+            return [true, res]
         })
         .catch(error => {
-            return false
+            console.error(error)
+            return [false, error]
         })
 }
+
 class LoginScreen extends Component {
-    constructor(props) {
-        super(props);
+  
+    constructor() {
+        super();
         this.state = {
-            userName: null,
-            password: null,
+            id: null,
+            userName: "",
+            password: "",
+            address: null,
+            phone: null,
+            userType: null,
             hasSuccess: false,
             hasFail: false,
         }
         this.onSubmit = this.onSubmit.bind(this);
+        this.onChange = this.onChange.bind(this);
     }
-    setUsername = () => this.setState({ userName: document.getElementById("username").value})
-    setPassword = () => this.setState({ password: document.getElementById("password").value})
+
+    onChange(e){
+        this.setState({[e.target.name]: e.target.value});
+    }
+    
     async onSubmit(e) {
-        e.preventDefault();
-        await this.setPassword()
-        await this.setUsername()
-        if(this.state.userName == null){
-            alert("Please enter a username!")
+        e.preventDefault()
+        
+        if(document.getElementById("userName").value == null || document.getElementById("password").value == null){
+            alert("Please enter a username and password.")
             return
         }
-        if(this.state.password == null){
-            alert("Please enter a password!")
-            return
-        }
-        //200 pass, 400 fail
+        
+        // Set state accoring to the REST response
         const success = await getUserConfirm(this.state.userName, this.state.password).then()
-        //const success = true;
-        if (success) {
+        if (success[0]) {
+            console.log(success[1].data["userType"])
+            this.setState({id: success[1].data["id"]})
+            this.setState({userName: success[1].data["userName"]})
+            this.setState({password: success[1].data["password"]})
+            this.setState({address: success[1].data["address"]})
+            this.setState({phone: success[1].data["phone"]})
+            this.setState({userType: success[1].data["userType"]})
             this.setState({hasSuccess: true})
             this.setState({hasFail: false})
         } else {
@@ -54,23 +68,53 @@ class LoginScreen extends Component {
             this.setState({hasFail: true})
         }
     }
+
     render() {
     if (!this.state.hasSuccess && !this.state.hasFail) {
         return(
             <div className = "Login_Ui">
                 <div className = "Heading">
                     <h1>Log in</h1>
-                    <br></br><br></br><br></br><br></br>
+                    <br/><br/>
                 </div>
                 <form onSubmit={this.onSubmit}>
-                    <div className = "UserName">
-                        <label htmlFor={"username"}>Username:</label>
-                        <input type="text" id="username" name="uname" required></input><br></br><br></br>
+                    
+                    <div className="row">
+                        <div className="col-sm"></div>    
+                        <div className="col-sm">
+                            <div className = "form-group">
+                                
+                                <input type="text" className="form-control"
+                                        placeholder="Username"
+                                        id="userName" 
+                                        name={"userName"} 
+                                        value={this.state.value}
+                                        onChange={this.onChange}>
+                                </input>
+                            
+                            </div>    
+                        </div>
+                        <div className="col-sm"></div>
                     </div>
-                    <div className = "Password">
-                        <label htmlFor={"password"}>Password:</label>
-                        <input type="password" id="password" name="pass" required></input><br></br><br></br>
+
+                    <div className="row">
+                        <div className="col-sm"></div>    
+                        <div className="col-sm">    
+                            <div className = "form-group">
+                                
+                                <input type="password" className="form-control"
+                                        placeholder="Password"
+                                        id="password"
+                                        name={"password"}
+                                        value={this.state.value}
+                                        onChange={this.onChange}>
+                                </input>
+                                
+                                </div>    
+                            </div>
+                        <div className="col-sm"></div>
                     </div>
+
 
                     <div className="row">
                         <div className="col-sm"></div>    
@@ -88,17 +132,29 @@ class LoginScreen extends Component {
         <Router>
             <div className = "Login_Ui">
                 <Redirect to= "/dashboard" render={(props) => (
-                    <Dashboard {...props} userName={this.state.userName} />
+                    <Dashboard {...props} 
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        password={this.state.password}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}/>
                 )}/>
                 <Route path="/dashboard" render={(props) => (
-                    <Dashboard {...props} userName={this.state.userName} />
+                    <Dashboard {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        password={this.state.password}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}/>
                 )}/>
             </div>
         </Router>
         )
     }
     else if(this.state.hasFail){
-        alert("Password or Username incorrect!")
+        alert("Incorrect password or username.")
         return(
             <Router>
                 <div className = "Login_Ui">
