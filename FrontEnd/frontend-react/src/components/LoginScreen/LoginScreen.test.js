@@ -16,46 +16,46 @@ describe('<LoginScreen/>', function() {
         expect(wrapper.contains(<h1>Log in</h1>)).to.equal(true);
     });
 });
-describe('<LoginScreen/>', function() {
-    it('renders username label', function() {
-        const wrapper = shallow(
-            <LoginScreen>
-                <label htmlFor={"username"}>Username:</label>
-            </LoginScreen>
-        );
-        expect(wrapper.contains(<label htmlFor={"username"}>Username:</label>)).to.equal(true);
-    });
-});
-describe('<LoginScreen/>', function() {
-    it('renders username input', function() {
-        const wrapper = shallow(
-            <LoginScreen>
-                <input type="text" id="username" name="uname" required></input>
-            </LoginScreen>
-        );
-        expect(wrapper.contains(<input type="text" id="username" name="uname" required></input>)).to.equal(true);
-    });
-});
-describe('<LoginScreen/>', function() {
-    it('renders password label', function() {
-        const wrapper = shallow(
-            <LoginScreen>
-                <label htmlFor={"password"}>Password:</label>
-            </LoginScreen>
-        );
-        expect(wrapper.contains(<label htmlFor={"password"}>Password:</label>)).to.equal(true);
-    });
-});
-describe('<LoginScreen/>', function() {
-    it('renders password input', function() {
-        const wrapper = shallow(
-            <LoginScreen>
-                <input type="password" id="password" name="pass" required></input>
-            </LoginScreen>
-        );
-        expect(wrapper.contains(<input type="password" id="password" name="pass" required></input>)).to.equal(true);
-    });
-});
+// describe('<LoginScreen/>', function() {
+//     it('renders username label', function() {
+//         const wrapper = shallow(
+//             <LoginScreen>
+//                 <label htmlFor={"username"}>Username:</label>
+//             </LoginScreen>
+//         );
+//         expect(wrapper.contains(<label htmlFor={"username"}>Username:</label>)).to.equal(true);
+//     });
+// });
+// describe('<LoginScreen/>', function() {
+//     it('renders username input', function() {
+//         const wrapper = shallow(
+//             <LoginScreen>
+//                 <input type="text" id="username" name="uname" required></input>
+//             </LoginScreen>
+//         );
+//         expect(wrapper.contains(<input type="text" id="username" name="uname" required></input>)).to.equal(true);
+//     });
+// });
+// describe('<LoginScreen/>', function() {
+//     it('renders password label', function() {
+//         const wrapper = shallow(
+//             <LoginScreen>
+//                 <label htmlFor={"password"}>Password:</label>
+//             </LoginScreen>
+//         );
+//         expect(wrapper.contains(<label htmlFor={"password"}>Password:</label>)).to.equal(true);
+//     });
+// });
+// describe('<LoginScreen/>', function() {
+//     it('renders password input', function() {
+//         const wrapper = shallow(
+//             <LoginScreen>
+//                 <input type="password" id="password" name="pass" required></input>
+//             </LoginScreen>
+//         );
+//         expect(wrapper.contains(<input type="password" id="password" name="pass" required></input>)).to.equal(true);
+//     });
+// });
 // describe('<LoginScreen/>', function() {
 //     it('renders button submit', function() {
 //         const wrapper = shallow(
