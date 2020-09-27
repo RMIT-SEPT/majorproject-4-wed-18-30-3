@@ -1,8 +1,4 @@
 import React, { Component } from 'react'
-import DashboardLinkButton from './DashboardLinkButton'
-import BookingLinkButton from './BookingLinkButton';
-import ProfileButton from './ProfileButton';
-import AdminPortalButton from './AdminPortalButton';
 import ContextualButtonPane from './ContextualButtonPane';
 
 class NavPane extends Component {
@@ -12,15 +8,13 @@ class NavPane extends Component {
                 <br/>
                 <b>Navigation</b>
                 <br/><br/>
-                <DashboardLinkButton/>
-                <br/><br/>
-                <BookingLinkButton/>
-                <br/><br/>
-                <ProfileButton/>
-                <br/><br/>
-                <AdminPortalButton/>
-                <br/><br/>
-                <ContextualButtonPane/>
+                <ContextualButtonPane
+                    id={this.props.id}
+                    userName={this.props.userName}
+                    address={this.props.address}
+                    phone={this.props.phone}
+                    userType={this.props.userType}
+                    token={this.props.token}/>
             </div>
         )
     }

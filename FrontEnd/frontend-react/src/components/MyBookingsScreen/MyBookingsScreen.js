@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
 import Header from '../Layout/Header';
+import Footer from '../Layout/Footer';
 
-class WeeklyViewScreen extends Component {
+class MyBookingsScreen extends Component {
     render() {
         return (
             <div>
@@ -13,12 +14,11 @@ class WeeklyViewScreen extends Component {
                     phone={this.props.phone}
                     userType={this.props.userType}
                     token={this.props.token}/>
-                <br/><br/><br/>
-
-                <h1>View availabilites by timeslot</h1>
+                <h1>My bookings</h1>
+                <Footer/>
             </div>
         )
     }
 }
 
-export default WeeklyViewScreen;
+export default MyBookingsScreen;

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
 import axios from "axios";
 import { connect } from 'react-redux'
+import Header from '../Layout/Header';
 
 
 const DNS_URI = "http://localhost:8080"
@@ -106,13 +107,14 @@ class EditProfile extends Component {
     render() {
         return (
             <div className="profile_screen_editprofile" id="profile_screen_editprofile">
-                
+            
               
               <b>Edit Personal Profile</b>
-              <br/>
+              <p>Ensure password field matches your current password or request will fail.</p>
+              
               <b><font color="red">{this.state.errorMessage}</font></b>
               <b><font color="green">{this.state.successMessage}</font></b>
-              <br/><br/>
+              <br/>
     
 
               <form onSubmit = {this.onSubmit}>

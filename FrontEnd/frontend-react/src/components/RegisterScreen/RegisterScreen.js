@@ -3,6 +3,8 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import makeAnimated from 'react-select/animated';
 import Select from 'react-select';
 import axios from "axios";
+import Header from '../Layout/Header';
+import Footer from '../Layout/Footer';
 
 const DNS_URI = "http://localhost:8080"
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
@@ -167,9 +169,13 @@ class RegisterScreen extends Component {
         if (!this.state.hasSuccess && !this.state.hasFail) {
             return(
                 <div className = "Register_Ui">
-                    <div className = "Heading">
+                <Header/>
+                <br/><br/>
+                <br/><br/><br/>
+                   <div className = "Heading">
                         <h1>Sign up</h1>
-                        <br></br>
+                        <p>Phone number must be 10 digits and start with "0".</p>
+                        
                         <b><font color="red">{this.state.errorMessage}</font></b>
                         <b><font color="green">{this.state.successMessage}</font></b>
                         <br></br><br></br>
@@ -295,6 +301,7 @@ class RegisterScreen extends Component {
                             <div className="col-sm"></div>
                         </div>
                         </form>
+                    <Footer/>
                 </div>
             )
         }

@@ -134,9 +134,8 @@ class BookingPane extends Component {
             availability: null,
             service: null,
             worker: null,
-            customer: null,
-            customerId: "Jo",
-            
+            userName: null,
+            userType: null,
             optionsService: [{value: "none", label: null}],
             optionsAvailability: [{value: "none", label: null}],
             optionsWorker: this.loadWorkers(),      
@@ -188,6 +187,23 @@ class BookingPane extends Component {
     async onSubmit(e){
         e.preventDefault();
 
+        // Set the userName and userType in component state
+        if (this.props.userName != null && this.props.userType != null) {
+
+            this.setState({userName: this.props.userName})
+            this.setState({userType: this.props.userType})
+
+            // Validate user type
+            if(this.props.userType != "CUSTOMER") {
+                alert("You must be a customer to make bookings. Create a customer account and try again.")
+                return 
+            }
+
+        } else {
+            alert("You must be logged in to make bookings. Please log in.")
+            return 
+        }
+
         if (this.state.availability == null) {
             alert("Please select a timeslot.")
             return
@@ -207,7 +223,7 @@ class BookingPane extends Component {
             worker: {user: {userName: this.state.worker.label}},
             timeslot: {date: this.state.availability["value"]["timeslot"]},
             service: {name: this.state.service.value["name"]},
-            customer: {user: {userName: this.state.customerId}}
+            customer: {user: {userName: this.props.userName}}
         }).then()
 
         // Set success/fail state, will change what the pane is rendering
@@ -229,10 +245,10 @@ class BookingPane extends Component {
         if (!this.state.hasSuccess && !this.state.hasFail) { 
             return (
                 <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
-
                     <br/>    
                     <b>Get started by choosing a worker.</b>
                     <br/>   <br/>   
+
                     <form onSubmit={this.onSubmit}>
 
                         <div className="form-group">
@@ -287,9 +303,9 @@ class BookingPane extends Component {
             return (
                 <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
                     <br/>    
-                    <b>Booking placed successfully.</b>
+                    <b>Booking placed successfully. Thank you for your booking, {this.props.userName}.</b>
                     <br/><br/>   
-                    <Link to="/weekly_view">View your bookings.</Link>
+                    <Link to="/my_bookings">View your bookings.</Link>
                     <br/><br/>  
                     <div className="row">
                         <div className="col-sm">

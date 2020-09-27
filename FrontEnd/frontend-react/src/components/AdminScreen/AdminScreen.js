@@ -1,12 +1,22 @@
 import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
 import NavPane from '../Layout/NavPane'
+import Header from '../Layout/Header';
+import Footer from '../Layout/Footer';
 
 class AdminScreen extends Component {
     render() {
         return (
             <div className="container" id="admin_screen_container">
-            <h1>Todo: Admin portal</h1>
+            <Header
+                id={this.props.id}
+                userName={this.props.userName}
+                address={this.props.address}
+                phone={this.props.phone}
+                userType={this.props.userType}
+                token={this.props.token}/>
+            <br/><br/><br/>
+            <h1>Admin portal</h1>
             <div className="row">
                     <div className="col-sm-3">
                         <NavPane/>
@@ -16,6 +26,7 @@ class AdminScreen extends Component {
                         Todo: admin task pane component
                     </div>
                 </div>
+            <Footer/>
             </div>
         )
     }
