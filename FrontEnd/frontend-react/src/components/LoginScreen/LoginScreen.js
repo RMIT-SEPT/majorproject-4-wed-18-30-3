@@ -3,6 +3,17 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import Dashboard from '../Dashboard/Dashboard';
 import {BrowserRouter as Router, Route, Redirect} from "react-router-dom";
 import axios from "axios";
+import Footer from '../Layout/Footer';
+import Header from '../Layout/Header';
+import BookingScreen from '../BookingScreen/BookingScreen';
+import ProfileScreen from '../ProfileScreen/ProfileScreen';
+import AvailabilitiesScreen from '../AvailabilitiesScreen/AvailabilitiesScreen';
+import RegisterScreen from '../RegisterScreen/RegisterScreen';
+import WeeklyViewScreen from '../WeeklyViewScreen/WeeklyViewScreen';
+import CalendarViewScreen from '../CalendarViewScreen/CalendarViewScreen';
+import AdminScreen from '../AdminScreen/AdminScreen';
+import HistoryScreen from '../HistoryScreen/HistoryScreen';
+import AboutScreen from '../AboutScreen/AboutScreen';
 
 const DNS_URI = "http://localhost:8080"
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
@@ -63,8 +74,8 @@ class LoginScreen extends Component {
             this.setState({phone: success[1].data["phone"]})
             this.setState({userType: success[1].data["userType"]})
             this.setState({token: success[1].data["token"]})
-            this.setState({hasSuccess: true})
             this.setState({hasFail: false})
+            this.setState({hasSuccess: true})
         } else {
             this.setState({hasSuccess: false})
             this.setState({hasFail: true})
@@ -75,8 +86,11 @@ class LoginScreen extends Component {
     if (!this.state.hasSuccess && !this.state.hasFail) {
         return(
             <div className = "Login_Ui">
+            <Header/>
+                <br/><br/><br/><br/>
                 <div className = "Heading">
                     <h1>Log in</h1>
+                    <p>Welcome back!</p>
                     <br/><br/>
                 </div>
                 <form onSubmit={this.onSubmit}>
@@ -125,6 +139,7 @@ class LoginScreen extends Component {
                         <div className="col-sm"></div>    
                     </div>
                 </form>
+            <Footer/>
             </div>
             )
         }
@@ -132,26 +147,106 @@ class LoginScreen extends Component {
         return(
         <Router>
             <div className = "Login_Ui">
-                <Redirect to= "/dashboard" render={(props) => (
-                    <Dashboard {...props} 
-                        id={this.state.id}
-                        userName={this.state.userName}
-                        password={this.state.password}
-                        address={this.state.address}
-                        phone={this.state.phone}
-                        userType={this.state.userType}
-                        token={this.state.token}/>
-                )}/>
-                <Route path="/dashboard" render={(props) => (
+                <Route exact path="/dashboard" render={(props) => (
                     <Dashboard {...props}
                         id={this.state.id}
                         userName={this.state.userName}
-                        password={this.state.password}
                         address={this.state.address}
                         phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
+                <Route exact path="/bookings" render={(props) => (
+                    <BookingScreen {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+                <Route exact path="/profile" render={(props) => (
+                    <ProfileScreen {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+                <Route exact path="/availabilites" render={(props) => (
+                    <AvailabilitiesScreen {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+                <Route exact path="/register" render={(props) => (
+                    <RegisterScreen {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+                <Route exact path="/weekly_view" render={(props) => (
+                    <WeeklyViewScreen {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+                <Route exact path="/calendar_view" render={(props) => (
+                    <CalendarViewScreen {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+                <Route exact path="/admin_portal" render={(props) => (
+                    <AdminScreen {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+                <Route exact path="/history" render={(props) => (
+                    <HistoryScreen {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+                <Route exact path="/about" render={(props) => (
+                    <AboutScreen {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+                <Redirect to="/dashboard" render={(props) => (
+                    <Dashboard {...props} 
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+                
             </div>
         </Router>
         )

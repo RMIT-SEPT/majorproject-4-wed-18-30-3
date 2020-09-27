@@ -3,6 +3,8 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import NavPane from '../Layout/NavPane'
 import { connect } from 'react-redux'
 import store from '../../store'
+import Footer from '../Layout/Footer'
+import Header from '../Layout/Header'
 
 
 class Dashboard extends Component {
@@ -16,14 +18,13 @@ class Dashboard extends Component {
         this.storeLoginToken()
     }
 
-    // Store user login details in Redux state, as passed in from the login component
+    // Store session token and login details in Redux state
     storeLoginToken() {
         this.props.dispatch({
             type: "LOGIN",
             payload: {
                 'id': this.props.id,
                 'userName': this.props.userName,
-                'password': this.props.password,
                 'address': this.props.address, 
                 'phone': this.props.phone,
                 'userType': this.props.userType,
@@ -32,20 +33,32 @@ class Dashboard extends Component {
         })
 
         // TODO: persist state between refreshes/redirects
-
     }
 
     render() {
         
-        // Ue the most recent element state history
+        // Use the most recent element in state history
         const index = this.props.user.length - 1
-
         return (
             <div className="container" id="dashboard_container">
+                <Header
+                    id={this.props.user[index]["id"]}
+                    userName={this.props.user[index]["userName"]}
+                    address={this.props.user[index]["address"]}
+                    phone={this.props.user[index]["phone"]}
+                    userType={this.props.user[index]["userType"]}
+                    token={this.props.user[index]["token"]}/>
+                <br/><br/><br/>
                 <h1>AGME Job Booking App</h1>
                 <div className="row">
                     <div className="col-sm-3">
-                        <NavPane/>
+                        <NavPane
+                            id={this.props.user[index]["id"]}
+                            userName={this.props.user[index]["userName"]}
+                            address={this.props.user[index]["address"]}
+                            phone={this.props.user[index]["phone"]}
+                            userType={this.props.user[index]["userType"]}
+                            token={this.props.user[index]["token"]}/>
                     </div>
                     <div className="col-sm-9">
                         <br/>
@@ -54,6 +67,7 @@ class Dashboard extends Component {
                         
                     </div>
                 </div>
+                <Footer/>
             </div>
         )
     }
