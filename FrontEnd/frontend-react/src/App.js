@@ -26,6 +26,7 @@ function App() {
     <div className="App">
             
       <Route exact path="/"><Redirect to="/login"/></Route>
+      <Route exact path="/logout"><Redirect to="/login"/></Route>
       <Route path="/index" component={LoginScreen}/>
       <Route path="/main" component={LoginScreen}/>
       <Route path="/home" component={LoginScreen}/>

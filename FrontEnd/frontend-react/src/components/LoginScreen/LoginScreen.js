@@ -158,6 +158,10 @@ class LoginScreen extends Component {
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
+                <Route exact path="/logout" render={(props) => (
+                    <LoginScreen {...props}/>
+                        
+                )}/>
                 <Route exact path="/bookings" render={(props) => (
                     <BookingScreen {...props}
                         id={this.state.id}
