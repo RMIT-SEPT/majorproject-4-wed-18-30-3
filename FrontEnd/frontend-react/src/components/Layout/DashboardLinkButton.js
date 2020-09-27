@@ -7,7 +7,7 @@ class DashboardLinkButton extends Component {
         return (
             <React.Fragment>
             <Link to="/dashboard" className="btn btn-sm btn-dark" id="navButton">
-            Return to Dashboard
+            Dashboard
             </Link>
             </React.Fragment>
         )
