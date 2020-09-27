@@ -9,8 +9,6 @@ class NavPane extends Component {
                 <br/>
                 <b>Navigation</b>
                 <br/><br/>
-                <DashboardLinkButton/>
-                <br/><br/>
                 <ContextualButtonPane
                     id={this.props.id}
                     userName={this.props.userName}
