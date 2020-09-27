@@ -1,10 +1,9 @@
-package labwed18303.demo.service;
+package labwed18303.demo.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import labwed18303.demo.exceptions.BookingException;
 import labwed18303.demo.model.*;
-import labwed18303.demo.services.*;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -115,8 +114,7 @@ public class BookingServiceTest {
     @Test
     public void addBookingShouldMatchGetBooking() throws Exception {
         bookingService.saveOrUpdateBooking(completeBooking);
-        assertTrue(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
-                Booking.class).equals(completeBooking));
+        assertTrue(bookingService.findByTimeslotWorker(completeBooking).equals(completeBooking));
     }
 
     //Checks to ensure objects being stored correctly:
@@ -124,38 +122,34 @@ public class BookingServiceTest {
     @Test
     public void noWorkerShouldNotMatchBooking() throws Exception {
         noWorker = new Booking(1, current, current, null, timeslotHasBooking, custHasBooking, serviceHasBooking);
-        assertFalse(this.bookingService.findByBookingIdentifier((long)1).equals(noWorker));
+        assertFalse(this.bookingService.findByTimeslotWorker(completeBooking).equals(noWorker));
     }
 
     @Test
     public void wrongWorkerShouldNotMatchBooking() throws Exception {
         workerNoBooking = new Worker("Mr Plow", "password", "742 Evergreen Terrace", 123456789, "Jim's Mowing");
         wrongWorker = new Booking(1, current, current,  workerNoBooking, timeslotHasBooking, custHasBooking, serviceHasBooking);
-        assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
-                Booking.class).equals(wrongWorker));
+        assertFalse(bookingService.findByTimeslotWorker(completeBooking).equals(wrongWorker));
     }
 
     @Test
     public void noCustomerShouldNotMatchBooking() throws Exception {
         noCustomer = new Booking(1, current, current, workerHasBooking, timeslotHasBooking, null, serviceHasBooking);
-        assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
-                Booking.class).equals(noCustomer));
+        assertFalse(bookingService.findByTimeslotWorker(completeBooking).equals(noCustomer));
     }
 
     @Test
     public void wrongCustomerShouldNotMatchBooking() throws Exception {
         //custNoBooking = new Customer(2, "Moe Sizlach", "password", "Beside the Church?", 123456789);
         wrongCustomer = new Booking(1, current, current,  workerHasBooking, timeslotHasBooking, custNoBooking, serviceHasBooking);
-        assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
-                Booking.class).equals(wrongCustomer));
+        assertFalse(bookingService.findByTimeslotWorker(completeBooking).equals(wrongCustomer));
     }
 
     @Test
     public void noTimeslotShouldNotMatchBooking() throws Exception {
         bookingService.saveOrUpdateBooking(completeBooking);
         noTimeslot = new Booking(1, current, current,  workerHasBooking, null, custHasBooking, serviceHasBooking);
-        assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
-                Booking.class).equals(noTimeslot));
+        assertFalse(bookingService.findByTimeslotWorker(completeBooking).equals(noTimeslot));
     }
 
 
@@ -163,23 +157,20 @@ public class BookingServiceTest {
     public void wrongTimeslotShouldNotMatchBooking() throws Exception {
         timeslotNoBooking = new Timeslot(2, 30, wrong, current, current);
         wrongTimeslot = new Booking(1, current, current, workerHasBooking, timeslotNoBooking, custHasBooking, serviceHasBooking);
-        assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
-                Booking.class).equals(wrongTimeslot));
+        assertFalse(bookingService.findByTimeslotWorker(completeBooking).equals(wrongTimeslot));
     }
 
     @Test
     public void noServiceShouldNotMatchBooking() throws Exception {
         noService = new Booking(1, current, current, workerHasBooking, timeslotHasBooking, custHasBooking, null);
-        assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
-                Booking.class).equals(noService));
+        assertFalse(bookingService.findByTimeslotWorker(completeBooking).equals(noService));
     }
 
     @Test
     public void wrongServiceShouldNotMatchBooking() throws Exception {
         serviceNoBooking = new ServiceProvided(2, "Hedge Trim", 30);
         wrongTimeslot = new Booking(1, current, current, workerHasBooking, timeslotHasBooking, custHasBooking, serviceNoBooking);
-        assertFalse(this.restTemplate.getForObject("http://localhost:" + port + "/api/booking/1",
-                Booking.class).equals(wrongService));
+        assertFalse(bookingService.findByTimeslotWorker(completeBooking).equals(wrongService));
     }
 
     //Business Logic Tests:
@@ -243,10 +234,10 @@ public class BookingServiceTest {
         Date under48 = new Date(current.getYear(), current.getMonth(), current.getDate(), current.getHours()+47, current.getMinutes());
         Timeslot timeslot = new Timeslot(48, 30, under48, current, current);
         timeslotService.saveOrUpdateTimeslot(timeslot);
-        Booking booking = new Booking(48, current, current, workerHasBooking, timeslotService.findByDate(timeslot.getDate()), custHasBooking, serviceHasBooking);
+        Booking booking = new Booking(48, current, current, workerHasBooking, timeslot, custHasBooking, serviceHasBooking);
         bookingService.saveOrUpdateBooking(booking);
         assertThrows(BookingException.class,() -> {
-            bookingService.deleteBookingByIdentifier(booking.getId());
+            bookingService.deleteBookingByIdentifier(bookingService.findByTimeslotWorker(booking).getId());
         });
     }
 
@@ -260,7 +251,7 @@ public class BookingServiceTest {
         Booking booking = new Booking(49, current, current, workerHasBooking, upcoming, custHasBooking, serviceHasBooking);
         Booking repoBooking = bookingService.saveOrUpdateBooking(booking);
         assertDoesNotThrow(() -> {
-            bookingService.deleteBookingByIdentifier(repoBooking.getId());
+            bookingService.deleteBookingByIdentifier(bookingService.findByTimeslotWorker(repoBooking).getId());
         });
     }
 
