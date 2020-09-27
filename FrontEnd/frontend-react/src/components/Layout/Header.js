@@ -31,6 +31,12 @@ class Header extends Component {
                                 <div className="navbar-brand">About</div>
                             </ul>
                         </Link>
+
+                        <Link to="/logout">
+                            <ul className="navbar-nav ml-auto">
+                                <div className="navbar-brand">Log out</div>
+                            </ul>
+                        </Link>
                     
                     </div>        
                 </div>
