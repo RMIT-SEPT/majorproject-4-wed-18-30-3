@@ -305,7 +305,7 @@ class BookingPane extends Component {
                     <br/>    
                     <b>Booking placed successfully. Thank you for your booking, {this.props.userName}.</b>
                     <br/><br/>   
-                    <Link to="/bookings/my">View your bookings.</Link>
+                    <Link to="/my_bookings">View your bookings.</Link>
                     <br/><br/>  
                     <div className="row">
                         <div className="col-sm">
