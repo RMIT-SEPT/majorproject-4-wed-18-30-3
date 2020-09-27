@@ -31,6 +31,7 @@ function App() {
       <Route path="/home" component={LoginScreen}/>
       <Route path="/dashboard" component={Dashboard}/>
       <Route path="/bookings" component={BookingScreen}/>
+      <Route path="/cancel" component={BookingScreen}/>
       <Route path="/my_bookings" component={MyBookingsScreen}/>
       <Route path="/login" component={LoginScreen}/>
       <Route path="/register" component={RegisterScreen}/>

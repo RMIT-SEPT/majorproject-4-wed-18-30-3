@@ -15,6 +15,7 @@ import AdminScreen from '../AdminScreen/AdminScreen';
 import HistoryScreen from '../HistoryScreen/HistoryScreen';
 import AboutScreen from '../AboutScreen/AboutScreen';
 import MyBookingsScreen from '../MyBookingsScreen/MyBookingsScreen';
+import CancelBookingScreen from '../CancelBookingScreen/CancelBookingScreen';
 
 const DNS_URI = "http://localhost:8080"
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
@@ -168,6 +169,15 @@ class LoginScreen extends Component {
                 )}/>
                 <Route exact path="/my_bookings" render={(props) => (
                     <MyBookingsScreen {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+                <Route exact path="/cancel" render={(props) => (
+                    <CancelBookingScreen {...props}
                         id={this.state.id}
                         userName={this.state.userName}
                         address={this.state.address}
