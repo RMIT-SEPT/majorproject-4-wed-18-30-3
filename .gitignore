@@ -4,3 +4,5 @@ creds2.sh
 terraform.tfstate
 terraform.tfstate.backup
 tmp/
+.class
+.xml
