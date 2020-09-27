@@ -6,4 +6,3 @@ terraform.tfstate.backup
 tmp/
 .class
 .xml
-*.class
