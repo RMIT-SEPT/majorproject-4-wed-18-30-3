@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
 import NavPane from '../Layout/NavPane'
 import { connect } from 'react-redux'
-import store from '../../store'
 import Footer from '../Layout/Footer'
 import Header from '../Layout/Header'
 

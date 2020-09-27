@@ -2,18 +2,11 @@ import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
 import axios from "axios";
 import { connect } from 'react-redux'
-import Header from '../Layout/Header';
 
-
-const DNS_URI = "http://localhost:8080"
+// const DNS_URI = "http://localhost:8080"
+const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 function refresh() {window.location.reload(false)}
-
-async function getUser(userName) {
-    return await axios.get(DNS_URI + '/'+ userName ).then(response => {
-        return response.data;
-    })
-}
 
 async function editProfile(newProfile) {
 

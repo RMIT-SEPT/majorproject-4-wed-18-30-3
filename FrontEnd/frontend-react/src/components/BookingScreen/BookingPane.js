@@ -5,7 +5,8 @@ import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { Link } from 'react-router-dom';
 
-    const DNS_URI = "http://localhost:8080"
+    // const DNS_URI = "http://localhost:8080"
+    const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
 
     // Return the current time in backend-friendly format 
     function currentTime() {
@@ -49,13 +50,6 @@ import { Link } from 'react-router-dom';
         .catch(error => {
             console.error(error)
             return false
-        })
-    }
-
-    // Return an array of all timeslot objects
-    async function getTimeslots() {
-        return await axios.get(DNS_URI + '/api/timeslot').then(response => {
-            return response.data
         })
     }
 
@@ -194,7 +188,7 @@ class BookingPane extends Component {
             this.setState({userType: this.props.userType})
 
             // Validate user type
-            if(this.props.userType != "CUSTOMER") {
+            if(this.props.userType !== "CUSTOMER") {
                 alert("You must be a customer to make bookings. Create a customer account and try again.")
                 return 
             }
