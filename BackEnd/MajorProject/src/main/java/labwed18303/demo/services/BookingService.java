@@ -134,7 +134,7 @@ public class BookingService {
             throw new BookingException("Booking has no valid with ID '"+bookingId+"'. This booking does not exist");
         }
         if(booking.getCustomer() != null){
-            long fortyEightHours = 48*60*60;
+            long fortyEightHours = 48*60*60*1000;
             Date bookingDate = booking.getTimeslot().getDate();
             if (booking.getTimeslot().getDate().getTime() - new Date().getTime() < fortyEightHours) {
                 throw new BookingException("Cannot remove Booking within 48 hours");
