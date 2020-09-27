@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import DashboardLinkButton from './DashboardLinkButton'
 import ContextualButtonPane from './ContextualButtonPane';
 
 class NavPane extends Component {

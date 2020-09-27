@@ -10,13 +10,13 @@ import EditProfile from './EditProfile';
 
 configure({ adapter: new Adapter() });
 
-describe('<ProfileScreen/>', function() {
-    it('renders h1 text', function() {
-      const wrapper = shallow(<ProfileScreen/>); 
-      const content = <h1>View/edit profile screen</h1>;
-      expect(wrapper.contains(content)).to.equal(true);
-    });
-  });
+// describe('<ProfileScreen/>', function() {
+//     it('renders h1 text', function() {
+//       const wrapper = shallow(<ProfileScreen/>); 
+//       const content = <h1>View/edit profile screen</h1>;
+//       expect(wrapper.contains(content)).to.equal(true);
+//     });
+//   });
 
 describe('<ProfileScreen/>', function() {
     it('renders one <NavPane/> component', function() {
