@@ -5,8 +5,8 @@ import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { Link } from 'react-router-dom';
 
-    // const DNS_URI = "http://localhost:8080"
-    const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
+    const DNS_URI = "http://localhost:8080"
+    // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
 
     // Return the current time in backend-friendly format 
     function currentTime() {
@@ -20,8 +20,6 @@ import { Link } from 'react-router-dom';
             ("0" + date.getUTCSeconds()).slice(-2);
         return dateString
     }
-
-    function refresh() {window.location.reload(false)}
 
     const capitalise = (string) => {
         if (typeof string !== 'string') return ''
@@ -142,6 +140,7 @@ class BookingPane extends Component {
             
         }
 
+        this.refresh = this.refresh.bind(this);
         this.loadWorkers = this.loadWorkers.bind(this);
         this.onWorkerChange = this.onWorkerChange.bind(this);
         this.onServiceChange = this.onServiceChange.bind(this);
@@ -152,6 +151,19 @@ class BookingPane extends Component {
     toggleDisableService = () => this.setState(prevState => ({disableService: !prevState.disableService}))
     onAvailabilityChange = availability => this.setState({ availability })
     showModal = e => {this.setState({show: !this.state.show})}
+
+    // Revert state back to inital
+    async refresh () {
+        this.setState({availability: null})
+        this.setState({service: null})
+        this.setState({worker: null})
+        this.setState({optionsService: [{value: "none", label: null}]})
+        this.setState({optionsAvailability: [{value: "none", label: null}]})
+        this.setState({disableWorker: false})
+        this.setState({disableService: false})
+        this.setState({hasSuccess: false})
+        this.setState({ hasFail: false})
+    }
 
     async loadWorkers() {
         const options = await getWorkerOptions()
@@ -280,9 +292,7 @@ class BookingPane extends Component {
                         </div>
                         
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
-                                Reset
-                            </button>           
+                        <Link to="/profile" className="btn btn-sm btn-dark" id="navButton">Edit profile</Link>        
                         </div>
 
                         <div className="col-sm">
@@ -303,7 +313,7 @@ class BookingPane extends Component {
                     <br/><br/>  
                     <div className="row">
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
+                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.refresh}>
                                 Make another booking
                             </button> 
                         </div>
@@ -324,7 +334,7 @@ class BookingPane extends Component {
                 
                 <div className="row">
                     <div className="col-sm">
-                        <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
+                        <button className="btn btn-sm btn-dark" id="navButton" onClick={this.refresh}>
                             Make another booking
                         </button> 
                     </div>
