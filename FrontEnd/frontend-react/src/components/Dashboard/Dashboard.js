@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 import Footer from '../Layout/Footer'
 import Header from '../Layout/Header'
 
-
 class Dashboard extends Component {
 
     constructor(props) {
