@@ -22,7 +22,7 @@ import { Link } from 'react-router-dom';
     }
 
     const capitalise = (string) => {
-        if (typeof string !== 'string') return ''
+        if (typeof string !== 'string') return null
         return string.charAt(0).toUpperCase() + string.slice(1)
     }
 
@@ -65,56 +65,83 @@ import { Link } from 'react-router-dom';
         })
     }
 
-    // Return relevant options depending on selection
-    async function getWorkerOptions() {
+    // Extract company list from workers
+    async function getCompanies() {
         const wks = await getWorkers().then()
-        var workerOptions = []
-
-        // Get all workers names
-        for (let i = 0; i < wks.length; i++) {               
-            workerOptions.push({
-                value: {id: wks[i]["user"]["userName"], userName: wks[i]["user"]["userName"]},
-                label: capitalise(wks[i]["user"]["userName"])})
+        var companies = []
+        for (let i = 0; i < wks.length; i++) {   
+            companies.push(wks[i]["companyName"])
         }
-        return workerOptions
+        return companies
     }
 
-    // Return relevant options depending on selection
-    async function getServiceOptions(component) {
-        const avs = await getBookings().then()
-        var serviceOptions = []
-        var temp = []
+    // Return options for companies select box
+    async function getCompanyOptions() {
+        const cps = await getCompanies()
+        var companyOptions = []
+        for (let i = 0; i < cps.length; i++) {               
+            companyOptions.push({
+                value: cps[i],
+                label: cps[i]})            
+        }
+        return companyOptions
+    }
 
-        console.log(avs)
-        
-        // Get services offered by selected worker
-        for (let i = 0; i < avs.length; i++) {               
-            if (avs[i]["customer"] === null && avs[i]["worker"]["user"]["userName"] === component["label"]) {
-                for (let j = 0; j < avs[i]["worker"]["services"].length; j++) {               
-                    var nameString = avs[i]["worker"]["services"][j]["name"]
-                    if (temp.includes(nameString) === false) {
-                        temp.push(nameString)
-                        serviceOptions.push({value: {id: avs[i]["worker"]["services"][j]["id"], name: nameString}, label: capitalise(nameString)})
+    // Return worker options depending on company selection
+    async function getWorkerOptions(service, company) {
+        const wks = await getWorkers().then()
+        var workerOptions = []
+    
+        // Get all workers names who belong to company who offer the service
+        for (let i = 0; i < wks.length; i++) {        
+            if (wks[i]["companyName"] === company)
+                for (let j = 0; j < wks[i]["services"].length; j++) {  
+                    if (wks[i]["services"][j]["name"] === service) {
+                    workerOptions.push({
+                        value: wks[i]["user"]["userName"],
+                        label: capitalise(wks[i]["user"]["userName"]) })
                     }
                 }
             }
-        }
+        return workerOptions
+    }
+
+    // Get services options provided by the given company
+    async function getServiceOptions(companyName) {
+        const wks = await getWorkers().then()
+        var serviceOptions = []
+        for (let i = 0; i < wks.length; i++) {                    
+            
+            // Get all services offered by workers within the company
+            if (wks[i].companyName === companyName) {
+                for (let j = 0; j < wks[i]["services"].length; j++) {               
+                    serviceOptions.push({
+                        value: wks[i]["services"][j].name,
+                        label: capitalise(wks[i]["services"][j]["name"])})
+                }
+            }
+
+        }   
         return serviceOptions
     }
 
         // Return relevant options depending on selectbox type
-        async function getAvailabilityOptions(workerName, component) {
-        const avs = await getBookings().then()
-        var availOptions = []
-
-        // Get services offered by selected worker
-        for (let i = 0; i < avs.length; i++) {               
-            if (avs[i]["customer"] === null && avs[i]["worker"]["user"]["userName"] === workerName["value"]["userName"]) {
-                const timeslot = {id: avs[i]["timeslot"]["id"], timeslot: avs[i]["timeslot"]["date"]}
-                const label = avs[i]["timeslot"]["date"]
-                availOptions.push({value: timeslot, label: label})
+        async function getAvailabilityOptions(worker, service) {
+            const avs = await getBookings().then()
+            var availOptions = []
+        
+            // Get services offered by selected worker
+            for (let i = 0; i < avs.length; i++) {               
+                if (avs[i]["customer"] === null && avs[i]["worker"]["user"]["userName"] === worker) {
+                    for (let j = 0; j < avs[i]["worker"]["services"].length; j++) {     
+                        if (avs[i]["worker"]["services"][j]["name"] === service) {         
+                            availOptions.push({
+                                value: avs[i]["timeslot"]["date"], 
+                                label: avs[i]["timeslot"]["date"] })
+                        }
+                    }
+                }
             }
-        }
         return availOptions
     }
 
@@ -124,33 +151,32 @@ class BookingPane extends Component {
         super()
         this.state = {
             availability: null,
+            companyName: null,
             service: null,
             worker: null,
             userName: null,
             userType: null,
-            optionsService: [{value: "none", label: null}],
-            optionsAvailability: [{value: "none", label: null}],
-            optionsWorker: this.loadWorkers(),      
-            
-            disableWorker: false,
-            disableService: false,
-
+            optionsCompany: this.loadCompanies(),
+            optionsService: null,
+            optionsAvailability: null,
+            optionsWorker: null,      
+            disableCompany: false,
+            disableWorker: true,
+            disableService: true,
+            disableAvailability: true,
             hasSuccess: false,
             hasFail: false
             
         }
 
         this.refresh = this.refresh.bind(this);
-        this.loadWorkers = this.loadWorkers.bind(this);
-        this.onWorkerChange = this.onWorkerChange.bind(this);
+        this.onAvailabilityChange = this.onAvailabilityChange.bind(this);
+        this.onCompanyChange = this.onCompanyChange.bind(this);
         this.onServiceChange = this.onServiceChange.bind(this);
+        this.onWorkerChange = this.onWorkerChange.bind(this);
+        this.loadWorkers = this.loadWorkers.bind(this);        
         this.onSubmit = this.onSubmit.bind(this);
     }
-
-    toggleDisableWorker = () => this.setState(prevState => ({disableWorker: !prevState.disableWorker}))
-    toggleDisableService = () => this.setState(prevState => ({disableService: !prevState.disableService}))
-    onAvailabilityChange = availability => this.setState({ availability })
-    showModal = e => {this.setState({show: !this.state.show})}
 
     // Revert state back to inital
     async refresh () {
@@ -159,10 +185,16 @@ class BookingPane extends Component {
         this.setState({worker: null})
         this.setState({optionsService: [{value: "none", label: null}]})
         this.setState({optionsAvailability: [{value: "none", label: null}]})
+        this.setState({disableCompany: false})
         this.setState({disableWorker: false})
         this.setState({disableService: false})
         this.setState({hasSuccess: false})
-        this.setState({ hasFail: false})
+        this.setState({hasFail: false})
+    }
+
+    async loadCompanies() {
+        const options = await getCompanyOptions()
+        this.setState({optionsCompany: options})
     }
 
     async loadWorkers() {
@@ -170,24 +202,32 @@ class BookingPane extends Component {
         this.setState({optionsWorker: options})
     }
 
-    async onWorkerChange(worker) {
-        this.setState({ worker })
-        
-        // Populate services with services the worker offers
-        const options = await getServiceOptions(worker)
+    async onCompanyChange(company) {
+        this.setState({ companyName: company["value"] })     
+        const options = await getServiceOptions(company["value"])
         this.setState({optionsService: options})
-        this.setState({disableWorker: true})
-    }   
+        this.setState({disableCompany: true})
+        this.setState({disableService: false})
+    } 
 
     async onServiceChange(service) {
-        this.setState({ service })
-        
-        if (this.state.worker != null) {
-            // Populate timeslots accoring to worker service availablility
-            const options = await getAvailabilityOptions(this.state.worker, service)
-            this.setState({optionsAvailability: options})
-            this.setState({disableService: true})
-        }
+        this.setState({ service: service["value"] })
+        const options = await getWorkerOptions(service["value"], this.state.companyName)
+        this.setState({optionsWorker: options})        
+        this.setState({disableService: true})
+        this.setState({disableWorker: false})
+    }
+
+    async onWorkerChange(worker) {
+        this.setState({ worker })
+        const options = await getAvailabilityOptions(worker["value"], this.state.service)
+        this.setState({optionsAvailability: options})
+        this.setState({disableWorker: true})
+        this.setState({disableAvailability: false})
+    }   
+
+    async onAvailabilityChange(availability) {
+        this.setState({ availability: availability["value"]})            
     } 
 
     async onSubmit(e){
@@ -210,12 +250,12 @@ class BookingPane extends Component {
             return 
         }
 
-        if (this.state.availability == null) {
-            alert("Please select a timeslot.")
+        if (this.state.companyName == null) {
+            alert("Please select a company.")
             return
         }
-        if (this.state.service == null) {
-            alert("Please select a service.")
+        if (this.state.availability == null) {
+            alert("Please select a timeslot.")
             return
         }
         if (this.state.worker == null) {
@@ -226,9 +266,9 @@ class BookingPane extends Component {
         // Send the POST request
         const success = await createBooking({
             updated_At: currentTime(),
-            worker: {user: {userName: this.state.worker.label}},
-            timeslot: {date: this.state.availability["value"]["timeslot"]},
-            service: {name: this.state.service.value["name"]},
+            worker: {user: {userName: this.state.worker.value}},
+            timeslot: {date: this.state.availability},
+            service: {name: this.state.service},
             customer: {user: {userName: this.props.userName}}
         }).then()
 
@@ -249,20 +289,28 @@ class BookingPane extends Component {
 
         // Booking input panel
         if (!this.state.hasSuccess && !this.state.hasFail) { 
+
+            var reset_url
+            if (window.location.pathname === "/bookings" ) {
+                reset_url = "/bookings_reset"
+            } else if (window.location.pathname === "/bookings_reset") {
+                reset_url = "/bookings"
+            }
+
             return (
                 <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
                     <br/>    
-                    <b>Get started by choosing a worker.</b>
+                    <b>Get started by choosing a service provider</b>
                     <br/>   <br/>   
 
                     <form onSubmit={this.onSubmit}>
 
                         <div className="form-group">
-                            <label htmlFor="worker">Select a worker:</label>
-                            <Select name={"worker"} value={this.state.value} options={this.state.optionsWorker}
-                                onChange={this.onWorkerChange} components={animatedComponents} isDisabled={this.state.disableWorker}/>
+                            <label htmlFor="companyName">Select a company:</label>
+                            <Select name={"companyName"} value={this.state.value} options={this.state.optionsCompany}
+                                onChange={this.onCompanyChange} components={animatedComponents} isDisabled={this.state.disableCompany}/>
                         </div>
-                                        
+
                         <div className="form-group">
                             <label htmlFor="service">Select a service:</label>
                             <Select name={"service"} value={this.state.value} options={this.state.optionsService}
@@ -270,9 +318,15 @@ class BookingPane extends Component {
                         </div>
 
                         <div className="form-group">
+                            <label htmlFor="worker">Select a worker:</label>
+                            <Select name={"worker"} value={this.state.value} options={this.state.optionsWorker}
+                                onChange={this.onWorkerChange} components={animatedComponents} isDisabled={this.state.disableWorker}/>
+                        </div>
+
+                        <div className="form-group">
                             <label htmlFor="availability">Select an available timeslot:</label>
                             <Select name={"availability"} value={this.state.value} options={this.state.optionsAvailability}
-                                onChange={this.onAvailabilityChange} components={animatedComponents}/>
+                                onChange={this.onAvailabilityChange}components={animatedComponents} isDisabled={this.state.disableAvailability}/>
                         </div>
                         
                         <div className="row">
@@ -281,7 +335,7 @@ class BookingPane extends Component {
 
                             </div>
                             <div className="col-sm">
-                                <CancelButton/>
+                                <Link to="/Dashboard" className="btn btn-sm btn-dark" id="navButton">Cancel</Link>        
                             </div>
                         </div>
                     </form>
@@ -292,8 +346,9 @@ class BookingPane extends Component {
                         </div>
                         
                         <div className="col-sm">
-                        <Link to="/profile" className="btn btn-sm btn-dark" id="navButton">Edit profile</Link>        
-                        </div>
+                        
+                        <Link to={reset_url} className="btn btn-sm btn-dark" id="navButton">Reset form</Link>        
+                    </div>
 
                         <div className="col-sm">
                             
@@ -307,7 +362,7 @@ class BookingPane extends Component {
             return (
                 <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
                     <br/>    
-                    <b>Booking placed successfully. Thank you for your booking, {this.props.userName}.</b>
+                    <b>Booking placed successfully. Thanks, {this.props.userName}.</b>
                     <br/><br/>   
                     <Link to="/my_bookings">View your bookings.</Link>
                     <br/><br/>  
