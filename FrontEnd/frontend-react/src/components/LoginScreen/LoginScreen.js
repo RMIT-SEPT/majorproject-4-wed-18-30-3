@@ -167,6 +167,7 @@ class LoginScreen extends Component {
                     <LoginScreen {...props}/>
                         
                 )}/>
+                
                 <Route exact path="/bookings" render={(props) => (
                     <BookingScreen {...props}
                         id={this.state.id}
@@ -176,6 +177,17 @@ class LoginScreen extends Component {
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
+
+                <Route exact path="/bookings_reset" render={(props) => (
+                    <BookingScreen {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+
                 <Route exact path="/my_bookings" render={(props) => (
                     <MyBookingsScreen {...props}
                         id={this.state.id}
