@@ -8,8 +8,8 @@ import CancelButton from './CancelButton';
 // How many timeslots to display at once in the drop down for timeslot view
 const SLOTS_TO_VIEW = 7
 
-const DNS_URI = "http://localhost:8080"
-// const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
+// const DNS_URI = "http://localhost:8080"
+const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
 
 // Create date object from "YYYY-MM-DD-hh-mm-ss" string
 function parseDateString(dStr) {

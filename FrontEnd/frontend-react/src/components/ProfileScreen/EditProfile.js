@@ -3,8 +3,8 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import axios from "axios";
 import { connect } from 'react-redux'
 
-const DNS_URI = "http://localhost:8080"
-// const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
+// const DNS_URI = "http://localhost:8080"
+const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 function refresh() {window.location.reload(false)}
 
