@@ -72,6 +72,12 @@ async function getBookings() {
     })
 }
 
+async function getWorkers() {
+    return await axios.get(DNS_URI + '/api/worker').then(response => {
+        return response.data
+    })
+}
+
 class AvailabilitiesPane extends Component {
 
     constructor(props) {
@@ -92,18 +98,25 @@ class AvailabilitiesPane extends Component {
             textAreaMsg: "",
             userName: null,
             userType: null,
-            token: null
+            token: null,
+
+            workerOptions: null,
+            avOptionsWorker: null
         }
 
         this.book = this.book.bind(this)
         this.reset = this.reset.bind(this)
         this.loadNext = this.loadNext.bind(this)
+        this.timeslotsOptionsByWorker = this.timeslotsOptionsByWorker.bind(this)
+        this.onTimeslotChangeWorkerView = this.onTimeslotChangeWorkerView.bind(this)
         this.loadAvailabilityOptions = this.loadAvailabilityOptions.bind(this)
         this.onAvailabilityChange = this.onAvailabilityChange.bind(this)
+        this.onWorkerChange = this.onWorkerChange.bind(this)
         this.selectView = this.selectView.bind(this)
         this.timeslotView = this.timeslotView.bind(this)
         this.workerView = this.workerView.bind(this)
         this.storeLoginToken = this.storeLoginToken.bind(this)   
+        this.getWorkerOptions = this.getWorkerOptions.bind(this)
     }
 
     async selectView () {this.setState({view: "select"})}
@@ -116,6 +129,8 @@ class AvailabilitiesPane extends Component {
     
     async workerView () {
         this.storeLoginToken()
+        this.setState({selectedAvMsg: null})
+        this.setState({workerOptions: this.getWorkerOptions()})
         this.setState({view: "worker"})
     }
 
@@ -135,45 +150,48 @@ class AvailabilitiesPane extends Component {
     
     async book () {
         
-        const name = document.getElementById("userName").textContent
-        const type = document.getElementById("userType").textContent
-        const loginToken = document.getElementById("userToken").textContent
-        const selectedService = document.getElementById("selectedService").textContent
-        const selectedWorker = document.getElementById("selectedWorker").textContent
-        const selectedTimeslot = document.getElementById("selectedTimeslot").textContent
+        if(this.state.bookingBtnMsg != "~") {
 
-        // Validate login
-        if (name !== null && type !== null) {
-            // Validate user type
-            if(type !== "CUSTOMER") {
-                alert("You must be a customer to make bookings. Create a customer account and try again.")
+            const name = document.getElementById("userName").textContent
+            const type = document.getElementById("userType").textContent
+            const loginToken = document.getElementById("userToken").textContent
+            const selectedService = document.getElementById("selectedService").textContent
+            const selectedWorker = document.getElementById("selectedWorker").textContent
+            const selectedTimeslot = document.getElementById("selectedTimeslot").textContent
+
+            // Validate login
+            if (name !== null && type !== null) {
+                // Validate user type
+                if(type !== "CUSTOMER") {
+                    alert("You must be a customer to make bookings. Create a customer account and try again.")
+                    return 
+                }
+            } else {
+                alert("You must be logged in to make bookings. Please log in.")
                 return 
             }
-        } else {
-            alert("You must be logged in to make bookings. Please log in.")
-            return 
-        }
 
-        // Send the POST request
-        const success = await createBooking({
-            updated_At: currentTime(),
-            worker: {user: {userName: selectedWorker}},
-            timeslot: {date: selectedTimeslot},
-            service: {name: selectedService},
-            customer: {user: {userName: name}}
-        }).then()
+            // Send the POST request
+            const success = await createBooking({
+                updated_At: currentTime(),
+                worker: {user: {userName: selectedWorker}},
+                timeslot: {date: selectedTimeslot},
+                service: {name: selectedService},
+                customer: {user: {userName: name}}
+            }).then()
 
-        console.log(success)
+            console.log(success)
 
-        // Set success/fail state, will change what the pane is rendering
-        if (success) {
-            this.setState({view: "success"})
-        } else {
-            this.setState({view: "failure"})
+            // Set success/fail state, will change what the pane is rendering
+            if (success) {
+                this.setState({view: "success"})
+            } else {
+                this.setState({view: "failure"})
+            }
         }
     }
 
-    // Store availabilities in component state
+    // Get availabilities from bookings
     async getAvailabilities() {
         const bkgs = await getBookings().then()
         var avs = []
@@ -187,6 +205,70 @@ class AvailabilitiesPane extends Component {
         this.setState({availabilites: avs})
         return avs
     }
+    
+    // Get only the workers who have availabilites
+    async getWorkerOptions() {
+        const bkgs = await getBookings().then()
+        var workerOptions = []
+        var temp = []    
+        for (let i = 0; i < bkgs.length; i++) {        
+            if (bkgs[i]["customer"] === null) {   
+                if (!temp.includes(bkgs[i]["worker"]["user"]["userName"])) {
+                    workerOptions.push({
+                        value: {
+                            date: bkgs[i]["timeslot"]["date"], 
+                            worker: bkgs[i]["worker"]["user"]["userName"], 
+                            service: bkgs[i]["worker"]["services"][0]["name"]},
+                        label: bkgs[i]["worker"]["user"]["userName"]
+                    })
+                    temp.push((bkgs[i]["worker"]["user"]["userName"]))
+                }
+            }
+        }
+        this.setState({workerOptions: workerOptions})
+    }
+
+    // Load the availability data in text area and enable booking button
+    async onWorkerChange(wkr) {
+        this.setState({selectedWorker: wkr["label"]})
+        this.setState({avOptionsWorker: this.timeslotsOptionsByWorker()})
+    }
+
+    // Add all of a workers services as options
+    async timeslotsOptionsByWorker() {
+        console.log(this.state.selectedWorker)
+        const bkgs = await getBookings().then()
+        var timeslotOptions = []
+        for (let i = 0; i < bkgs.length; i++) {        
+            if (bkgs[i]["customer"] === null) {   
+                if (bkgs[i]["worker"]["user"]["userName"] === this.state.selectedWorker) {
+                    for (let j = 0; j < bkgs[i]["worker"]["services"].length; j++) {        
+                        timeslotOptions.push({
+                            value: {
+                                date: bkgs[i]["timeslot"]["date"], 
+                                service: bkgs[i]["worker"]["services"][j]["name"]},
+                            label: capitalise(bkgs[i]["worker"]["services"][j]["name"]) + " | " + parseDateString(bkgs[i]["timeslot"]["date"]).toUTCString()
+                        })
+                    }
+                }
+            }
+        }
+        console.log(timeslotOptions)
+        this.setState({avOptionsWorker: timeslotOptions})
+        return timeslotOptions
+    }
+
+    async onTimeslotChangeWorkerView(ts) {
+        console.log(ts)
+        var avMsg = "You have selected " + ts["value"]["service"] + " with " +
+                    this.state.selectedWorker + ", " + parseDateString(ts["value"]["date"]).toUTCString() + "."
+                    
+        this.setState({bookingBtnMsg: "Book selected timeslot"})
+        this.setState({selectedAvMsg: avMsg})        
+        this.setState({selectedService: ts["value"]["service"]})
+        this.setState({selectedTimeslot: ts["value"]["date"]})
+    }
+
 
     // Load SLOTS_TO_VIEW # of availabilites, starting from startTimeslot
     async loadAvailabilityOptions(startTimeSlot) {
@@ -250,9 +332,7 @@ class AvailabilitiesPane extends Component {
                     av["value"]["worker"] + ", " + av["label"] + "."
                     
         var service = av["value"]["service"]
-
         var worker = av["value"]["worker"]
-        
         var timeslot = av["value"]["date"]
 
         this.setState({selectedAv: av})
@@ -353,13 +433,49 @@ class AvailabilitiesPane extends Component {
                 <div className="timeslot_view_pane" id="timeslot_view_pane">
                     <br/>
                     <b>Availabilites by worker</b>
-                 
+                    <br/>                 
 
                     <div className="row">
                         <div className="col-sm">
                             Select a worker to view availabilities
                         </div>
                     </div>
+                    <br/>
+
+                    <div className="row">
+                        <div className="col-sm">
+                            <Select name={"worker"} components={animatedComponents}
+                                    value={this.state.value} 
+                                    options={this.state.workerOptions}
+                                    onChange={this.onWorkerChange}/>
+                            <br/>
+                        </div>
+                    </div>
+
+                    <div className="row">
+                        <div className="col-sm">
+                            <Select name={"availabilities"} components={animatedComponents}
+                                    value={this.state.value} 
+                                    options={this.state.avOptionsWorker}
+                                    onChange={this.onTimeslotChangeWorkerView}/>
+                            <br/>
+                        </div>
+                    </div>
+
+                    <b><font color="MidnightBlue">{this.state.selectedAvMsg}</font></b>
+                    <div id="selectedService" style={{display: "none"}}>{this.state.selectedService}</div>
+                    <div id="selectedWorker" style={{display: "none"}}>{this.state.selectedWorker}</div>
+                    <div id="selectedTimeslot" style={{display: "none"}}>{this.state.selectedTimeslot}</div>
+                    <br/><br/>
+
+                    <div className="row">
+                        <div className="col-sm">
+                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.book}>
+                                {this.state.bookingBtnMsg}
+                            </button> 
+                        </div>
+                    </div>   
+                    <br/>
 
                     <div className="row">
                         <div className="col-sm">
@@ -421,7 +537,6 @@ class AvailabilitiesPane extends Component {
                         </div>
                     </div>   
                     <br/>
-
 
                     <b><font color="MidnightBlue">{this.state.selectedAvMsg}</font></b>
                         <div id="selectedService" style={{display: "none"}}>{this.state.selectedService}</div>
