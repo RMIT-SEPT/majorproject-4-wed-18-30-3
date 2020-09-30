@@ -17,7 +17,7 @@ class AvailabilitiesScreen extends Component {
                     token={this.props.token}/>
                 <br/><br/><br/>
                 
-                <h1>View booking availabilities</h1>
+                <h1>Make booking by availability</h1>
 
                 <div className="row">
                     <div className="col-sm-3">
