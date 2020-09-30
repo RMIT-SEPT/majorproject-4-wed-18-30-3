@@ -19,6 +19,9 @@ class ContextualButtonPane extends Component {
                 <Link to="/cancel" className="btn btn-sm btn-dark" id="navButton">Cancel existing booking</Link>
                 <br/><br/>
                 
+                <Link to="/my_bookings" className="btn btn-sm btn-dark" id="navButton">View my current bookings</Link>
+                <br/><br/>
+
                 <Link to="/history" className="btn btn-sm btn-dark" id="navButton">View my booking history</Link>
                 <br/><br/>
 
