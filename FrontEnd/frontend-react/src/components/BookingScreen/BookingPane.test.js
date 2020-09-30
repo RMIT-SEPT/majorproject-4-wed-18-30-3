@@ -8,21 +8,12 @@ import CancelButton from './CancelButton';
 
 configure({ adapter: new Adapter() });
 
-describe('<BookingPane/>', function() {
-  it('renders heading text', function() {
-    const wrapper = shallow(
-      <BookingPane>
-        <b>Get started by choosing a worker.</b>
-      </BookingPane>
-    ); 
-    expect(wrapper.contains(<b>Get started by choosing a worker.</b>)).to.equal(true);
-  });
-});
+
 
 describe('<BookingPane/>', function() {
   it('renders three <Select/> components', function() {
     const wrapper = shallow(<BookingPane/>);
-    expect(wrapper.find(Select)).to.have.lengthOf(3);
+    expect(wrapper.find(Select)).to.have.lengthOf(4);
   });
 });
 
@@ -56,12 +47,5 @@ describe('<BookingPane/>', function() {
       </BookingPane>
     ); 
     expect(wrapper.contains(<label htmlFor="service">Select a service:</label>)).to.equal(true);
-  });
-});
-
-describe('<BookingPane/>', function() {
-  it('renders one <CancelButton/> component', function() {
-    const wrapper = shallow(<BookingPane/>);
-    expect(wrapper.find(CancelButton)).to.have.lengthOf(1);
   });
 });

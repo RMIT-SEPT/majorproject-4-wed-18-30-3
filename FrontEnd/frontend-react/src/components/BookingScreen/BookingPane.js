@@ -295,7 +295,8 @@ class BookingPane extends Component {
                 reset_url = "/bookings_reset"
             } else if (window.location.pathname === "/bookings_reset") {
                 reset_url = "/bookings"
-            }
+            } else 
+                reset_url = "/bookings" 
 
             return (
                 <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
