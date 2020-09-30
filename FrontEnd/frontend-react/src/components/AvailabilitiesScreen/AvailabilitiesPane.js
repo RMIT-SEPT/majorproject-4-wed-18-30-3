@@ -72,12 +72,6 @@ async function getBookings() {
     })
 }
 
-async function getWorkers() {
-    return await axios.get(DNS_URI + '/api/worker').then(response => {
-        return response.data
-    })
-}
-
 class AvailabilitiesPane extends Component {
 
     constructor(props) {
@@ -150,7 +144,7 @@ class AvailabilitiesPane extends Component {
     
     async book () {
         
-        if(this.state.bookingBtnMsg != "~") {
+        if(this.state.bookingBtnMsg !== "~") {
 
             const name = document.getElementById("userName").textContent
             const type = document.getElementById("userType").textContent
