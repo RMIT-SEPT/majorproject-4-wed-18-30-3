@@ -16,7 +16,7 @@ class MyBookingsScreen extends Component {
                     token={this.props.token}/>
                 <br/><br/><br/>
                 
-                <h1>View current bookings</h1>
+                <h2>View current bookings</h2>
 
                 <div className="row">
                     <div className="col-sm-3">

@@ -275,7 +275,7 @@ class AvailabilitiesPane extends Component {
             start = new Date()
         else 
             start = parseDateString(startTimeSlot)
-            step = 1
+            step = 0
         var count = 0
         const avs = this.state.availabilites
         var avOptions = []
