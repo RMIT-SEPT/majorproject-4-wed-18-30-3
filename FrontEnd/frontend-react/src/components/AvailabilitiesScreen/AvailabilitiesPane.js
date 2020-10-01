@@ -8,8 +8,8 @@ import CancelButton from './CancelButton';
 // How many timeslots to display at once in the drop down for timeslot view
 const SLOTS_TO_VIEW = 7
 
-// const DNS_URI = "http://localhost:8080"
-const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
+const DNS_URI = "http://localhost:8080"
+// const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
 
 // Create date object from "YYYY-MM-DD-hh-mm-ss" string
 function parseDateString(dStr) {
@@ -230,7 +230,6 @@ class AvailabilitiesPane extends Component {
 
     // Add all of a workers services as options
     async timeslotsOptionsByWorker() {
-        console.log(this.state.selectedWorker)
         const bkgs = await getBookings().then()
         var timeslotOptions = []
         for (let i = 0; i < bkgs.length; i++) {        
