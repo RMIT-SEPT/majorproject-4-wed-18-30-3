@@ -5,7 +5,7 @@ class CalendarViewScreen extends Component {
     render() {
         return (
             <div>
-                <h1>Todo: Calendar view timeslot screen</h1>
+                <h2>Todo: Calendar view timeslot screen</h2>
             </div>
         )
     }
