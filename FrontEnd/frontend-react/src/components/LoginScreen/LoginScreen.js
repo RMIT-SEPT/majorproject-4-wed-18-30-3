@@ -96,7 +96,7 @@ class LoginScreen extends Component {
                 <div className="row">
                     <div className="col-sm"></div>  
                     <div className="col-sm">
-                        <div className="card border-dark mb-3" styles="max-width: 18rem;">
+                        <div className="card shadow-sm p-3 mb-5 bg-white rounded">
                         <br/><br/><br/>
                             <h1>Log in</h1>
                             <p>Welcome back!</p>
@@ -139,15 +139,24 @@ class LoginScreen extends Component {
                                     <div className="col-2"></div>
                                 </div>
 
-                                <div className="row">
+                                <div className="row form-group">
                                     <div className="col-2"></div>    
                                     <div className="col-8">
                                         <input type="submit" value="Sign in" className="btn btn-outline-dark" id="navButton"/>
                                     </div>
                                     <div className="col-2"></div>    
                                 </div>
+
+                                <div className="row form-group">
+                                    <div className="col-2"></div>    
+                                    <div className="col-8">
+                                        <a href="/register" className="btn btn-outline-dark" id="navButton">Register</a>
+                                    </div>
+                                    <div className="col-2"></div>    
+                                </div>
+
                             </form>
-                            <br/><br/><br/><br/>
+                            <br/><br/><br/>
                             </div>
                         </div>
                     <div className="col-sm"></div>  

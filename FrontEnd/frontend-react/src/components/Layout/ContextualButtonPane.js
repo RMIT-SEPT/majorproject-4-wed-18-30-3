@@ -9,7 +9,10 @@ class ContextualButtonPane extends Component {
         if (this.props.userType === "CUSTOMER") {
             return (
                 <React.Fragment>              
-                                
+
+                <Link to="/dashboard" className="btn btn-outline-dark" id="navButton">Home</Link>
+                <br/><br/>
+
                 <Link to="/bookings" className="btn btn-outline-dark" id="navButton">Make booking by company</Link>
                 <br/><br/>
 
@@ -28,6 +31,12 @@ class ContextualButtonPane extends Component {
                 <Link to="/profile" className="btn btn-outline-dark" id="navButton">Edit my profile</Link>
                 <br/><br/>
 
+                <Link to="/about" className="btn btn-outline-dark" id="navButton">About/Contact us</Link>
+                <br/><br/>
+
+                <Link to="/logout" className="btn btn-outline-dark" id="navButton">Log out</Link>
+                <br/><br/>
+
                 </React.Fragment>
             )
 
@@ -35,6 +44,10 @@ class ContextualButtonPane extends Component {
         } else if (this.props.userType === "ADMIN") {
             return (
                 <React.Fragment>              
+                
+                <Link to="/dashboard" className="btn btn-outline-dark" id="navButton">Home</Link>
+                <br/><br/>
+
                 <Link to="/admin_portal" className="btn btn-outline-dark" id="navButton">View customer bookings</Link>
                 <br/><br/>
 
@@ -46,6 +59,13 @@ class ContextualButtonPane extends Component {
 
                 <Link to="/profile" className="btn btn-outline-dark" id="navButton">Edit my profile</Link>
                 <br/><br/>
+
+                <Link to="/about" className="btn btn-outline-dark" id="navButton">About/Contact us</Link>
+                <br/><br/>
+
+                <Link to="/logout" className="btn btn-outline-dark" id="navButton">Log out</Link>
+                <br/><br/>
+
                 </React.Fragment>
             )
         
@@ -54,11 +74,21 @@ class ContextualButtonPane extends Component {
             return (
                 <React.Fragment>              
                 
+                <Link to="/dashboard" className="btn btn-outline-dark" id="navButton">Home</Link>
+                <br/><br/>
+
                 <Link to="/set_availabilites" className="btn btn-outline-dark" id="navButton">Set my availabilites</Link>
                 <br/><br/>
 
                 <Link to="/profile" className="btn btn-outline-dark" id="navButton">Edit my profile</Link>
                 <br/><br/>
+
+                <Link to="/about" className="btn btn-outline-dark" id="navButton">About/Contact us</Link>
+                <br/><br/>
+
+                <Link to="/logout" className="btn btn-outline-dark" id="navButton">Log out</Link>
+                <br/><br/>
+
                 </React.Fragment>
             )
         

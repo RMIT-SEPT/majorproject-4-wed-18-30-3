@@ -114,13 +114,13 @@ class Dashboard extends Component {
         // Use the most recent element in state history
         const index = this.props.user.length - 1
 
-        var headerText = "AGME Booking App"
+        var headerText = ""
         if (this.props.userType === "CUSTOMER")
-            headerText = "AGME Booking App - Customer portal"
+            headerText = "Customer portal"
         else if (this.props.userType === "WORKER")
-            headerText = "AGME Booking App - Worker portal"
+            headerText = "Worker portal"
         else if (this.props.userType === "ADMIN")
-            headerText = "AGME Booking App - Admin portal"      
+            headerText = "Admin portal"      
 
         // Check user is logged in
         if (this.props.userName === undefined && this.props.userType === undefined) {
@@ -134,7 +134,7 @@ class Dashboard extends Component {
                     userType={this.props.user[index]["userType"]}
                     token={this.props.user[index]["token"]}/>
                     <br/><br/><br/><br/>
-                <b>Please log in first.</b>
+                <b>Please <a href="/login">log in </a> to use the app.</b>
                 <br/><br/>
                 <Footer/>
                 </div>

@@ -16,29 +16,9 @@ class Header extends Component {
         // User logged in, show contextual links.
         if (this.props.userName != null) {
             return (
-                <nav className="navbar navbar-expand-sm navbar-dark bg-dark" id="header">
+            <nav className="bg-dark text-center" id="header">
                 <div className="container">
-                    <div className="collapse navbar-collapse" id="mobile-nav">    
-                        
-                        <Link to="/dashboard">
-                        <ul className="navbar-nav ml-auto">
-                            <div className="navbar-brand">Home</div>
-                        </ul>
-                        </Link>
-
-                        <Link to="/about">
-                            <ul className="navbar-nav ml-auto">
-                                <div className="navbar-brand">About</div>
-                            </ul>
-                        </Link>
-
-                        <Link to="/logout">
-                            <ul className="navbar-nav ml-auto">
-                                <div className="navbar-brand">Log out</div>
-                            </ul>
-                        </Link>
-                    
-                    </div>        
+                    <h4>AGME Online Appointment Booking App</h4>
                 </div>
             </nav>
             )
@@ -46,21 +26,9 @@ class Header extends Component {
         // No login session, show contextual links.
         } else {
             return (
-                <nav className="navbar navbar-expand-sm navbar-dark bg-dark" id="header">
+                <nav className="bg-dark text-center" id="header">
                 <div className="container">
-                    <div className="collapse navbar-collapse" id="mobile-nav">
-                        <ul className="navbar-nav ml-auto">
-                            <a className="navbar-brand" href="/register">
-                                Register
-                            </a>                           
-                            <a className="navbar-brand" href="/login">
-                                Sign in
-                            </a>
-                            <a className="navbar-brand" href="/about">
-                                About
-                            </a>
-                        </ul>
-                    </div>        
+                    <h4 className="text-center">AGME Online Appointment Booking App</h4>
                 </div>
             </nav>
             )
