@@ -10,19 +10,22 @@ class ContextualButtonPane extends Component {
             return (
                 <React.Fragment>              
                                 
-                <Link to="/bookings" className="btn btn-sm btn-dark" id="navButton">Create a new booking</Link>
+                <Link to="/bookings" className="btn btn-sm btn-dark" id="navButton">Make booking by company</Link>
+                <br/><br/>
+
+                <Link to="/availabilites" className="btn btn-sm btn-dark" id="navButton">Make booking by availability</Link>
                 <br/><br/>
 
                 <Link to="/cancel" className="btn btn-sm btn-dark" id="navButton">Cancel existing booking</Link>
                 <br/><br/>
                 
-                <Link to="/history" className="btn btn-sm btn-dark" id="navButton">View booking history</Link>
+                <Link to="/my_bookings" className="btn btn-sm btn-dark" id="navButton">View my current bookings</Link>
                 <br/><br/>
 
-                <Link to="/availabilites" className="btn btn-sm btn-dark" id="navButton">View availabilites</Link>
+                <Link to="/history" className="btn btn-sm btn-dark" id="navButton">View my booking history</Link>
                 <br/><br/>
 
-                <Link to="/profile" className="btn btn-sm btn-dark" id="navButton">Edit profile</Link>
+                <Link to="/profile" className="btn btn-sm btn-dark" id="navButton">Edit my profile</Link>
                 <br/><br/>
 
                 </React.Fragment>
@@ -41,7 +44,7 @@ class ContextualButtonPane extends Component {
                 <Link to="/admin_portal" className="btn btn-sm btn-dark" id="navButton">Appointment settings</Link>
                 <br/><br/>
 
-                <Link to="/profile" className="btn btn-sm btn-dark" id="navButton">Edit profile</Link>
+                <Link to="/profile" className="btn btn-sm btn-dark" id="navButton">Edit my profile</Link>
                 <br/><br/>
                 </React.Fragment>
             )
@@ -51,10 +54,10 @@ class ContextualButtonPane extends Component {
             return (
                 <React.Fragment>              
                 
-                <Link to="/availabilities" className="btn btn-sm btn-dark" id="navButton">Set availabilites</Link>
+                <Link to="/availabilites" className="btn btn-sm btn-dark" id="navButton">Set my availabilites</Link>
                 <br/><br/>
 
-                <Link to="/profile" className="btn btn-sm btn-dark" id="navButton">Edit profile</Link>
+                <Link to="/profile" className="btn btn-sm btn-dark" id="navButton">Edit my profile</Link>
                 <br/><br/>
                 </React.Fragment>
             )
@@ -63,7 +66,7 @@ class ContextualButtonPane extends Component {
         } else {
             return (
                 <React.Fragment>              
-                <Link to="/login" className="btn btn-sm btn-dark" id="navButton">Please log in</Link>
+                <Link to="/login" className="btn btn-sm btn-dark" id="navButton">Log in</Link>
                 <br/><br/>
                 </React.Fragment>
             )

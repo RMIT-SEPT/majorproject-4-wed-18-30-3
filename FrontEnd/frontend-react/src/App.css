@@ -41,6 +41,14 @@
   text-align: center;
 }
 
+#scrollable {
+  height: 60%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  text-align: center;
+  padding: 10px;
+}
+
 #navButton {
   width: 100%;
 }

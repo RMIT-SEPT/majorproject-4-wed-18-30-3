@@ -18,6 +18,7 @@ import MyBookingsScreen from '../MyBookingsScreen/MyBookingsScreen';
 import CancelBookingScreen from '../CancelBookingScreen/CancelBookingScreen';
 
 const DNS_URI = "http://localhost:8080"
+// const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 
 async function getUserConfirm(userName, password) {
@@ -162,6 +163,11 @@ class LoginScreen extends Component {
                     <LoginScreen {...props}/>
                         
                 )}/>
+                <Route exact path="/login" render={(props) => (
+                    <LoginScreen {...props}/>
+                        
+                )}/>
+                
                 <Route exact path="/bookings" render={(props) => (
                     <BookingScreen {...props}
                         id={this.state.id}
@@ -171,6 +177,17 @@ class LoginScreen extends Component {
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
+
+                <Route exact path="/bookings_reset" render={(props) => (
+                    <BookingScreen {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+
                 <Route exact path="/my_bookings" render={(props) => (
                     <MyBookingsScreen {...props}
                         id={this.state.id}

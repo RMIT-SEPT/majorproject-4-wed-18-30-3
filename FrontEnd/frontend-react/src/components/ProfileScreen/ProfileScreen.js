@@ -17,7 +17,7 @@ class ProfileScreen extends Component {
                     userType={this.props.userType}
                     token={this.props.token}/>
                 <br/><br/><br/>
-                <h1>View/edit profile</h1>
+                <h2>View/edit profile</h2>
                 <div className="row">
                     <div className="col-sm-3">
                         <NavPane
@@ -31,7 +31,13 @@ class ProfileScreen extends Component {
                     <div className="col-sm-9">
                         <br/><br/>
         
-                        <EditProfile/>
+                        <EditProfile
+                        id={this.props.id}
+                        userName={this.props.userName}
+                        address={this.props.address}
+                        phone={this.props.phone}
+                        userType={this.props.userType}
+                        token={this.props.token}/>
                     </div>
                 </div>
                 <Footer/>

@@ -19,7 +19,13 @@ class AdminScreen extends Component {
             <h1>Admin portal</h1>
             <div className="row">
                     <div className="col-sm-3">
-                        <NavPane/>
+                        <NavPane
+                            id={this.props.id}
+                            userName={this.props.userName}
+                            address={this.props.address}
+                            phone={this.props.phone}
+                            userType={this.props.userType}
+                            token={this.props.token}/>
                     </div>
                     <div className="col-sm-9">
                     <br/><br/>

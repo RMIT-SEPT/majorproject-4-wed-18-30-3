@@ -20,7 +20,7 @@ class AboutScreen extends Component {
                 <h1>AGME | Excellence in task scheduling</h1>
 
                 <div>
-                    <img src={logo}/>
+                    <img src={logo} alt="AGME"/>
                 </div>
 
                 <Footer/>

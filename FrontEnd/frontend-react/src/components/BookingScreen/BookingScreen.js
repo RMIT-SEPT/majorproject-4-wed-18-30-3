@@ -18,7 +18,7 @@ class BookingScreen extends Component {
                     token={this.props.token}/>
                 <br/><br/><br/>
                 
-                <h1>Make a booking</h1>
+                <h2>Make booking by company</h2>
 
                 <div className="row">
                     <div className="col-sm-3">

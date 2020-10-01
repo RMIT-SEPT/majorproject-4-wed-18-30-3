@@ -7,6 +7,7 @@ import Header from '../Layout/Header';
 import Footer from '../Layout/Footer';
 
 const DNS_URI = "http://localhost:8080"
+// const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 
 async function createWorker(userName, password, phone, address, userType) {

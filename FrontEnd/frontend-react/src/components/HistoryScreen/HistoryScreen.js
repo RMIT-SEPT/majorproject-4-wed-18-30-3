@@ -17,7 +17,7 @@ class HistoryScreen extends Component {
                     token={this.props.token}/>
                 <br/><br/><br/>
                 
-                <h1>View booking history</h1>
+                <h2>View booking history</h2>
 
                 <div className="row">
                     <div className="col-sm-3">
