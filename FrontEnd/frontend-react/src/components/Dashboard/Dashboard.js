@@ -147,15 +147,13 @@ class Dashboard extends Component {
 
             // Wait for promise fulfillment
             if(Array.isArray(bookings)) {
-                console.log(bookings)
-                console.log("yes")
 
                 // Customer
                 if (this.props.userType === "CUSTOMER") {
                     bookingDisplay = bookings.map((bkg) => { 
                         return (
                             <div className="list-group-item d-flex justify-content-between align-items-center" key={bkg["id"]}>
-                                {capitalise(bkg["service"]["name"])} for {bkg["customer"]["user"]["userName"]} on {(parseDateString(bkg["timeslot"]["date"])).toUTCString()}
+                                {capitalise(bkg["service"]["name"])} with {bkg["worker"]["user"]["userName"]} on {(parseDateString(bkg["timeslot"]["date"])).toUTCString()}
                                 <span className="badge badge-primary badge-pill">{bkg["service"]["minDuration"]} mins</span>
                             </div>
                         )
@@ -199,8 +197,7 @@ class Dashboard extends Component {
                         </div>
                         <div className="col-sm-9">
                             <br/>
-                            <b>Welcome, {this.props.user[index]["userName"]}!</b>
-                            <p>{this.state.bookingMsg}</p>
+                            <b>Welcome, {this.props.user[index]["userName"]}!</b> &nbsp; {this.state.bookingMsg}
                             
                             <div className="list-group list-group-flush" id="scrollable">              
                                 {bookingDisplay}
