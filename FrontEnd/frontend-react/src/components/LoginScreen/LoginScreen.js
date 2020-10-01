@@ -16,6 +16,7 @@ import HistoryScreen from '../HistoryScreen/HistoryScreen';
 import AboutScreen from '../AboutScreen/AboutScreen';
 import MyBookingsScreen from '../MyBookingsScreen/MyBookingsScreen';
 import CancelBookingScreen from '../CancelBookingScreen/CancelBookingScreen';
+import SetAvailabilitiesScreen from '../SetAvailabilitesScreen/SetAvailabilitiesScreen';
 
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
@@ -217,6 +218,15 @@ class LoginScreen extends Component {
                 )}/>
                 <Route exact path="/availabilites" render={(props) => (
                     <AvailabilitiesScreen {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+                <Route exact path="/set_availabilites" render={(props) => (
+                    <SetAvailabilitiesScreen {...props}
                         id={this.state.id}
                         userName={this.state.userName}
                         address={this.state.address}

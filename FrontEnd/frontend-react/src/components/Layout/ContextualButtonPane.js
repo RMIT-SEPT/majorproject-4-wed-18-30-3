@@ -54,7 +54,7 @@ class ContextualButtonPane extends Component {
             return (
                 <React.Fragment>              
                 
-                <Link to="/availabilites" className="btn btn-sm btn-dark" id="navButton">Set my availabilites</Link>
+                <Link to="/set_availabilites" className="btn btn-sm btn-dark" id="navButton">Set my availabilites</Link>
                 <br/><br/>
 
                 <Link to="/profile" className="btn btn-sm btn-dark" id="navButton">Edit my profile</Link>

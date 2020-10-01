@@ -16,6 +16,7 @@ import AdminScreen from './components/AdminScreen/AdminScreen';
 import AboutScreen from './components/AboutScreen/AboutScreen';
 import HistoryScreen from './components/HistoryScreen/HistoryScreen';
 import MyBookingsScreen from './components/MyBookingsScreen/MyBookingsScreen';
+import SetAvailabilitiesScreen from './components/SetAvailabilitesScreen/SetAvailabilitiesScreen';
 
 
 // need to add a redirect from the landing page to dashboard
@@ -42,6 +43,7 @@ function App() {
       <Route path="/weekly_view" component={WeeklyViewScreen}/>
       <Route path="/profile" component={ProfileScreen}/>
       <Route path="/availabilites" component={AvailabilitiesScreen}/>
+      <Route path="/set_availabilites" component={SetAvailabilitiesScreen}/>
       <Route path="/admin_portal" component={AdminScreen}/>
       <Route path="/about" component={AboutScreen}/>
       <Route path="/history" component={HistoryScreen}/>
