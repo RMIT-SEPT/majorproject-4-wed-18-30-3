@@ -6,7 +6,7 @@ import makeAnimated from 'react-select/animated';
 import CancelButton from './CancelButton';
 
 // How many timeslots to display at once in the drop down for timeslot view
-const SLOTS_TO_VIEW = 7
+const SLOTS_TO_VIEW = 10
 
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
@@ -290,7 +290,8 @@ class AvailabilitiesPane extends Component {
                         value: {
                             date: avs[i + step]["timeslot"]["date"], 
                             worker: avs[i + step]["worker"]["user"]["userName"], 
-                            service: avs[i + step]["worker"]["services"][0]["name"]}, 
+                            service: avs[i + step]["worker"]["services"][0]["name"], 
+                            duration: avs[i + step]["worker"]["services"][0]["minDuration"]}, 
                         label: parseDateString(avs[i + step]["timeslot"]["date"]).toUTCString()}
                     avOptions.push(av)
 
@@ -307,15 +308,6 @@ class AvailabilitiesPane extends Component {
         this.setState({lastCurrentAvOption: avOptions[avOptions.length - 1]["value"]["date"]})
         var msg = "(displaying " + (this.state.viewIndex - SLOTS_TO_VIEW)  + "-" + this.state.viewIndex + " of " + this.state.availabilites.length + ")"
         this.setState({viewMessage: msg})
-
-        var text = ""
-        for (let i = 0; i < avOptions.length; i++) {  
-            text += avOptions[i]["label"] + " | " + capitalise(avOptions[i]["value"]["service"]) +
-                    " with " + avOptions[i]["value"]["worker"] + "\n"
-            count++
-        }
-        this.setState({textAreaMsg: text})
-
     }
 
     // Load the availability data in text area and enable booking button
@@ -403,12 +395,12 @@ class AvailabilitiesPane extends Component {
                     <br/><br/>
                     <div className="row">
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.timeslotView}>
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.timeslotView}>
                                 View availabilities by timeslot
                             </button> 
                         </div>
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.workerView}>
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.workerView}>
                                 View availabilities by worker
                             </button> 
                         </div>
@@ -463,7 +455,7 @@ class AvailabilitiesPane extends Component {
 
                     <div className="row">
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.book}>
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.book}>
                                 {this.state.bookingBtnMsg}
                             </button> 
                         </div>
@@ -472,12 +464,12 @@ class AvailabilitiesPane extends Component {
 
                     <div className="row">
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.selectView}>
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.selectView}>
                                 Back to select view
                             </button> 
                         </div>
                         <div className="col-sm">
-                            <Link to="/Dashboard" className="btn btn-sm btn-dark" id="navButton">Cancel</Link>    
+                            <Link to="/Dashboard" className="btn btn-outline-dark" id="navButton">Cancel</Link>    
                         </div>
                     </div>
                     <div id="userId" style={{display: "none"}}>{id}</div>
@@ -490,9 +482,24 @@ class AvailabilitiesPane extends Component {
         // Timeslot view
         } else if (this.state.view === "timeslot") {
 
-            const next = "next " + SLOTS_TO_VIEW + " slots >>"
-            
+            const next = "next " + SLOTS_TO_VIEW + " >>"
+            const avOptions = this.state.avOptions
+            var availDisplay
+
+            // Wait for promise fulfillment
+            if(Array.isArray(avOptions)) {
+                var availDisplay = avOptions.map((opt) => { 
+                    return (
+                        <div className="list-group-item d-flex justify-content-between align-items-center">
+                            {opt["label"]} | {capitalise(opt["value"]["service"])} with {opt["value"]["worker"]}
+                            <span className="badge badge-primary badge-pill">{opt["value"]["duration"]} min</span>
+                        </div>
+                    )
+                })
+            }
+
             return (
+                
                 <div className="timeslot_view_pane" id="timeslot_view_pane">
                     <br/>
                     <b>Availabilites by timeslot</b>
@@ -502,11 +509,12 @@ class AvailabilitiesPane extends Component {
                             Select a timeslot - {this.state.viewMessage}
                         </div>
                     </div>
+                    <br/>
 
                     <div className="row">
                         <div className="col-2">
                             <Link to="/availabilites">
-                                <div className="btn btn-sm btn-dark" id="navButton" onClick={this.reset}>Reset</div> 
+                                <div className="btn btn-outline-dark" id="navButton" onClick={this.reset}>Reset</div> 
                             </Link>
                         </div>
                         <div className="col-8">
@@ -517,16 +525,15 @@ class AvailabilitiesPane extends Component {
                             <br/>
                         </div>
                         <div className="col-2">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.loadNext}>{next}</button> 
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.loadNext}>{next}</button> 
                         </div>
                     </div>
 
                     <div className="row">
                         <div className="col-sm">
-                            <textarea id="form7" className="md-textarea form-control" 
-                                    rows="9" 
-                                    value={this.state.textAreaMsg}
-                                    onChange={this.onChange}/>
+                            <div className="list-group list-group-flush">              
+                                {availDisplay}
+                            </div>
                         </div>
                     </div>   
                     <br/>
@@ -539,7 +546,7 @@ class AvailabilitiesPane extends Component {
 
                     <div className="row">
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.book}>
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.book}>
                                 {this.state.bookingBtnMsg}
                             </button> 
                         </div>
@@ -548,12 +555,12 @@ class AvailabilitiesPane extends Component {
 
                     <div className="row">
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.selectView}>
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.selectView}>
                                 Back to select view
                             </button> 
                         </div>
                         <div className="col-sm">
-                            <Link to="/Dashboard" className="btn btn-sm btn-dark" id="navButton">Cancel</Link>    
+                            <Link to="/Dashboard" className="btn btn-outline-dark" id="navButton">Cancel</Link>    
                         </div>
                     </div>
                     <div id="userId" style={{display: "none"}}>{id}</div>
@@ -574,7 +581,7 @@ class AvailabilitiesPane extends Component {
                     <br/><br/>  
                     <div className="row">
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.reset}>
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.reset}>
                                 Make another booking
                             </button> 
                         </div>
@@ -595,7 +602,7 @@ class AvailabilitiesPane extends Component {
                 
                 <div className="row">
                     <div className="col-sm">
-                        <button className="btn btn-sm btn-dark" id="navButton" onClick={this.reset}>
+                        <button className="btn btn-outline-dark" id="navButton" onClick={this.reset}>
                             Make another booking
                         </button> 
                     </div>

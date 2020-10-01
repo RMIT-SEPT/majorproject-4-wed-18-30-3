@@ -332,11 +332,11 @@ class BookingPane extends Component {
                         
                         <div className="row">
                             <div className="col-sm">
-                            <input type="submit" className="btn btn-sm btn-dark" id="navButton"/>
+                            <input type="submit" className="btn btn-outline-dark" id="navButton"/>
 
                             </div>
                             <div className="col-sm">
-                                <Link to="/Dashboard" className="btn btn-sm btn-dark" id="navButton">Cancel</Link>        
+                                <Link to="/Dashboard" className="btn btn-outline-dark" id="navButton">Cancel</Link>        
                             </div>
                         </div>
                     </form>
@@ -348,7 +348,7 @@ class BookingPane extends Component {
                         
                         <div className="col-sm">
                         
-                        <Link to={reset_url} className="btn btn-sm btn-dark" id="navButton">Reset form</Link>        
+                        <Link to={reset_url} className="btn btn-outline-dark" id="navButton">Reset form</Link>        
                     </div>
 
                         <div className="col-sm">
@@ -369,7 +369,7 @@ class BookingPane extends Component {
                     <br/><br/>  
                     <div className="row">
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.refresh}>
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.refresh}>
                                 Make another booking
                             </button> 
                         </div>
@@ -390,7 +390,7 @@ class BookingPane extends Component {
                 
                 <div className="row">
                     <div className="col-sm">
-                        <button className="btn btn-sm btn-dark" id="navButton" onClick={this.refresh}>
+                        <button className="btn btn-outline-dark" id="navButton" onClick={this.refresh}>
                             Make another booking
                         </button> 
                     </div>

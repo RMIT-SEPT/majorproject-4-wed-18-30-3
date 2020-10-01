@@ -91,58 +91,67 @@ class LoginScreen extends Component {
         return(
             <div className = "Login_Ui">
             <Header/>
-                <br/><br/><br/><br/>
-                <div className = "Heading">
-                    <h1>Log in</h1>
-                    <p>Welcome back!</p>
-                    <br/><br/>
-                </div>
-                <form onSubmit={this.onSubmit}>
-                    
-                    <div className="row">
-                        <div className="col-sm"></div>    
-                        <div className="col-sm">
-                            <div className = "form-group">
-                                
-                                <input type="text" className="form-control"
-                                        placeholder="Username"
-                                        id="userName" 
-                                        name={"userName"} 
-                                        value={this.state.value}
-                                        onChange={this.onChange}>
-                                </input>
-                            
-                            </div>    
-                        </div>
-                        <div className="col-sm"></div>
-                    </div>
+                <br/><br/><br/><br/><br/>
 
-                    <div className="row">
-                        <div className="col-sm"></div>    
-                        <div className="col-sm">    
-                            <div className = "form-group">
-                                
-                                <input type="password" className="form-control"
-                                        placeholder="Password"
-                                        id="password"
-                                        name={"password"}
-                                        value={this.state.value}
-                                        onChange={this.onChange}>
-                                </input>
-                                
-                                </div>    
+                <div className="row">
+                    <div className="col-sm"></div>  
+                    <div className="col-sm">
+                        <div className="card border-dark mb-3" styles="max-width: 18rem;">
+                        <br/><br/><br/>
+                            <h1>Log in</h1>
+                            <p>Welcome back!</p>
+                            <br/><br/>
+            
+                            <form onSubmit={this.onSubmit}>
+                            <div className="row">
+                                <div className="col-2"></div>    
+                                <div className="col-8">
+                                    <div className = "form-group">
+                                        
+                                        <input type="text" className="form-control"
+                                                placeholder="Username"
+                                                id="userName" 
+                                                name={"userName"} 
+                                                value={this.state.value}
+                                                onChange={this.onChange}>
+                                        </input>
+                                    
+                                    </div>    
+                                </div>
+                                <div className="col-2"></div>
+                                </div>
+
+                                <div className="row">
+                                    <div className="col-2"></div>    
+                                    <div className="col-8">    
+                                        <div className = "form-group">
+                                            
+                                            <input type="password" className="form-control"
+                                                    placeholder="Password"
+                                                    id="password"
+                                                    name={"password"}
+                                                    value={this.state.value}
+                                                    onChange={this.onChange}>
+                                            </input>
+                                            
+                                            </div>    
+                                        </div>
+                                    <div className="col-2"></div>
+                                </div>
+
+                                <div className="row">
+                                    <div className="col-2"></div>    
+                                    <div className="col-8">
+                                        <input type="submit" value="Sign in" className="btn btn-outline-dark" id="navButton"/>
+                                    </div>
+                                    <div className="col-2"></div>    
+                                </div>
+                            </form>
+                            <br/><br/><br/><br/>
                             </div>
-                        <div className="col-sm"></div>
-                    </div>
-
-                    <div className="row">
-                        <div className="col-sm"></div>    
-                        <div className="col-sm">
-                            <input type="submit" className="btn btn-sm btn-dark" id="navButton"/>
                         </div>
-                        <div className="col-sm"></div>    
-                    </div>
-                </form>
+                    <div className="col-sm"></div>  
+                </div>
             <Footer/>
             </div>
             )

@@ -178,11 +178,11 @@ class EditProfile extends Component {
                 
                 <div className="row">
                                 <div className="col-sm">
-                                    <input type="submit" value="Save" className="btn btn-sm btn-dark" id="navButton"
+                                    <input type="submit" value="Save" className="btn btn-outline-dark" id="navButton"
                                             />
                                 </div>
                                 <div className="col-sm">
-                                <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}
+                                <button className="btn btn-outline-dark" id="navButton" onClick={refresh}
                                         >
                                     Cancel Edit
                                 </button>   

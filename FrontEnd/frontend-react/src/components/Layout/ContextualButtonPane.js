@@ -10,22 +10,22 @@ class ContextualButtonPane extends Component {
             return (
                 <React.Fragment>              
                                 
-                <Link to="/bookings" className="btn btn-sm btn-dark" id="navButton">Make booking by company</Link>
+                <Link to="/bookings" className="btn btn-outline-dark" id="navButton">Make booking by company</Link>
                 <br/><br/>
 
-                <Link to="/availabilites" className="btn btn-sm btn-dark" id="navButton">Make booking by availability</Link>
+                <Link to="/availabilites" className="btn btn-outline-dark" id="navButton">Make booking by availability</Link>
                 <br/><br/>
 
-                <Link to="/cancel" className="btn btn-sm btn-dark" id="navButton">Cancel existing booking</Link>
+                <Link to="/cancel" className="btn btn-outline-dark" id="navButton">Cancel existing booking</Link>
                 <br/><br/>
                 
-                <Link to="/my_bookings" className="btn btn-sm btn-dark" id="navButton">View my current bookings</Link>
+                <Link to="/my_bookings" className="btn btn-outline-dark" id="navButton">View my current bookings</Link>
                 <br/><br/>
 
-                <Link to="/history" className="btn btn-sm btn-dark" id="navButton">View my booking history</Link>
+                <Link to="/history" className="btn btn-outline-dark" id="navButton">View my booking history</Link>
                 <br/><br/>
 
-                <Link to="/profile" className="btn btn-sm btn-dark" id="navButton">Edit my profile</Link>
+                <Link to="/profile" className="btn btn-outline-dark" id="navButton">Edit my profile</Link>
                 <br/><br/>
 
                 </React.Fragment>
@@ -35,16 +35,16 @@ class ContextualButtonPane extends Component {
         } else if (this.props.userType === "ADMIN") {
             return (
                 <React.Fragment>              
-                <Link to="/admin_portal" className="btn btn-sm btn-dark" id="navButton">View customer bookings</Link>
+                <Link to="/admin_portal" className="btn btn-outline-dark" id="navButton">View customer bookings</Link>
                 <br/><br/>
 
-                <Link to="/admin_portal" className="btn btn-sm btn-dark" id="navButton">Manage company groups</Link>
+                <Link to="/admin_portal" className="btn btn-outline-dark" id="navButton">Manage company groups</Link>
                 <br/><br/>
 
-                <Link to="/admin_portal" className="btn btn-sm btn-dark" id="navButton">Appointment settings</Link>
+                <Link to="/admin_portal" className="btn btn-outline-dark" id="navButton">Appointment settings</Link>
                 <br/><br/>
 
-                <Link to="/profile" className="btn btn-sm btn-dark" id="navButton">Edit my profile</Link>
+                <Link to="/profile" className="btn btn-outline-dark" id="navButton">Edit my profile</Link>
                 <br/><br/>
                 </React.Fragment>
             )
@@ -54,10 +54,10 @@ class ContextualButtonPane extends Component {
             return (
                 <React.Fragment>              
                 
-                <Link to="/set_availabilites" className="btn btn-sm btn-dark" id="navButton">Set my availabilites</Link>
+                <Link to="/set_availabilites" className="btn btn-outline-dark" id="navButton">Set my availabilites</Link>
                 <br/><br/>
 
-                <Link to="/profile" className="btn btn-sm btn-dark" id="navButton">Edit my profile</Link>
+                <Link to="/profile" className="btn btn-outline-dark" id="navButton">Edit my profile</Link>
                 <br/><br/>
                 </React.Fragment>
             )
@@ -66,7 +66,7 @@ class ContextualButtonPane extends Component {
         } else {
             return (
                 <React.Fragment>              
-                <Link to="/login" className="btn btn-sm btn-dark" id="navButton">Log in</Link>
+                <Link to="/login" className="btn btn-outline-dark" id="navButton">Log in</Link>
                 <br/><br/>
                 </React.Fragment>
             )
