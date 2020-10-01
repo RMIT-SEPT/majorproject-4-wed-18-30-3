@@ -3,16 +3,25 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import axios from "axios";
 import { connect } from 'react-redux'
 
-// const DNS_URI = "http://localhost:8080"
-const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
+const DNS_URI = "http://localhost:8080"
+// const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 function refresh() {window.location.reload(false)}
 
 async function editProfile(newProfile) {
 
-    console.log(newProfile)
+    
+    const query = {
+        userName: newProfile.userName,
+        password: newProfile.password,
+        address: newProfile.address,
+        phone: newProfile.phone,
+        userType: newProfile.userType
+    }
+
+    console.log(JSON.stringify(query))
+
     return await axios.put(DNS_URI + '/api/user', {
-        id: newProfile.userId,
         userName: newProfile.userName,
         password: newProfile.password,
         address: newProfile.address,
@@ -79,7 +88,7 @@ class EditProfile extends Component {
         const loginToken = document.getElementById("userToken").textContent
 
         const newProfile = {
-            userId: id,
+            id: id,
             userName: this.state.userName,
             password: this.state.password,
             address: this.state.address,
