@@ -80,6 +80,7 @@ class RegisterScreen extends Component {
             response: null,
             errorMessage: "",
             successMessage: "",
+            cancelTxt: "Cancel",
             userTypes: [
                 {value: 'CUSTOMER', label: 'Customer'},
                 {value: 'ADMIN', label: 'Admin'},
@@ -158,6 +159,7 @@ class RegisterScreen extends Component {
         if (this.state.response >= 200 && this.state.response <= 302) {
             this.setState({successMessage: "User successfully created. Log in to get started."})
             this.setState({errorMessage: ""})
+            this.setState({cancelTxt: "Log in"})
         } else {
             this.setState({errorMessage: "Account creation failed, please check your details and try again."})
             this.setState({successMessage: ""})
@@ -307,7 +309,7 @@ class RegisterScreen extends Component {
                                 <div className="row">
                                     <div className="col-2"></div>    
                                     <div className="col-8">
-                                        <a href="/login" className="btn btn-outline-dark" id="navButton">Cancel</a>
+                                        <a href="/login" className="btn btn-outline-dark" id="navButton">{this.state.cancelTxt}</a>
                                     </div>
                                     <div className="col-2"></div>    
                                 </div>                            
