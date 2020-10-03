@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -36,12 +38,6 @@ public class BookingServiceTest {
 
     @Autowired
     private BookingService bookingService;
-
-    @LocalServerPort
-    private int port;
-
-    @Autowired
-    private TestRestTemplate restTemplate;
 
     Date current;
     Date future;
@@ -72,7 +68,10 @@ public class BookingServiceTest {
     Booking noService;
     Booking wrongService;
 
-
+    @Bean
+    BCryptPasswordEncoder bCryptPasswordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
 
     @BeforeAll
     public void setUp(){
@@ -84,10 +83,10 @@ public class BookingServiceTest {
         serviceHasBooking = new ServiceProvided(1, "Plow", 30);
         serviceService.saveOrUpdateServiceProvided(serviceHasBooking);
         services.add(serviceHasBooking);
-        workerHasBooking = new Worker("Test Worker", "password", "Round the Corner", 140000000, services, "Jim's Mowing");
+        workerHasBooking = new Worker("Test Worker", "password", "Olivia Testosterone", "Round the Corner", 140000000, services, "Jim's Mowing");
         workerService.saveOrUpdateWorker(workerHasBooking);
 
-        custHasBooking = new Customer("Test Customer", "password", "On the Corner", 1234567890);
+        custHasBooking = new Customer("Test Customer", "password", "Test Testington", "On the Corner", 1234567890);
         custService.saveOrUpdateCustomer(custHasBooking);
 
         timeslotHasBooking = new Timeslot(1, 30, future, current, current);
@@ -127,7 +126,7 @@ public class BookingServiceTest {
 
     @Test
     public void wrongWorkerShouldNotMatchBooking() throws Exception {
-        workerNoBooking = new Worker("Mr Plow", "password", "742 Evergreen Terrace", 123456789, "Jim's Mowing");
+        workerNoBooking = new Worker("Mr Plow", "password", "Test Testington", "742 Evergreen Terrace", 123456789, "Jim's Mowing");
         wrongWorker = new Booking(1, current, current,  workerNoBooking, timeslotHasBooking, custHasBooking, serviceHasBooking);
         assertFalse(bookingService.findByTimeslotWorker(completeBooking).equals(wrongWorker));
     }
@@ -231,7 +230,8 @@ public class BookingServiceTest {
     @Test
     public void deleteBookingBefore48ThrowsError(){
         Date current = new Date();
-        Date under48 = new Date(current.getYear(), current.getMonth(), current.getDate(), current.getHours()+47, current.getMinutes());
+        long fortySevenHours = 47*60*60*1000;
+        Date under48 = new Date(current.getTime() + fortySevenHours);
         Timeslot timeslot = new Timeslot(48, 30, under48, current, current);
         timeslotService.saveOrUpdateTimeslot(timeslot);
         Booking booking = new Booking(48, current, current, workerHasBooking, timeslot, custHasBooking, serviceHasBooking);
@@ -244,8 +244,9 @@ public class BookingServiceTest {
     @Test
     public void deleteBookingAfter48DoesNotThrowError(){
         Date current = new Date();
-        Date under48 = new Date(current.getYear(), current.getMonth(), current.getDate(), current.getHours()+49, current.getMinutes());
-        Timeslot timeslot = new Timeslot(49, 30, under48, current, current);
+        long fortyNineHours = 49*60*60*1000;
+        Date over48 = new Date(current.getTime()+fortyNineHours);
+        Timeslot timeslot = new Timeslot(49, 30, over48, current, current);
         timeslotService.saveOrUpdateTimeslot(timeslot);
         Timeslot upcoming = timeslotService.findByDate(timeslot.getDate());
         Booking booking = new Booking(49, current, current, workerHasBooking, upcoming, custHasBooking, serviceHasBooking);

@@ -16,7 +16,7 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    @PostMapping("")
+    @PostMapping("/register")
     public ResponseEntity<Admin> createAdminUser(@RequestBody Admin admin)
     {
         Admin admin1 =  adminService.saveOrUpdateAdmin(admin);

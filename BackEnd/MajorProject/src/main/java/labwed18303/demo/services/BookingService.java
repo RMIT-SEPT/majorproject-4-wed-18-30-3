@@ -30,18 +30,14 @@ public class BookingService {
 //    It must have a valid service. -> The service must exist and be a service the associated worker provides.
 //    The booking's timeslot date must be in the future.
     public Booking saveOrUpdateBooking(Booking booking) {
+        booking.setId(-1);
         Timeslot relatedTimeslot = booking.getTimeslot();
         if(booking.getTimeslot()==null || booking.getTimeslot().getDate() == null) {
                 throw new BookingException("Booking must have a valid timeslot");
         }
-        try{
-            if(booking.getTimeslot().getDate() != null) {
-                relatedTimeslot = timeslotService.findByDate(booking.getTimeslot().getDate());
-                booking.setTimeslot(relatedTimeslot);
-            }
-            else{
-                throw new BookingException("Booking must have a valid timeslot");
-            }
+        try {
+            relatedTimeslot = timeslotService.findByDate(booking.getTimeslot().getDate());
+            booking.setTimeslot(relatedTimeslot);
         }
         catch(TimeslotException e){
             throw new BookingException(e.getMessage());

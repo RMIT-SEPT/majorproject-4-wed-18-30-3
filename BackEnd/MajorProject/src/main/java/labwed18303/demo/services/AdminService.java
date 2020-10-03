@@ -2,10 +2,7 @@ package labwed18303.demo.services;
 
 import labwed18303.demo.Repositories.AdminRepository;
 import labwed18303.demo.exceptions.BookingException;
-import labwed18303.demo.model.Admin;
-import labwed18303.demo.model.Booking;
-import labwed18303.demo.model.Customer;
-import labwed18303.demo.model.UserType;
+import labwed18303.demo.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +14,7 @@ public class AdminService {
     private UserService userService;
 
     public Admin saveOrUpdateAdmin(Admin admin){
-        userService.checkNullValue(admin.getUser());
-        userService.checkDuplicateUserName(admin.getUser());
-
-        admin.setUserName(admin.getUser().getUserName());
+        admin.setUser(userService.addNewUser(admin.getUser()));
 
         admin.getUser().setUserType(UserType.ADMIN);
         return adminRepository.save(admin);
@@ -32,7 +26,8 @@ public class AdminService {
 
     public Admin findByUserName(String userName){
 
-        Admin admin = adminRepository.findByUserName(userName);
+        User user = userService.findByUserName(userName);
+        Admin admin = adminRepository.findByUser(user);
 
         return admin;
     }

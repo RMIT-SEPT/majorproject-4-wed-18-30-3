@@ -14,8 +14,6 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String userName;
-
     @OneToOne(
             cascade = CascadeType.ALL
             //mappedBy = "customer"
@@ -36,8 +34,8 @@ public class Customer {
     public Customer() {
     }
 
-    public Customer(String name, String password, String address, int phone){
-        user = new User(name, password, address, phone, UserType.CUSTOMER);
+    public Customer(String name, String password, String fullName, String address, int phone){
+        user = new User(name, password, fullName, address, phone, UserType.CUSTOMER);
     }
 
 
@@ -47,10 +45,6 @@ public class Customer {
 
     public long getId(){
         return id;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public void setUser(User user) {

@@ -2,6 +2,7 @@ package labwed18303.demo.web;
 
 import  labwed18303.demo.model.Customer;
 import labwed18303.demo.services.CustomerService;
+import labwed18303.demo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +16,9 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-    @PostMapping("")
-    public ResponseEntity<Customer> createNewPerson(@RequestBody Customer customer){
 
+    @PostMapping("/register")
+    public ResponseEntity<Customer> createNewPerson(@RequestBody Customer customer){
         Customer customer1 = customerService.saveOrUpdateCustomer(customer);
         return new ResponseEntity<Customer>(customer1, HttpStatus.FOUND);
     }

@@ -2,10 +2,12 @@ package labwed18303.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 @Entity
@@ -17,6 +19,7 @@ public class User implements UserDetails {
     protected String userName;
     protected String password;
     protected String address;
+    protected String fullName;
     protected int phone;
 
     @OneToOne(
@@ -41,9 +44,10 @@ public class User implements UserDetails {
 
     }
 
-    public User(String userName, String password, String address, int phone, UserType userType) {
+    public User(String userName, String password, String fullName, String address, int phone, UserType userType) {
         this.userName = userName;
         this.password = password;
+        this.fullName = fullName;
         this.address = address;
         this.phone = phone;
         this.userType = userType;
@@ -63,7 +67,20 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        Collection<SimpleGrantedAuthority> authorities = new HashSet<SimpleGrantedAuthority>();
+
+        if(this.userType == userType.CUSTOMER){
+            authorities.add(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
+        }
+        else if(this.userType == userType.WORKER){
+            authorities.add(new SimpleGrantedAuthority("ROLE_WORKER"));
+        }
+        else if(this.userType == UserType.ADMIN){
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            authorities.add(new SimpleGrantedAuthority("ROLE_WORKER"));
+        }
+
+        return authorities;
     }
 
     public String getPassword() {
@@ -96,10 +113,26 @@ public class User implements UserDetails {
 
     public UserType getUserType(){ return userType; }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
     public User updateUser(User user){
         if(this.password != user.getPassword()){
             if(user.getPassword() != null) {
                 this.password = user.getPassword();
+            }
+        }
+
+        if(this.fullName != user.fullName){
+            if(user.getFullName() != this.fullName){
+                if(user.getFullName() != null){
+                    this.fullName = user.getFullName();
+                }
             }
         }
 
@@ -127,6 +160,7 @@ public class User implements UserDetails {
                 userName.equals(user.getUserName()) &&
                 password.equals(user.getPassword()) &&
                 address.equals(user.getAddress()) &&
+                fullName.equals(user.getFullName()) &&
                 userType == user.getUserType();
     }
 
@@ -142,21 +176,21 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

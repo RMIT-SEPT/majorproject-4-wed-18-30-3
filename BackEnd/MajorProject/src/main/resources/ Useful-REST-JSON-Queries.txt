@@ -22,6 +22,7 @@ POST localhost:8080/api/worker
 {
 "user" : {
     "userName":"Jim",
+    "fullName":"Jim Jamie Jameson",
     "password":"password",
     "address":"Just Round the Corner",
     "phone":"1234567890",
@@ -32,14 +33,27 @@ POST localhost:8080/api/worker
 }
 
 
-POST localhost:8080/api/customer
+POST localhost:8080/api/customer/register
     {
     "user" : {
         "userName":"John",
         "password":"password",
+        "fullName":"John Baptiste",
         "address":"On The Corner",
         "phone":"1234567890",
         "userType": 0
+        }
+    }
+
+POST localhost:8080/api/admin/register
+    {
+    "user" : {
+        "userName":"Adam",
+        "password":"password",
+        "fullName":"Adam Inh",
+        "address":"High Above",
+        "phone":"1234567890",
+        "userType": "ADMIN"
         }
     }
 

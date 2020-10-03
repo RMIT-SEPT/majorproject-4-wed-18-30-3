@@ -14,9 +14,6 @@ public class Worker {
 
     private long id;
 
-    private String userName;
-
-
     @NonNull
     private String companyName;
 
@@ -51,19 +48,23 @@ public class Worker {
         this.user = user;
     }
 
-    public Worker(String userName, String password, String address, int phone, Set<ServiceProvided> services, String companyName){
-        this.user = new User(userName, password, address, phone, UserType.WORKER);
+    public Worker(String userName, String password, String fullName, String address, int phone, Set<ServiceProvided> services, String companyName){
+        this.user = new User(userName, password, fullName, address, phone, UserType.WORKER);
         this.services = services;
         this.companyName = companyName;
     }
 
-    public Worker(String userName, String password, String address, int phone, String companyName){
-        this.user = new User(userName, password, address, phone, UserType.WORKER);
+    public Worker(String userName, String password, String fullName, String address, int phone, ServiceProvided service, String companyName){
+        this.user = new User(userName, password, fullName, address, phone, UserType.WORKER);
+        Set<ServiceProvided> services = new HashSet<>();
+        services.add(service);
+        this.services = services;
         this.companyName = companyName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public Worker(String userName, String password, String fullName, String address, int phone, String companyName){
+        this.user = new User(userName, password, fullName, address, phone, UserType.WORKER);
+        this.companyName = companyName;
     }
 
     public void setUser(User user) {

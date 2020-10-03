@@ -21,12 +21,7 @@ public class CustomerService {
     private UserService userService;
 
     public Customer saveOrUpdateCustomer(Customer customer) {
-        userService.checkNullValue(customer.getUser());
-
-        userService.checkDuplicateUserName(customer.getUser());
-
-        customer.setUserName(customer.getUser().getUserName());
-
+        customer.setUser(userService.addNewUser(customer.getUser()));
         customer.getUser().setUserType(UserType.CUSTOMER);
 
         return customerRepository.save(customer);
@@ -39,8 +34,8 @@ public class CustomerService {
 
     public Customer findByUserName(String userName){
 
-
-        Customer customer = customerRepository.findByUserName(userName);
+        User user = userService.findByUserName(userName);
+        Customer customer = customerRepository.findByUser(user);
 
         return customer;
     }

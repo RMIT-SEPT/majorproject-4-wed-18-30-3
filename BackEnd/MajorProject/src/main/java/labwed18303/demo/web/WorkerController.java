@@ -17,7 +17,7 @@ public class WorkerController {
     @Autowired
     private WorkerService workerService;
 
-    @PostMapping("")
+    @PostMapping("/register")
     public ResponseEntity<Worker> createWorker(@RequestBody Worker worker)
     {
         Worker worker1 = workerService.saveOrUpdateWorker(worker);
