@@ -79,7 +79,11 @@ class Dashboard extends Component {
                 for (let i = 0; i < bkgs.length; i++) {
                     if (bkgs[i]["customer"] !== null) {
                         if (bkgs[i]["customer"]["user"]["userName"] === this.props.userName) {
-                            userBkgs.push(bkgs[i])
+                            
+                            // Only add bookings if theyre in the future
+                            if(parseDateString(bkgs[i]["timeslot"]["date"]) > new Date()) {
+                                userBkgs.push(bkgs[i])
+                            }
                         }
                     }
                 }
@@ -95,7 +99,11 @@ class Dashboard extends Component {
                 for (let i = 0; i < bkgs.length; i++) {
                     if (bkgs[i]["worker"] !== null && bkgs[i]["customer"] !== null) {
                         if (bkgs[i]["worker"]["user"]["userName"] === this.props.userName) {
-                            userBkgs.push(bkgs[i])
+
+                            // Only add bookings if theyre in the future
+                            if(parseDateString(bkgs[i]["timeslot"]["date"]) > new Date()) {
+                                userBkgs.push(bkgs[i])
+                            }
                         }
                     }
                 }
