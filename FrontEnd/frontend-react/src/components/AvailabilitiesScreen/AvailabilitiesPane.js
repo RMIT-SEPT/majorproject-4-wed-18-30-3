@@ -280,34 +280,38 @@ class AvailabilitiesPane extends Component {
         const avs = this.state.availabilites
         var avOptions = []
 
-        // Only add timeslots to options if they are in the future
-        for (let i = 0; i < avs.length; i++) {   
-            var date = parseDateString(avs[i]["timeslot"]["date"])
-            if (date > start && count < SLOTS_TO_VIEW && count < avs.length) {
-                count++
-                if (avs[i + step] !== null) {
-                    const av = {
-                        value: {
-                            date: avs[i + step]["timeslot"]["date"], 
-                            worker: avs[i + step]["worker"]["user"]["userName"], 
-                            service: avs[i + step]["worker"]["services"][0]["name"], 
-                            duration: avs[i + step]["worker"]["services"][0]["minDuration"]}, 
-                        label: parseDateString(avs[i + step]["timeslot"]["date"]).toUTCString()}
-                    avOptions.push(av)
+        // Only process if availabilites exist
+        console.log(avs)
+        if (avs.length != 0) {
+            // Only add timeslots to options if they are in the future
+            for (let i = 0; i < avs.length; i++) {   
+                var date = parseDateString(avs[i]["timeslot"]["date"])
+                if (date > start && count < SLOTS_TO_VIEW && count < avs.length) {
+                    count++
+                    if (avs[i + step] !== null) {
+                        const av = {
+                            value: {
+                                date: avs[i + step]["timeslot"]["date"], 
+                                worker: avs[i + step]["worker"]["user"]["userName"], 
+                                service: avs[i + step]["worker"]["services"][0]["name"], 
+                                duration: avs[i + step]["worker"]["services"][0]["minDuration"]}, 
+                            label: parseDateString(avs[i + step]["timeslot"]["date"]).toUTCString()}
+                        avOptions.push(av)
 
-                    // select the first available appointment by default
-                    if (step === 1) {
+                        // select the first available appointment by default
+                        if (step === 1) {
 
+                        }
                     }
+                    step = 0
                 }
-                step = 0
             }
+            console.log("sdgsdg")
+            this.setState({avOptions: avOptions})
+            this.setState({lastCurrentAvOption: avOptions[avOptions.length - 1]["value"]["date"]})
+            var msg = "(displaying " + (this.state.viewIndex - SLOTS_TO_VIEW)  + "-" + this.state.viewIndex + " of " + this.state.availabilites.length + ")"
+            this.setState({viewMessage: msg})
         }
-        this.setState({avOptions: avOptions})
-
-        this.setState({lastCurrentAvOption: avOptions[avOptions.length - 1]["value"]["date"]})
-        var msg = "(displaying " + (this.state.viewIndex - SLOTS_TO_VIEW)  + "-" + this.state.viewIndex + " of " + this.state.availabilites.length + ")"
-        this.setState({viewMessage: msg})
     }
 
     // Load the availability data in text area and enable booking button
