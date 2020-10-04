@@ -236,12 +236,16 @@ class AvailabilitiesPane extends Component {
             if (bkgs[i]["customer"] === null) {   
                 if (bkgs[i]["worker"]["user"]["userName"] === this.state.selectedWorker) {
                     for (let j = 0; j < bkgs[i]["worker"]["services"].length; j++) {        
-                        timeslotOptions.push({
-                            value: {
-                                date: bkgs[i]["timeslot"]["date"], 
-                                service: bkgs[i]["worker"]["services"][j]["name"]},
-                            label: capitalise(bkgs[i]["worker"]["services"][j]["name"]) + " | " + parseDateString(bkgs[i]["timeslot"]["date"]).toUTCString()
-                        })
+                        
+                        // only add bookings for timeslots in the future
+                        if (bkgs[i]["timeslot"]["date"] > new Date()) {
+                            timeslotOptions.push({
+                                value: {
+                                    date: bkgs[i]["timeslot"]["date"], 
+                                    service: bkgs[i]["worker"]["services"][j]["name"]},
+                                label: capitalise(bkgs[i]["worker"]["services"][j]["name"]) + " | " + parseDateString(bkgs[i]["timeslot"]["date"]).toUTCString()
+                            })
+                        }
                     }
                 }
             }
@@ -306,11 +310,17 @@ class AvailabilitiesPane extends Component {
                     step = 0
                 }
             }
-            console.log("sdgsdg")
             this.setState({avOptions: avOptions})
-            this.setState({lastCurrentAvOption: avOptions[avOptions.length - 1]["value"]["date"]})
-            var msg = "(displaying " + (this.state.viewIndex - SLOTS_TO_VIEW)  + "-" + this.state.viewIndex + " of " + this.state.availabilites.length + ")"
-            this.setState({viewMessage: msg})
+            
+            // Set a different message depending on if or not availabilities exist
+            if (avOptions.length > 0) {
+                this.setState({lastCurrentAvOption: avOptions[avOptions.length - 1]["value"]["date"]})
+                var msg = "(displaying " + (this.state.viewIndex - SLOTS_TO_VIEW)  + "-" + this.state.viewIndex + " of " + this.state.availabilites.length + ")"
+                this.setState({viewMessage: msg})
+    
+            } else {
+                this.setState({viewMessage: "No availabilites found for any workers."})
+            }
         }
     }
 
@@ -510,7 +520,7 @@ class AvailabilitiesPane extends Component {
                     
                     <div className="row">
                         <div className="col-sm">
-                            Select a timeslot - {this.state.viewMessage}
+                            {this.state.viewMessage}
                         </div>
                     </div>
                     <br/>

@@ -135,9 +135,14 @@ import { Link } from 'react-router-dom';
                 if (avs[i]["customer"] === null && avs[i]["worker"]["user"]["userName"] === worker) {
                     for (let j = 0; j < avs[i]["worker"]["services"].length; j++) {     
                         if (avs[i]["worker"]["services"][j]["name"] === service) {         
-                            availOptions.push({
-                                value: avs[i]["timeslot"]["date"], 
-                                label: avs[i]["timeslot"]["date"] })
+
+                            // Only add availabilities if they are in the future
+                            if (avs[i]["timeslot"]["date"] > new Date()) {
+                                availOptions.push({
+                                    value: avs[i]["timeslot"]["date"], 
+                                    label: avs[i]["timeslot"]["date"] })
+                            }
+                                
                         }
                     }
                 }
