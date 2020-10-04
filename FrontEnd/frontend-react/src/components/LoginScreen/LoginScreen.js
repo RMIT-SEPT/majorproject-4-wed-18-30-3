@@ -186,7 +186,15 @@ class LoginScreen extends Component {
                     <LoginScreen {...props}/>
                         
                 )}/>
-                
+                <Route exact path="/set_availabilites_reset" render={(props) => (
+                    <SetAvailabilitiesScreen {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
                 <Route exact path="/bookings" render={(props) => (
                     <BookingScreen {...props}
                         id={this.state.id}

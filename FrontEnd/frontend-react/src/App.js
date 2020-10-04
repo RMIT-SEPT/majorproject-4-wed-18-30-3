@@ -35,6 +35,7 @@ function App() {
       <Route path="/home" component={LoginScreen}/>
       <Route path="/dashboard" component={Dashboard}/>
       <Route path="/bookings" component={BookingScreen}/>
+      <Route path="/bookings_reset" component={BookingScreen}/>
       <Route path="/cancel" component={BookingScreen}/>
       <Route path="/my_bookings" component={MyBookingsScreen}/>
       <Route path="/login" component={LoginScreen}/>
@@ -44,6 +45,7 @@ function App() {
       <Route path="/profile" component={ProfileScreen}/>
       <Route path="/availabilites" component={AvailabilitiesScreen}/>
       <Route path="/set_availabilites" component={SetAvailabilitiesScreen}/>
+      <Route path="/set_availabilites_reset" component={SetAvailabilitiesScreen}/>
       <Route path="/admin_portal" component={AdminScreen}/>
       <Route path="/about" component={AboutScreen}/>
       <Route path="/history" component={HistoryScreen}/>
