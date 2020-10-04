@@ -232,13 +232,13 @@ class AvailabilitiesPane extends Component {
     async timeslotsOptionsByWorker() {
         const bkgs = await getBookings().then()
         var timeslotOptions = []
+
         for (let i = 0; i < bkgs.length; i++) {        
             if (bkgs[i]["customer"] === null) {   
                 if (bkgs[i]["worker"]["user"]["userName"] === this.state.selectedWorker) {
                     for (let j = 0; j < bkgs[i]["worker"]["services"].length; j++) {        
-                        
                         // only add bookings for timeslots in the future
-                        if (bkgs[i]["timeslot"]["date"] > new Date()) {
+                        if (parseDateString(bkgs[i]["timeslot"]["date"]) > new Date()) {
                             timeslotOptions.push({
                                 value: {
                                     date: bkgs[i]["timeslot"]["date"], 
@@ -250,13 +250,11 @@ class AvailabilitiesPane extends Component {
                 }
             }
         }
-        console.log(timeslotOptions)
         this.setState({avOptionsWorker: timeslotOptions})
         return timeslotOptions
     }
 
     async onTimeslotChangeWorkerView(ts) {
-        console.log(ts)
         var avMsg = "You have selected " + ts["value"]["service"] + " with " +
                     this.state.selectedWorker + ", " + parseDateString(ts["value"]["date"]).toUTCString() + "."
                     
@@ -285,8 +283,7 @@ class AvailabilitiesPane extends Component {
         var avOptions = []
 
         // Only process if availabilites exist
-        console.log(avs)
-        if (avs.length != 0) {
+        if (avs.length !== 0) {
             // Only add timeslots to options if they are in the future
             for (let i = 0; i < avs.length; i++) {   
                 var date = parseDateString(avs[i]["timeslot"]["date"])
@@ -501,10 +498,11 @@ class AvailabilitiesPane extends Component {
             var availDisplay
 
             // Wait for promise fulfillment
+            var count = 0
             if(Array.isArray(avOptions)) {
                 var availDisplay = avOptions.map((opt) => { 
                     return (
-                        <div className="list-group-item d-flex justify-content-between align-items-center">
+                        <div className="list-group-item d-flex justify-content-between align-items-center" key={++count}>
                             {opt["label"]} | {capitalise(opt["value"]["service"])} with {opt["value"]["worker"]}
                             <span className="badge badge-primary badge-pill">{opt["value"]["duration"]} min</span>
                         </div>
