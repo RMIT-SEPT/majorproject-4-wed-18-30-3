@@ -11,10 +11,10 @@ describe('<RegisterScreen/>', function() {
     it('renders heading text', function() {
         const wrapper = shallow(
             <RegisterScreen>
-                <h1>Sign up</h1>
+                <h1>Register</h1>
             </RegisterScreen>
         );
-        expect(wrapper.contains(<h1>Sign up</h1>)).to.equal(true);
+        expect(wrapper.contains(<h1>Register</h1>)).to.equal(true);
     });
 });
 // describe('<RegisterScreen/>', function() {
