@@ -16,12 +16,12 @@ public class Timeslot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
+    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss", timezone = "Australia/Sydney")
     private Date date;
     private int duration;
-    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
+    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss", timezone = "Australia/Sydney")
     private Date created_At;
-    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
+    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss", timezone = "Australia/Sydney")
     private Date updated_At;
 
     @OneToMany(

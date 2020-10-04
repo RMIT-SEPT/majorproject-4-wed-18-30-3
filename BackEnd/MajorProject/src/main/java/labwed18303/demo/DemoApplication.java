@@ -76,10 +76,10 @@ public static int MIN_DURATION = 30;
         List<Booking> bookings = new ArrayList<>();
         int bookingCounter = 0;
         for(int i = 0; i<100; ++i){
-            Date itDate = new Date(rounded + bookingCounter * minDurationMillis);
+            Date itDate = new Date(rounded + (bookingCounter * minDurationMillis));
             while(itDate.getHours() > 16 || itDate.getHours() < 9){
                 ++bookingCounter;
-                itDate = new Date(rounded + bookingCounter * minDurationMillis);
+                itDate = new Date(rounded + (bookingCounter * minDurationMillis));
             }
             for(int j = 0; j < 3; ++j) {
                 bookingService.saveOrUpdateBooking(new Booking(i, new Date(), new Date(), workers.get(j), new Timeslot(i, MIN_DURATION, itDate, new Date(), new Date())));
