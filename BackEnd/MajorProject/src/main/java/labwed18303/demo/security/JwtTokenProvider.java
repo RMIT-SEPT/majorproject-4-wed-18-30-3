@@ -2,19 +2,25 @@ package labwed18303.demo.security;
 
 
 import io.jsonwebtoken.*;
+import labwed18303.demo.exceptions.UserException;
 import labwed18303.demo.model.User;
+import labwed18303.demo.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static labwed18303.demo.security.SecurityConstants.EXPIRATION_TIME;
-import static labwed18303.demo.security.SecurityConstants.SECRET;
+import static labwed18303.demo.security.SecurityConstants.*;
 
 @Component
 public class JwtTokenProvider {
+
+    @Autowired
+    UserService userService;
 
     //Generate the token
 
@@ -67,5 +73,18 @@ public class JwtTokenProvider {
         String userName = (String)claims.get("userName");
 
         return userName;
+    }
+
+    public User getUserFromHeader(String header){
+        User toReturn = null;
+        if(StringUtils.hasText(header)&&header.startsWith(TOKEN_PREFIX)){
+            try{
+                toReturn = userService.findByUserName(getUserNameFromJWT(header.substring(7)));
+            }
+            catch(UserException e){
+
+            }
+        }
+        return toReturn;
     }
 }

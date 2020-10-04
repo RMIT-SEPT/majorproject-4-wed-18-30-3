@@ -13,6 +13,7 @@ public class ServiceProvidedService {
     private ServiceProvidedRepository serviceProvidedRepository;
 
     public ServiceProvided saveOrUpdateServiceProvided(ServiceProvided serviceProvided) {
+        serviceProvided.setId(-1);
         if(serviceProvidedRepository.findByName(serviceProvided.getName())!= null){
             throw new ServiceProvidedException("Service with this name already exists");
         }

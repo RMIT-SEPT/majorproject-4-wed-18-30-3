@@ -117,6 +117,9 @@ public class BookingService {
     public Iterable<Booking> findAllBookings(){
         return bookingRepository.findAll();
     }
+    public Iterable<Booking> findAllBookingsWithoutCustomers(){
+        return bookingRepository.findByCustomerIsNull();
+    }
 
 //    If the booking has no customer, it can be removed.
 //    If it has a customer, i.e. "Cancelling", it cannot be removed if it is less than 48 hours from the booking date.

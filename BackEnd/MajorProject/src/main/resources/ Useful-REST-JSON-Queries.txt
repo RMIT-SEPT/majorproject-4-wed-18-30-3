@@ -61,8 +61,16 @@ POST localhost:8080/api/booking
 {
 "timeslot":{"date":"2020-11-30-16-30-00"},
 "worker":{"user":{"userName":"Jim"}},
-"service":{"name":"plow"},
-"customer":{"user":{"userName":"John"}},
+"created_At":"2020-01-01-00-00-00",
+"updated_At":"2020-08-29-00-00-00"
+}
+
+POST localhost:8080/api/booking
+{
+"timeslot":{"date":"2020-11-30-16-30-00"},
+"worker":{"user":{"userName":"Jim"}},
+"service":{"name":"Mowing"},
+"customer":{"user":{"userName":"Customer"}},
 "created_At":"2020-01-01-00-00-00",
 "updated_At":"2020-08-29-00-00-00"
 }
