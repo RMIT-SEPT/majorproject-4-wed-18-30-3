@@ -18,6 +18,24 @@ async function getBookings() {
     })
 }
 
+async function getWorkers() {
+    return await axios.get(DNS_URI + '/api/worker').then(response => {
+        console.log("getWorker()", response)
+        return response.data
+    }).catch(error => {
+        console.error("getWorker()", error)
+    })
+}
+
+async function getCustomers() {
+    return await axios.get(DNS_URI + '/api/customer').then(response => {
+        console.log("getCustomers()", response)
+        return response.data
+    }).catch(error => {
+        console.error("getCustomers()", error)
+    })
+}
+
 const capitalise = (string) => {
     if (typeof string !== 'string') return null
     return string.charAt(0).toUpperCase() + string.slice(1)
@@ -43,9 +61,13 @@ class Dashboard extends Component {
             userName: null,
             userType: null,
             bookings: this.getUserBookings(),
+            customers: this.loadCustomers(),
+            workers: this.loadWorkers(),
             bookingMsg: null
         }
 
+        this.loadCustomers = this.loadCustomers.bind(this)
+        this.loadWorkers = this.loadWorkers.bind(this)
         this.storeLoginToken = this.storeLoginToken.bind(this)
         this.storeLoginToken()
     }
@@ -65,6 +87,52 @@ class Dashboard extends Component {
         })
         // TODO: persist state between refreshes
     }
+
+    async loadCustomers() {
+        const customers = await getCustomers()
+        var customerList = []
+        
+        for (let i = 0; i < customers.length; i++) {
+            var nextBooking = "No bookings yet"
+            var bookingCount = 0
+            if (customers[i].bookings.length > 0)
+                nextBooking = customers[i].bookings[0].timeslot.date
+                bookingCount = customers[i].bookings.length
+            customerList.push({
+                user: customers[i].user.userName,
+                nextBooking: nextBooking,
+                bookingCount: bookingCount
+            })
+        }
+
+        console.log(customerList)
+
+        this.setState({customers: customerList})
+        return customerList
+    }
+
+    async loadWorkers() {
+        const workers = await getWorkers()
+        var workerList = []
+
+
+        for (let i = 0; i < workers.length; i++) {
+            var services = workers[i].services[0]["name"]
+            var serviceCount = workers[i].services.length
+            workerList.push({
+                user: workers[i].user.userName,
+                company: workers[i].companyName,
+                services: services,
+                serviceCount: serviceCount
+            })
+        }
+
+        console.log(workerList)
+
+        this.setState({workers: workerList})
+        return workerList
+    }
+
 
     async getUserBookings() {
         // Only load bookings if a customer or worker is logged in 
@@ -150,10 +218,70 @@ class Dashboard extends Component {
         
         } else {
 
+            const customers = this.state.customers
+            const workers = this.state.workers
             const bookings = this.state.bookings
             var bookingDisplay
+            var customerHeader
+            var workerHeader
+            var customerDisplay
+            var workerDisplay
+            var custCount
+            var wkrCount
 
-            // Wait for promise fulfillment
+            // Show app stats for admins
+            if (this.props.userType === "ADMIN") {           
+                if(Array.isArray(customers)) {
+                    
+                    custCount = customers.length
+                    var count = 0                    
+                    customerDisplay = customers.map((user) => { 
+                        return (
+                            <div className="list-group-item d-flex justify-content-between align-items-center" key={++count}>
+                                {user.user} | Next booking: {user.nextBooking}
+                                <span className="badge badge-primary badge-pill">{user.bookingCount} active bookings</span>
+                            </div>
+                        )
+                    })
+
+                    customerHeader = (
+                        <div>
+                        <br/>
+                        <p>Customers at a glance</p>
+                        </div>
+                    )
+
+                    workerHeader = (
+                        <div>
+                        <br/>
+                        <p>Workers at a glance</p>
+                        </div>
+                    )   
+                        
+                }
+            
+            
+                if(Array.isArray(workers)) {
+                    
+                    wkrCount = workers.length
+                    var count = 0                    
+                    workerDisplay = workers.map((user) => { 
+                        return (
+                            <div className="list-group-item d-flex justify-content-between align-items-center" key={++count}>
+                                {user.user} from {user.company}
+                                <span className="badge badge-primary badge-pill">{user.serviceCount} service(s) offered</span>
+                            </div>
+                        )
+                    })
+                        
+
+
+                }
+
+            }
+
+
+            // Show users and workers their bookings
             if(Array.isArray(bookings)) {
 
                 // Customer
@@ -209,6 +337,10 @@ class Dashboard extends Component {
                             
                             <div className="list-group list-group-flush" id="scrollable">              
                                 {bookingDisplay}
+                                {workerHeader}
+                                {workerDisplay}
+                                {customerHeader}
+                                {customerDisplay}
                             </div>
 
                         </div>
