@@ -1,5 +1,6 @@
 package labwed18303.demo.web;
 
+import labwed18303.demo.exceptions.BookingException;
 import labwed18303.demo.model.Booking;
 import labwed18303.demo.model.User;
 import labwed18303.demo.payload.AuthorizationErrorResponse;
@@ -38,21 +39,33 @@ public class BookingController {
         if(booking.getCustomer() == null) {
             if (authUser == null || booking.getWorker() == null || booking.getWorker().getUser() == null || booking.getWorker().getUser().getUserName() == null ||
                     (booking.getWorker().getUser().getUserName().compareTo(authUser.getUserName()) != 0 && authUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) == false)) {
-                AuthorizationErrorResponse error = new AuthorizationErrorResponse("Do not have permission");
+                AuthorizationErrorResponse error = new AuthorizationErrorResponse("Do not have permission to set another worker's availability");
                 toReturn = new ResponseEntity(error, HttpStatus.valueOf(401));
             } else {
                 Booking booking1 = bookingService.saveOrUpdateBooking(booking);
                 toReturn = new ResponseEntity<>(booking1, HttpStatus.ACCEPTED);
             }
         }
-        else{
-            if (authUser == null || booking.getCustomer() == null || booking.getCustomer().getUser() == null || booking.getCustomer().getUser().getUserName() == null ||
-                    (booking.getCustomer().getUser().getUserName().compareTo(authUser.getUserName()) != 0 && authUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) == false)) {
-                AuthorizationErrorResponse error = new AuthorizationErrorResponse("Do not have permission");
-                toReturn = new ResponseEntity(error, HttpStatus.valueOf(401));
+        else {
+            Booking existingBooking = null;
+            try{
+                existingBooking = bookingService.findByTimeslotWorker(booking);
+            }
+            catch(Exception e){
+
+            }
+            if (existingBooking != null) {
+                if (authUser == null || booking.getCustomer() == null || booking.getCustomer().getUser() == null || booking.getCustomer().getUser().getUserName() == null ||
+                        (booking.getCustomer().getUser().getUserName().compareTo(authUser.getUserName()) != 0 && authUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) == false)) {
+                    AuthorizationErrorResponse error = new AuthorizationErrorResponse("Do not have permission to book for another customer");
+                    toReturn = new ResponseEntity(error, HttpStatus.valueOf(401));
+                } else {
+                    Booking booking1 = bookingService.saveOrUpdateBooking(booking);
+                    toReturn = new ResponseEntity<>(booking1, HttpStatus.ACCEPTED);
+                }
             } else {
-                Booking booking1 = bookingService.saveOrUpdateBooking(booking);
-                toReturn = new ResponseEntity<>(booking1, HttpStatus.ACCEPTED);
+                AuthorizationErrorResponse error = new AuthorizationErrorResponse("Availability must exist before making booking.");
+                toReturn = new ResponseEntity(error, HttpStatus.valueOf(400));
             }
         }
         return toReturn;
@@ -124,10 +137,38 @@ public class BookingController {
 
 //    If the booking has no customer, it can be removed.
 //    If it has a customer, i.e. "Cancelling", it cannot be removed if it is less than 48 hours from the booking date.
-    @DeleteMapping("/{bookingId}")
-    public ResponseEntity<?> deleteBooking(@PathVariable Long bookingId){
-        bookingService.deleteBookingByIdentifier(bookingId);
-
-        return new ResponseEntity<String>("Booking with ID: '"+bookingId+"' was deleted", HttpStatus.OK);
+    @DeleteMapping("")
+    public ResponseEntity<?> deleteBooking(@RequestHeader(HEADER_STRING) String auth, @RequestBody Booking booking){
+        ResponseEntity<?> toReturn = null;
+        User authUser = tokenProvider.getUserFromHeader(auth);
+        Booking savedBooking = null;
+        try {
+            savedBooking = bookingService.findByTimeslotWorker(booking);
+        }
+        catch(Exception e){
+            toReturn = new ResponseEntity(e.getMessage(), HttpStatus.valueOf(400));
+        }
+        if(savedBooking != null) {
+            if (savedBooking.getCustomer() == null) {
+                if (authUser == null || savedBooking.getWorker() == null || savedBooking.getWorker().getUser() == null || savedBooking.getWorker().getUser().getUserName() == null ||
+                        (savedBooking.getWorker().getUser().getUserName().compareTo(authUser.getUserName()) != 0 && authUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) == false)) {
+                    AuthorizationErrorResponse error = new AuthorizationErrorResponse("Do not have permission to set another worker's availability");
+                    toReturn = new ResponseEntity(error, HttpStatus.valueOf(401));
+                } else {
+                    bookingService.deleteBookingByIdentifier(savedBooking.getId());
+                    toReturn = new ResponseEntity<String>("Booking with ID: '" + savedBooking.getId() + "' was deleted", HttpStatus.OK);
+                }
+            } else {
+                if (authUser == null || savedBooking.getCustomer() == null || savedBooking.getCustomer().getUser() == null || savedBooking.getCustomer().getUser().getUserName() == null ||
+                        (savedBooking.getCustomer().getUser().getUserName().compareTo(authUser.getUserName()) != 0 && authUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) == false)) {
+                    AuthorizationErrorResponse error = new AuthorizationErrorResponse("Do not have permission to book for another customer");
+                    toReturn = new ResponseEntity(error, HttpStatus.valueOf(401));
+                } else {
+                    bookingService.deleteBookingByIdentifier(savedBooking.getId());
+                    toReturn = new ResponseEntity<String>("Booking with ID: '" + savedBooking.getId() + "' was deleted", HttpStatus.OK);
+                }
+            }
+        }
+        return toReturn;
     }
 }

@@ -39,19 +39,19 @@ public class ServiceProvidedController {
         return toReturn;
     }
 
-    @GetMapping("/{serviceProvidedName}")
+    @GetMapping("/{serviceName}")
     public ResponseEntity<?> getServiceProvidedByName(@PathVariable String serviceName){
 
         ServiceProvided serviceProvided = serviceProvidedService.findByName(serviceName);
 
-        return new ResponseEntity<ServiceProvided>(serviceProvided, HttpStatus.OK);
+        return new ResponseEntity<>(serviceProvided, HttpStatus.OK);
     }
 
     @GetMapping("")
     public Iterable<ServiceProvided> getAllServiceProvided(){return serviceProvidedService.findAllServiceProvided();}
 
-    @DeleteMapping("/{serviceProvidedId}")
-    public ResponseEntity<?> deleteServiceProvided(@RequestHeader(HEADER_STRING) String auth, @PathVariable long serviceProvidedId){
+    @DeleteMapping("/{serviceName}")
+    public ResponseEntity<?> deleteServiceProvided(@RequestHeader(HEADER_STRING) String auth, @PathVariable String serviceName){
         ResponseEntity<?> toReturn = null;
         User authUser = tokenProvider.getUserFromHeader(auth);
         if(authUser == null || authUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) == false){
@@ -59,8 +59,8 @@ public class ServiceProvidedController {
             toReturn = new ResponseEntity(error, HttpStatus.valueOf(401));
         }
         else{
-            serviceProvidedService.deleteServiceProvidedByIdentifier(serviceProvidedId);
-            toReturn = new ResponseEntity<String>("Service with ID: '"+serviceProvidedId+"' was deleted", HttpStatus.OK);
+            serviceProvidedService.deleteServiceProvidedByName(serviceName);
+            toReturn = new ResponseEntity<String>("Service with ID: '"+serviceName+"' was deleted", HttpStatus.OK);
         }
         return toReturn;
     }

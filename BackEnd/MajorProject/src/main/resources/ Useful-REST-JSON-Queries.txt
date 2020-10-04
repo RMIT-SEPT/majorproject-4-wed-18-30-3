@@ -1,3 +1,10 @@
+POST localhost:8080/api/user/login
+{
+    "userName":"Customer",
+    "password":"password"
+}
+
+
 POST localhost:8080/api/timeslot
 {
     "date":"2020-11-30-16-30-00",
@@ -25,8 +32,7 @@ POST localhost:8080/api/worker
     "fullName":"Jim Jamie Jameson",
     "password":"password",
     "address":"Just Round the Corner",
-    "phone":"1234567890",
-    "userType": "WORKER"
+    "phone":"1234567890"
 },
 "services":[{"name":"plow"}],
 "companyName":"Jim's Mowing"
@@ -40,8 +46,7 @@ POST localhost:8080/api/customer/register
         "password":"password",
         "fullName":"John Baptiste",
         "address":"On The Corner",
-        "phone":"1234567890",
-        "userType": 0
+        "phone":"1234567890"
         }
     }
 
@@ -52,8 +57,7 @@ POST localhost:8080/api/admin/register
         "password":"password",
         "fullName":"Adam Inh",
         "address":"High Above",
-        "phone":"1234567890",
-        "userType": "ADMIN"
+        "phone":"1234567890"
         }
     }
 
