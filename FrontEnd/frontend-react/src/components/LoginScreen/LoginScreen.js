@@ -11,12 +11,15 @@ import AvailabilitiesScreen from '../AvailabilitiesScreen/AvailabilitiesScreen';
 import RegisterScreen from '../RegisterScreen/RegisterScreen';
 import WeeklyViewScreen from '../WeeklyViewScreen/WeeklyViewScreen';
 import CalendarViewScreen from '../CalendarViewScreen/CalendarViewScreen';
-import AdminScreen from '../AdminScreen/AdminScreen';
 import HistoryScreen from '../HistoryScreen/HistoryScreen';
 import AboutScreen from '../AboutScreen/AboutScreen';
 import MyBookingsScreen from '../MyBookingsScreen/MyBookingsScreen';
 import CancelBookingScreen from '../CancelBookingScreen/CancelBookingScreen';
 import SetAvailabilitiesScreen from '../SetAvailabilitesScreen/SetAvailabilitiesScreen';
+import AdminBookingSummary from '../AdminScreen/AdminBookingSummary';
+import AdminAddWorker from '../AdminScreen/AdminAddWorker';
+import AdminSetAvailabilities from '../AdminScreen/AdminSetAvailabilities';
+import AdminEditUser from '../AdminScreen/AdminEditUser';
 
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
@@ -186,15 +189,7 @@ class LoginScreen extends Component {
                     <LoginScreen {...props}/>
                         
                 )}/>
-                <Route exact path="/set_availabilites_reset" render={(props) => (
-                    <SetAvailabilitiesScreen {...props}
-                        id={this.state.id}
-                        userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
-                        userType={this.state.userType}
-                        token={this.state.token}/>
-                )}/>
+                
                 <Route exact path="/bookings" render={(props) => (
                     <BookingScreen {...props}
                         id={this.state.id}
@@ -287,15 +282,7 @@ class LoginScreen extends Component {
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
-                <Route exact path="/admin_portal" render={(props) => (
-                    <AdminScreen {...props}
-                        id={this.state.id}
-                        userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
-                        userType={this.state.userType}
-                        token={this.state.token}/>
-                )}/>
+
                 <Route exact path="/history" render={(props) => (
                     <HistoryScreen {...props}
                         id={this.state.id}
@@ -314,6 +301,47 @@ class LoginScreen extends Component {
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
+                
+                <Route exact path="/admin_set_availabilites" render={(props) => (
+                    <AdminSetAvailabilities {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+
+                <Route exact path="/admin_booking_summary" render={(props) => (
+                    <AdminBookingSummary {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+
+                <Route exact path="/admin_add_worker" render={(props) => (
+                    <AdminAddWorker {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+
+                <Route exact path="/admin_edit_user" render={(props) => (
+                    <AdminEditUser {...props}
+                        id={this.state.id}
+                        userName={this.state.userName}
+                        address={this.state.address}
+                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+                
                 <Redirect to="/dashboard" render={(props) => (
                     <Dashboard {...props} 
                         id={this.state.id}
