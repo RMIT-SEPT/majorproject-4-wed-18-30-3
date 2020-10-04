@@ -299,6 +299,8 @@ class SetAvailabilitiesScreen extends Component {
     // Set n days of availabilities 
     async setAvailByDay(n) {
 
+        this.setState({success: "pending"})
+
         // Get a list of the workers next open timeslots
         const rawTimeslots = await getTimelots().then()
         const bkgs = await getBookings().then()
@@ -617,6 +619,18 @@ class SetAvailabilitiesScreen extends Component {
                     </div>
                 
                     
+                <Footer/>
+                </div>  
+            )
+        // Pending
+        } else if (this.state.success === "pending") {
+            return (
+                <div>
+                <Header/>
+                    <br/>    <br/>  <br/>  <br/>  
+                    <b>Working... Please wait a moment...</b>
+                    <br/><br/>   
+
                 <Footer/>
                 </div>  
             )
