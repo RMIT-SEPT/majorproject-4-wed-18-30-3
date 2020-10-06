@@ -23,18 +23,29 @@ import AdminEditUser from '../AdminScreen/AdminEditUser';
 
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
-const axiosConfig = {headers: {'Content-Type': 'application/json'}}
+const axiosConfig = {
+    headers: {
+        'Content-Type': 'application/json',
+    }}
 
 async function getUserConfirm(userName, password) {
-    return await axios.post(DNS_URI + '/api/user', {
-        userName: userName,
-        password: password
+
+    console.log(JSON.stringify({
+        "userName": userName,
+        "password": password
+    }))
+
+    return await axios.post(DNS_URI + '/api/user/login', {
+        "userName": userName,
+        "password": password
     }, axiosConfig)
         .then(res => {
+            console.log(res.data)
             return [true, res]
         })
         .catch(error => {
             console.error(error)
+            console.error(error.response.data)
             return [false, error]
         })
 }
@@ -74,6 +85,7 @@ class LoginScreen extends Component {
         const success = await getUserConfirm(this.state.userName, this.state.password).then()
         if (success[0]) {
             console.log(success[1].data["userType"])
+            console.log(success[1].data["token"])
             this.setState({id: success[1].data["id"]})
             this.setState({userName: success[1].data["userName"]})
             this.setState({password: success[1].data["password"]})

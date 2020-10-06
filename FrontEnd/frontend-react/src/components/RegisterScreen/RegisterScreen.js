@@ -11,7 +11,7 @@ const DNS_URI = "http://localhost:8080"
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 
 async function createWorker(userName, password, phone, address, userType) {
-    return await axios.post(DNS_URI + '/api/worker', {
+    return await axios.post(DNS_URI + '/api/worker/register', {
         "user": {
             "userName": userName, 
             "password": password, 
@@ -20,6 +20,7 @@ async function createWorker(userName, password, phone, address, userType) {
             "userType": userType},
         "services": [{}],
         "companyName": " "
+        
     }, axiosConfig)
         .then(res => {
             return [true, res.status]
@@ -30,7 +31,7 @@ async function createWorker(userName, password, phone, address, userType) {
 }
 
 async function createAdmin(userName, password, phone, address, userType) {
-    return await axios.post(DNS_URI + '/api/admin', {
+    return await axios.post(DNS_URI + '/api/admin/register', {
         "user": {
             "userName": userName, 
             "password": password, 
@@ -47,7 +48,7 @@ async function createAdmin(userName, password, phone, address, userType) {
 }
 
 async function createCustomer(userName, password, phone, address, userType) {
-    return await axios.post(DNS_URI + '/api/customer', {
+    return await axios.post(DNS_URI + '/api/customer/register', {
         "user": {
             "userName": userName, 
             "password": password, 
