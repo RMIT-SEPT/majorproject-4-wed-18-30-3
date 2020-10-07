@@ -49,7 +49,7 @@
 }
 
 #scrollable {
-  height: 60%;
+  height: 80%;
   overflow-x: hidden;
   overflow-y: auto;
   text-align: center;

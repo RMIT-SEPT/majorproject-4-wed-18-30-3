@@ -267,14 +267,14 @@ class Dashboard extends Component {
                     customerHeader = (
                         <div>
                         <br/>
-                        <p>Customers at a glance</p>
+                        <p className="text-left"><b>Customers at a glance</b></p>
                         </div>
                     )
 
                     workerHeader = (
                         <div>
                         <br/>
-                        <p>Workers at a glance</p>
+                        <p className="text-left"><b>Workers at a glance</b></p>
                         </div>
                     )   
                         
