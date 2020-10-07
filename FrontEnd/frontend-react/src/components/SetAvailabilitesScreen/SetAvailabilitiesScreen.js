@@ -134,7 +134,7 @@ class SetAvailabilitiesScreen extends Component {
 
             disableService: false,
             disableTimeslot: true,
-            disableNext: false,
+            disableNext: true,
 
             success: null
         }
@@ -166,6 +166,7 @@ class SetAvailabilitiesScreen extends Component {
             this.setState({showSubmitPanel: true})
             var msg = "You're offering " + this.state.selectedService + " service on " + parseDateString(e.value.value)
             this.setState({submitMessage: msg})
+            this.setState({disableNext: false})
         }
     }
 
@@ -221,9 +222,9 @@ class SetAvailabilitiesScreen extends Component {
 
         this.setState({showSubmitPanel : false})
         this.setState({selectedDate: null})
-        const ts = await getTimeslots().then()
+        const ts = await getTimeslots(this.props.token, this.props.userType, this.props.userName).then()
         var bkgTimes = []
-        const bkgs = await getBookings().then()
+        const bkgs = await getBookings(this.props.token, this.props.userType, this.props.userName).then()
         for (let i = 0; i < bkgs.length; i++) { 
             if (bkgs[i]["customer"] !== null && bkgs[i]["worker"]["user"]["userName"] === this.props.userName) 
                 bkgTimes.push(bkgs[i]["timeslot"]["date"])
@@ -506,7 +507,7 @@ class SetAvailabilitiesScreen extends Component {
                                 <div className="col-2">
                                     <button className="btn btn-outline-dark" id="navButton" 
                                             onClick={this.next}
-                                            disabled={this.state.disableNext}>Next 50</button> 
+                                            disabled={this.state.disableNext}>Next</button> 
                                 </div>
                             </div>
 
