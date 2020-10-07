@@ -12,8 +12,6 @@ public class Admin {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String  userName;
-
     @OneToOne(
             cascade = CascadeType.ALL
             //mappedBy = "admin"
@@ -25,8 +23,8 @@ public class Admin {
     public Admin() {
     }
 
-    public Admin(String name, String password, String address, int phone) {
-        user = new User(name, password, address, phone, UserType.ADMIN);
+    public Admin(String name, String password, String fullName, String address, int phone) {
+        user = new User(name, password, fullName, address, phone, UserType.ADMIN);
     }
 
     public long getId(){
@@ -35,10 +33,6 @@ public class Admin {
 
     public User getUser(){
         return user;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public void setUser(User user) {

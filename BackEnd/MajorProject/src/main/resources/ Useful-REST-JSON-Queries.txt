@@ -1,3 +1,10 @@
+POST localhost:8080/api/user/login
+{
+    "userName":"Customer",
+    "password":"password"
+}
+
+
 POST localhost:8080/api/timeslot
 {
     "date":"2020-11-30-16-30-00",
@@ -22,24 +29,35 @@ POST localhost:8080/api/worker
 {
 "user" : {
     "userName":"Jim",
+    "fullName":"Jim Jamie Jameson",
     "password":"password",
     "address":"Just Round the Corner",
-    "phone":"1234567890",
-    "userType": "WORKER"
+    "phone":"1234567890"
 },
 "services":[{"name":"plow"}],
 "companyName":"Jim's Mowing"
 }
 
 
-POST localhost:8080/api/customer
+POST localhost:8080/api/customer/register
     {
     "user" : {
         "userName":"John",
         "password":"password",
+        "fullName":"John Baptiste",
         "address":"On The Corner",
-        "phone":"1234567890",
-        "userType": 0
+        "phone":"1234567890"
+        }
+    }
+
+POST localhost:8080/api/admin/register
+    {
+    "user" : {
+        "userName":"Adam",
+        "password":"password",
+        "fullName":"Adam Inh",
+        "address":"High Above",
+        "phone":"1234567890"
         }
     }
 
@@ -47,8 +65,16 @@ POST localhost:8080/api/booking
 {
 "timeslot":{"date":"2020-11-30-16-30-00"},
 "worker":{"user":{"userName":"Jim"}},
-"service":{"name":"plow"},
-"customer":{"user":{"userName":"John"}},
+"created_At":"2020-01-01-00-00-00",
+"updated_At":"2020-08-29-00-00-00"
+}
+
+POST localhost:8080/api/booking
+{
+"timeslot":{"date":"2020-11-30-16-30-00"},
+"worker":{"user":{"userName":"Jim"}},
+"service":{"name":"Mowing"},
+"customer":{"user":{"userName":"Customer"}},
 "created_At":"2020-01-01-00-00-00",
 "updated_At":"2020-08-29-00-00-00"
 }

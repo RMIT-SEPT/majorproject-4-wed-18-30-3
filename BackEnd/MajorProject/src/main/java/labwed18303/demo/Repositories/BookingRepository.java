@@ -15,6 +15,8 @@ import org.springframework.stereotype.Repository;
         @Override
         Iterable<Booking> findAll();
 
+        Iterable<Booking> findByCustomerIsNull();
+
         Booking findByTimeslotAndWorker(Timeslot timeslot, Worker worker);
 
     }

@@ -14,10 +14,10 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
+    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss", timezone = "Australia/Sydney")
     Date created_At;
 
-    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss")
+    @JsonFormat(pattern = "yyyy-MM-dd-HH-mm-ss", timezone = "Australia/Sydney")
     Date updated_At;
 
     @ManyToOne

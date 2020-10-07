@@ -13,6 +13,7 @@ public class ServiceProvidedService {
     private ServiceProvidedRepository serviceProvidedRepository;
 
     public ServiceProvided saveOrUpdateServiceProvided(ServiceProvided serviceProvided) {
+        serviceProvided.setId(-1);
         if(serviceProvidedRepository.findByName(serviceProvided.getName())!= null){
             throw new ServiceProvidedException("Service with this name already exists");
         }
@@ -35,11 +36,11 @@ public class ServiceProvidedService {
     }
     public ServiceProvided findByName(String name){return serviceProvidedRepository.findByName(name);}
 
-    public void deleteServiceProvidedByIdentifier(Long serviceId){
-        ServiceProvided serviceProvided = serviceProvidedRepository.findByid(serviceId);
+    public void deleteServiceProvidedByName(String serviceName){
+        ServiceProvided serviceProvided = serviceProvidedRepository.findByName(serviceName);
 
         if(serviceProvided == null){
-            throw  new  ServiceProvidedException("Cannot Person with ID '"+serviceId+"'. This person does not exist");
+            throw  new  ServiceProvidedException("Cannot Person with ID '" + serviceName + "'. This person does not exist");
         }
 
         serviceProvidedRepository.delete(serviceProvided);

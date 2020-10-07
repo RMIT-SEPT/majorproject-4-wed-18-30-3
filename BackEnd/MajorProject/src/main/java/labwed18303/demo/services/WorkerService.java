@@ -1,11 +1,9 @@
 package labwed18303.demo.services;
 
 import labwed18303.demo.Repositories.WorkerRepository;
+import labwed18303.demo.exceptions.UserException;
 import labwed18303.demo.exceptions.WorkerException;
-import labwed18303.demo.model.ServiceProvided;
-import labwed18303.demo.model.Timeslot;
-import labwed18303.demo.model.UserType;
-import labwed18303.demo.model.Worker;
+import labwed18303.demo.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,34 +20,31 @@ public class WorkerService {
 
     @Autowired ServiceProvidedService serviceService;
 
-    public Worker saveOrUpdateWorker(Worker person) {
-        userService.checkNullValue(person.getUser());
+    public Worker saveOrUpdateWorker(Worker worker) {
+        worker.setUser(userService.addNewUser(worker.getUser()));
 
-        userService.checkDuplicateUserName(person.getUser());
-
-        person.setUserName(person.getUser().getUserName());
-        if(person.getCompanyName() == null || person.getCompanyName().isEmpty()){
+        if(worker.getCompanyName() == null || worker.getCompanyName().isEmpty()){
             throw new WorkerException("Worker must have a company");
         }
 
-        person.getUser().setUserType(UserType.WORKER);
-        if(person.getServices() != null) {
+        worker.getUser().setUserType(UserType.WORKER);
+        if(worker.getServices() != null) {
             Set<ServiceProvided> services = new HashSet<>();
             ServiceProvided savedService;
-            for (ServiceProvided service : person.getServices()) {
+            for (ServiceProvided service : worker.getServices()) {
                 savedService = serviceService.findByName(service.getName());
                 if (savedService != null) {
                     services.add(savedService);
                 }
             }
-            if(workerRepository.findByUserName(person.getUser().getUserName())!= null) {
-                for (ServiceProvided service : workerRepository.findByUserName(person.getUser().getUserName()).getServices()) {
+            if(findByUserName(worker.getUser().getUserName())!= null) {
+                for (ServiceProvided service : findByUserName(worker.getUser().getUserName()).getServices()) {
                     services.add(service);
                 }
             }
-            person.setServices(services);
+            worker.setServices(services);
         }
-        return workerRepository.save(person);
+        return workerRepository.save(worker);
     }
 
     public Worker findById(Long workerId){
@@ -80,7 +75,14 @@ public class WorkerService {
 
 
     public Worker findByUserName(String userName){
-        Worker worker = workerRepository.findByUserName(userName);
+        Worker worker = null;
+        try {
+            User user = userService.findByUserName(userName);
+            worker = workerRepository.findByUser(user);
+        }
+        catch(UserException e){
+
+        }
         return worker;
     }
 }
