@@ -5,11 +5,8 @@ import { connect } from 'react-redux'
 
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
-const axiosConfig = {headers: {'Content-Type': 'application/json'}}
-function refresh() {window.location.reload(false)}
 
-async function editProfile(newProfile) {
-
+async function editProfile(newProfile, token, userType, userName) {
     
     const query = {
         userName: newProfile.userName,
@@ -27,7 +24,9 @@ async function editProfile(newProfile) {
         address: newProfile.address,
         phone: newProfile.phone,
         userType: newProfile.userType
-    }, axiosConfig)
+    }, { headers: { 
+        'Authorization': token }
+    })
     .then(res => {
         console.log(`statusCode: ${res.status}`)
         console.log(res.data)
@@ -82,21 +81,15 @@ class EditProfile extends Component {
             return
         } 
   
-        const id = document.getElementById("userId").textContent
-        const name = document.getElementById("userName").textContent
-        const type = document.getElementById("userType").textContent
-        const loginToken = document.getElementById("userToken").textContent
-
         const newProfile = {
-            id: id,
             userName: this.state.userName,
             password: this.state.password,
             address: this.state.address,
             phone: this.state.phone,
-            userType: type
+            userType: this.props.userType
         }
 
-        const success = await editProfile(newProfile);
+        const success = await editProfile(newProfile, this.props.token, this.props.userType, this.props.userName);
         this.setState({response: success[1]})
 
         if (this.state.response >= 200 && this.state.response <= 302) {
@@ -178,21 +171,18 @@ class EditProfile extends Component {
                 
                 <div className="row">
                                 <div className="col-sm">
-                                    <input type="submit" value="Save" className="btn btn-sm btn-dark" id="navButton"
+                                    <input type="submit" value="Save" className="btn btn-outline-dark" id="navButton"
                                             />
                                 </div>
                                 <div className="col-sm">
-                                <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}
+                                <button className="btn btn-outline-dark" id="navButton" onClick={this.reset}
                                         >
                                     Cancel Edit
                                 </button>   
                                 </div>
                             </div>
                 </form>
-                <div id="userId" style={{display: "none"}}>{this.props.id}</div>
-                <div id="userName" style={{display: "none"}}>{this.props.userName}</div>
-                <div id="userType" style={{display: "none"}}>{this.props.userType}</div>
-                <div id="userToken" style={{display: "none"}}>{this.props.token}</div>
+
                 </div>
             )
         }

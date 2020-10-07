@@ -6,7 +6,7 @@ import makeAnimated from 'react-select/animated';
 import CancelButton from './CancelButton';
 
 // How many timeslots to display at once in the drop down for timeslot view
-const SLOTS_TO_VIEW = 7
+const SLOTS_TO_VIEW = 8
 
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
@@ -14,14 +14,52 @@ const DNS_URI = "http://localhost:8080"
 // Create date object from "YYYY-MM-DD-hh-mm-ss" string
 function parseDateString(dStr) {
     var date = new Date()
-
-    date.setUTCFullYear(dStr.slice(0, 4))
-    date.setUTCMonth(parseInt((dStr.slice(5, 7)) - 1, 10))
-    date.setUTCDate(dStr.slice(8, 10))
-    date.setUTCHours(dStr.slice(11, 13))
-    date.setUTCMinutes(dStr.slice(14, 16))
-    date.setUTCSeconds(dStr.slice(17, 19))  
+    date.setFullYear(dStr.slice(0, 4))
+    date.setMonth(parseInt((dStr.slice(5, 7)) - 1, 10))
+    date.setDate(dStr.slice(8, 10))
+    date.setHours(dStr.slice(11, 13))
+    date.setMinutes(dStr.slice(14, 16))
+    date.setSeconds(dStr.slice(17, 19))  
     return date
+}
+
+// Return the next chronological timeslot in backend format
+function nextSlot(date, increment) {
+    return new Date(date.getTime() + increment*60000);
+}
+
+// Return the current time in backend-friendly format 
+function currentTime() {
+    var date = new Date();
+    var dateString =
+        date.getFullYear() + "-" +
+        ("0" + (date.getMonth()+1)).slice(-2) + "-" +
+        ("0" + date.getDate()).slice(-2) + "-" +
+        ("0" + date.getHours()).slice(-2) + "-" +
+        ("0" + date.getMinutes()).slice(-2) + "-" +
+        ("0" + date.getSeconds()).slice(-2);
+    return dateString
+}
+
+// Return the given time in backend-friendly format 
+function formatTime(date) {
+    var dateString =
+        date.getFullYear() + "-" +
+        ("0" + (date.getMonth()+1)).slice(-2) + "-" +
+        ("0" + date.getDate()).slice(-2) + "-" +
+        ("0" + date.getHours()).slice(-2) + "-" +
+        ("0" + date.getMinutes()).slice(-2) + "-" +
+        ("0" + date.getSeconds()).slice(-2);
+    return dateString
+}
+
+// Return current time as Date object rounded to its next upper increment
+function roundedCurrentTime(increment) {
+    var date = new Date()
+    var ms = 1000 * 60 * increment;
+    var rDate = new Date(Math.round(date.getTime() / ms) * ms);
+    rDate.setMinutes(rDate.getMinutes() + increment)
+    return rDate 
 }
 
 const capitalise = (string) => {
@@ -29,20 +67,20 @@ const capitalise = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
-// Header config for REST requests
-const axiosConfig = {headers: {'Content-Type': 'application/json'}}
-
 // Send a create booking request to bookings endpoint
-async function createBooking(newBooking) {
+async function createBooking(newBooking, token, userType, userName) {
 
     console.log(newBooking)
     return await axios.post(DNS_URI + '/api/booking', {
-        updated_At: currentTime(),
-        worker: newBooking.worker,
         timeslot: newBooking.timeslot,
+        worker: newBooking.worker,
         service: newBooking.service,
+        created_At: currentTime(),  
+        updated_At: currentTime(),          
         customer: newBooking.customer
-    }, axiosConfig)
+    },  { headers: { 
+        'Authorization': token }
+    })
     .then(res => {
         console.log(`statusCode: ${res.statusCode}`)
         console.log(res)
@@ -50,26 +88,25 @@ async function createBooking(newBooking) {
     })
     .catch(error => {
         console.error(error)
+        console.log(error.response)
+        console.log(error.response.data)
         return false
     })
 }
 
-function currentTime() {
-    var date = new Date();
-    var dateString =
-        date.getUTCFullYear() + "-" +
-        ("0" + (date.getUTCMonth()+1)).slice(-2) + "-" +
-        ("0" + date.getUTCDate()).slice(-2) + "-" +
-        ("0" + date.getUTCHours()).slice(-2) + "-" +
-        ("0" + date.getUTCMinutes()).slice(-2) + "-" +
-        ("0" + date.getUTCSeconds()).slice(-2);
-    return dateString
-}
+// Return all availability objects
+async function getBookings(token, userType, userName) {
 
-async function getBookings() {
-    return await axios.get(DNS_URI + '/api/booking').then(response => {
+    return await axios.get(DNS_URI + '/api/booking', {
+        headers: { 
+            'Authorization': token }
+      }).then(function(response) {
+        console.log('Authenticated');
         return response.data
-    })
+      }).catch(function(error) {
+        console.error("getBookings()", error)
+        console.log(error.response.data)
+      });
 }
 
 class AvailabilitiesPane extends Component {
@@ -146,17 +183,14 @@ class AvailabilitiesPane extends Component {
         
         if(this.state.bookingBtnMsg !== "~") {
 
-            const name = document.getElementById("userName").textContent
-            const type = document.getElementById("userType").textContent
-            const loginToken = document.getElementById("userToken").textContent
             const selectedService = document.getElementById("selectedService").textContent
             const selectedWorker = document.getElementById("selectedWorker").textContent
             const selectedTimeslot = document.getElementById("selectedTimeslot").textContent
 
             // Validate login
-            if (name !== null && type !== null) {
+            if (this.props.userName !== null && this.props.userType !== null) {
                 // Validate user type
-                if(type !== "CUSTOMER") {
+                if(this.props.userType !== "CUSTOMER") {
                     alert("You must be a customer to make bookings. Create a customer account and try again.")
                     return 
                 }
@@ -171,10 +205,8 @@ class AvailabilitiesPane extends Component {
                 worker: {user: {userName: selectedWorker}},
                 timeslot: {date: selectedTimeslot},
                 service: {name: selectedService},
-                customer: {user: {userName: name}}
-            }).then()
-
-            console.log(success)
+                customer: {user: {userName: this.props.userName}},
+            }, this.props.token, this.props.userType, this.props.userName).then()
 
             // Set success/fail state, will change what the pane is rendering
             if (success) {
@@ -187,13 +219,26 @@ class AvailabilitiesPane extends Component {
 
     // Get availabilities from bookings
     async getAvailabilities() {
-        const bkgs = await getBookings().then()
+        const bkgs = await getBookings(this.props.token, this.props.userType, this.props.userName).then()
         var avs = []
+
+        var future = false
+        var currentTime = roundedCurrentTime(30)
+        var formattedTime = formatTime(currentTime)
+        var next = formatTime(nextSlot(currentTime, 30))
+        var nextNext = formatTime(nextSlot(currentTime, 60))
 
         // Filter available timeslots from booked timeslots
         for (let i = 0; i < bkgs.length; i++) {               
             if (bkgs[i]["customer"] === null) {             
-                avs.push(bkgs[i]) 
+
+                // Only add slots in the future
+                if (future)
+                    avs.push(bkgs[i]) 
+                    if (parseDateString(bkgs[i]["timeslot"]["date"])  > parseDateString(formattedTime) || parseDateString(bkgs[i]["timeslot"]["date"])  > parseDateString(next) ||parseDateString(bkgs[i]["timeslot"]["date"])  > parseDateString(nextNext)) { 
+                        future = true
+                    }
+
             }
         }
         this.setState({availabilites: avs})
@@ -202,7 +247,7 @@ class AvailabilitiesPane extends Component {
     
     // Get only the workers who have availabilites
     async getWorkerOptions() {
-        const bkgs = await getBookings().then()
+        const bkgs = await getBookings(this.props.token, this.props.userType, this.props.userName).then()
         var workerOptions = []
         var temp = []    
         for (let i = 0; i < bkgs.length; i++) {        
@@ -230,31 +275,43 @@ class AvailabilitiesPane extends Component {
 
     // Add all of a workers services as options
     async timeslotsOptionsByWorker() {
-        const bkgs = await getBookings().then()
+        const bkgs = await getBookings(this.props.token, this.props.userType, this.props.userName).then()
         var timeslotOptions = []
+
+        var future = false
+        var currentTime = roundedCurrentTime(30)
+        var formattedTime = formatTime(currentTime)
+        var next = formatTime(nextSlot(currentTime, 30))
+        var nextNext = formatTime(nextSlot(currentTime, 60))
+
         for (let i = 0; i < bkgs.length; i++) {        
             if (bkgs[i]["customer"] === null) {   
                 if (bkgs[i]["worker"]["user"]["userName"] === this.state.selectedWorker) {
                     for (let j = 0; j < bkgs[i]["worker"]["services"].length; j++) {        
-                        timeslotOptions.push({
-                            value: {
-                                date: bkgs[i]["timeslot"]["date"], 
-                                service: bkgs[i]["worker"]["services"][j]["name"]},
-                            label: capitalise(bkgs[i]["worker"]["services"][j]["name"]) + " | " + parseDateString(bkgs[i]["timeslot"]["date"]).toUTCString()
-                        })
+                        
+                        // only add bookings for timeslots in the future
+                        if (future) {
+                            timeslotOptions.push({
+                                value: {
+                                    date: bkgs[i]["timeslot"]["date"], 
+                                    service: bkgs[i]["worker"]["services"][j]["name"]},
+                                label: capitalise(bkgs[i]["worker"]["services"][j]["name"]) + " | " + parseDateString(bkgs[i]["timeslot"]["date"]).toString()
+                            })
+                        }
+                        if (parseDateString(bkgs[i]["timeslot"]["date"])  > parseDateString(formattedTime) || parseDateString(bkgs[i]["timeslot"]["date"])  > parseDateString(next) ||parseDateString(bkgs[i]["timeslot"]["date"])  > parseDateString(nextNext)) {
+                            future = true
+                        }
                     }
                 }
             }
         }
-        console.log(timeslotOptions)
         this.setState({avOptionsWorker: timeslotOptions})
         return timeslotOptions
     }
 
     async onTimeslotChangeWorkerView(ts) {
-        console.log(ts)
         var avMsg = "You have selected " + ts["value"]["service"] + " with " +
-                    this.state.selectedWorker + ", " + parseDateString(ts["value"]["date"]).toUTCString() + "."
+                    this.state.selectedWorker + ", " + parseDateString(ts["value"]["date"]).toString() + "."
                     
         this.setState({bookingBtnMsg: "Book selected timeslot"})
         this.setState({selectedAvMsg: avMsg})        
@@ -275,47 +332,48 @@ class AvailabilitiesPane extends Component {
             start = new Date()
         else 
             start = parseDateString(startTimeSlot)
-            step = 1
+            step = 0
         var count = 0
         const avs = this.state.availabilites
         var avOptions = []
 
-        // Only add timeslots to options if they are in the future
-        for (let i = 0; i < avs.length; i++) {   
-            var date = parseDateString(avs[i]["timeslot"]["date"])
-            if (date > start && count < SLOTS_TO_VIEW && count < avs.length) {
-                count++
-                if (avs[i + step] !== null) {
-                    const av = {
-                        value: {
-                            date: avs[i + step]["timeslot"]["date"], 
-                            worker: avs[i + step]["worker"]["user"]["userName"], 
-                            service: avs[i + step]["worker"]["services"][0]["name"]}, 
-                        label: parseDateString(avs[i + step]["timeslot"]["date"]).toUTCString()}
-                    avOptions.push(av)
+        // Only process if availabilites exist
+        if (avs.length !== 0) {
+            // Only add timeslots to options if they are in the future
+            for (let i = 0; i < avs.length; i++) {   
+                var date = parseDateString(avs[i]["timeslot"]["date"])
+                if (date > start && count < SLOTS_TO_VIEW && count < avs.length) {
+                    count++
+                    if (avs[i + step] !== null) {
+                        const av = {
+                            value: {
+                                date: avs[i + step]["timeslot"]["date"], 
+                                worker: avs[i + step]["worker"]["user"]["userName"], 
+                                service: avs[i + step]["worker"]["services"][0]["name"], 
+                                duration: avs[i + step]["worker"]["services"][0]["minDuration"]}, 
+                            label: parseDateString(avs[i + step]["timeslot"]["date"]).toString()}
+                        avOptions.push(av)
 
-                    // select the first available appointment by default
-                    if (step === 1) {
+                        // select the first available appointment by default
+                        if (step === 1) {
 
+                        }
                     }
+                    step = 0
                 }
-                step = 0
+            }
+            this.setState({avOptions: avOptions})
+            
+            // Set a different message depending on if or not availabilities exist
+            if (avOptions.length > 0) {
+                this.setState({lastCurrentAvOption: avOptions[avOptions.length - 1]["value"]["date"]})
+                var msg = "(displaying " + (this.state.viewIndex - SLOTS_TO_VIEW)  + "-" + this.state.viewIndex + " of " + this.state.availabilites.length + ")"
+                this.setState({viewMessage: msg})
+    
+            } else {
+                this.setState({viewMessage: "No availabilites found for any workers."})
             }
         }
-        this.setState({avOptions: avOptions})
-
-        this.setState({lastCurrentAvOption: avOptions[avOptions.length - 1]["value"]["date"]})
-        var msg = "(displaying " + (this.state.viewIndex - SLOTS_TO_VIEW)  + "-" + this.state.viewIndex + " of " + this.state.availabilites.length + ")"
-        this.setState({viewMessage: msg})
-
-        var text = ""
-        for (let i = 0; i < avOptions.length; i++) {  
-            text += avOptions[i]["label"] + " | " + capitalise(avOptions[i]["value"]["service"]) +
-                    " with " + avOptions[i]["value"]["worker"] + "\n"
-            count++
-        }
-        this.setState({textAreaMsg: text})
-
     }
 
     // Load the availability data in text area and enable booking button
@@ -403,12 +461,12 @@ class AvailabilitiesPane extends Component {
                     <br/><br/>
                     <div className="row">
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.timeslotView}>
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.timeslotView}>
                                 View availabilities by timeslot
                             </button> 
                         </div>
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.workerView}>
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.workerView}>
                                 View availabilities by worker
                             </button> 
                         </div>
@@ -463,7 +521,7 @@ class AvailabilitiesPane extends Component {
 
                     <div className="row">
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.book}>
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.book}>
                                 {this.state.bookingBtnMsg}
                             </button> 
                         </div>
@@ -472,12 +530,12 @@ class AvailabilitiesPane extends Component {
 
                     <div className="row">
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.selectView}>
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.selectView}>
                                 Back to select view
                             </button> 
                         </div>
                         <div className="col-sm">
-                            <Link to="/Dashboard" className="btn btn-sm btn-dark" id="navButton">Cancel</Link>    
+                            <Link to="/Dashboard" className="btn btn-outline-dark" id="navButton">Cancel</Link>    
                         </div>
                     </div>
                     <div id="userId" style={{display: "none"}}>{id}</div>
@@ -490,23 +548,40 @@ class AvailabilitiesPane extends Component {
         // Timeslot view
         } else if (this.state.view === "timeslot") {
 
-            const next = "next " + SLOTS_TO_VIEW + " slots >>"
-            
+            const next = "next " + SLOTS_TO_VIEW + " >>"
+            const avOptions = this.state.avOptions
+            var availDisplay
+
+            // Wait for promise fulfillment
+            var count = 0
+            if(Array.isArray(avOptions)) {
+                availDisplay = avOptions.map((opt) => { 
+                    return (
+                        <div className="list-group-item d-flex justify-content-between align-items-center" key={++count}>
+                            {opt["label"]} | {capitalise(opt["value"]["service"])} with {opt["value"]["worker"]}
+                            <span className="badge badge-primary badge-pill">{opt["value"]["duration"]} min</span>
+                        </div>
+                    )
+                })
+            }
+
             return (
+                
                 <div className="timeslot_view_pane" id="timeslot_view_pane">
                     <br/>
                     <b>Availabilites by timeslot</b>
                     
                     <div className="row">
                         <div className="col-sm">
-                            Select a timeslot - {this.state.viewMessage}
+                            {this.state.viewMessage}
                         </div>
                     </div>
+                    <br/>
 
                     <div className="row">
                         <div className="col-2">
                             <Link to="/availabilites">
-                                <div className="btn btn-sm btn-dark" id="navButton" onClick={this.reset}>Reset</div> 
+                                <div className="btn btn-outline-dark" id="navButton" onClick={this.reset}>Reset</div> 
                             </Link>
                         </div>
                         <div className="col-8">
@@ -517,16 +592,15 @@ class AvailabilitiesPane extends Component {
                             <br/>
                         </div>
                         <div className="col-2">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.loadNext}>{next}</button> 
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.loadNext}>{next}</button> 
                         </div>
                     </div>
 
                     <div className="row">
                         <div className="col-sm">
-                            <textarea id="form7" className="md-textarea form-control" 
-                                    rows="9" 
-                                    value={this.state.textAreaMsg}
-                                    onChange={this.onChange}/>
+                            <div className="list-group list-group-flush">              
+                                {availDisplay}
+                            </div>
                         </div>
                     </div>   
                     <br/>
@@ -539,7 +613,7 @@ class AvailabilitiesPane extends Component {
 
                     <div className="row">
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.book}>
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.book}>
                                 {this.state.bookingBtnMsg}
                             </button> 
                         </div>
@@ -548,12 +622,12 @@ class AvailabilitiesPane extends Component {
 
                     <div className="row">
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.selectView}>
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.selectView}>
                                 Back to select view
                             </button> 
                         </div>
                         <div className="col-sm">
-                            <Link to="/Dashboard" className="btn btn-sm btn-dark" id="navButton">Cancel</Link>    
+                            <Link to="/Dashboard" className="btn btn-outline-dark" id="navButton">Cancel</Link>    
                         </div>
                     </div>
                     <div id="userId" style={{display: "none"}}>{id}</div>
@@ -574,7 +648,7 @@ class AvailabilitiesPane extends Component {
                     <br/><br/>  
                     <div className="row">
                         <div className="col-sm">
-                            <button className="btn btn-sm btn-dark" id="navButton" onClick={this.reset}>
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.reset}>
                                 Make another booking
                             </button> 
                         </div>
@@ -595,7 +669,7 @@ class AvailabilitiesPane extends Component {
                 
                 <div className="row">
                     <div className="col-sm">
-                        <button className="btn btn-sm btn-dark" id="navButton" onClick={this.reset}>
+                        <button className="btn btn-outline-dark" id="navButton" onClick={this.reset}>
                             Make another booking
                         </button> 
                     </div>

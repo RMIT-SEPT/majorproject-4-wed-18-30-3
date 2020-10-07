@@ -11,7 +11,7 @@ const DNS_URI = "http://localhost:8080"
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 
 async function createWorker(userName, password, phone, address, userType) {
-    return await axios.post(DNS_URI + '/api/worker', {
+    return await axios.post(DNS_URI + '/api/worker/register', {
         "user": {
             "userName": userName, 
             "password": password, 
@@ -20,6 +20,7 @@ async function createWorker(userName, password, phone, address, userType) {
             "userType": userType},
         "services": [{}],
         "companyName": " "
+        
     }, axiosConfig)
         .then(res => {
             return [true, res.status]
@@ -30,7 +31,7 @@ async function createWorker(userName, password, phone, address, userType) {
 }
 
 async function createAdmin(userName, password, phone, address, userType) {
-    return await axios.post(DNS_URI + '/api/admin', {
+    return await axios.post(DNS_URI + '/api/admin/register', {
         "user": {
             "userName": userName, 
             "password": password, 
@@ -47,7 +48,7 @@ async function createAdmin(userName, password, phone, address, userType) {
 }
 
 async function createCustomer(userName, password, phone, address, userType) {
-    return await axios.post(DNS_URI + '/api/customer', {
+    return await axios.post(DNS_URI + '/api/customer/register', {
         "user": {
             "userName": userName, 
             "password": password, 
@@ -80,6 +81,7 @@ class RegisterScreen extends Component {
             response: null,
             errorMessage: "",
             successMessage: "",
+            cancelTxt: "Cancel",
             userTypes: [
                 {value: 'CUSTOMER', label: 'Customer'},
                 {value: 'ADMIN', label: 'Admin'},
@@ -158,6 +160,7 @@ class RegisterScreen extends Component {
         if (this.state.response >= 200 && this.state.response <= 302) {
             this.setState({successMessage: "User successfully created. Log in to get started."})
             this.setState({errorMessage: ""})
+            this.setState({cancelTxt: "Log in"})
         } else {
             this.setState({errorMessage: "Account creation failed, please check your details and try again."})
             this.setState({successMessage: ""})
@@ -173,137 +176,157 @@ class RegisterScreen extends Component {
                 <Header/>
                 <br/><br/>
                 <br/><br/><br/>
-                   <div className = "Heading">
-                        <h1>Sign up</h1>
-                        <p>Phone number must be 10 digits and start with "0".</p>
-                        
-                        <b><font color="red">{this.state.errorMessage}</font></b>
-                        <b><font color="green">{this.state.successMessage}</font></b>
-                        <br></br><br></br>
-                    </div>
-                    <form onSubmit={this.onSubmit}>
+                <div className="row">
+                <div className="col-sm"></div>
+                    <div className="col-sm">
+                        <div className="card shadow-sm p-3 mb-5 bg-white rounded">
+                            <br/><br/><br/>
+                            <h1>Register</h1>
+                            <p>Phone no. must be 10 digits and start with 0</p>
+                            
+                            <b><font color="red">{this.state.errorMessage}</font></b>
+                            <b><font color="green">{this.state.successMessage}</font></b>
+                            <br></br><br></br>
+                            <form onSubmit={this.onSubmit}>
 
-                        <div className="row">
-                            <div className="col-sm"></div>    
-                            <div className="col-sm">
-                                <div className = "form-group">
-                                    <input type="text" className="form-control"
-                                        placeholder="Username"
-                                        id="userName"
-                                        name="userName"
-                                        value={this.state.value}
-                                        onChange={this.onChange}>
-                                    </input>
-                                    </div>    
+                                <div className="row">
+                                    <div className="col-2"></div>    
+                                    <div className="col-8">
+                                        <div className = "form-group">
+                                            <input type="text" className="form-control"
+                                                placeholder="Username"
+                                                id="userName"
+                                                name="userName"
+                                                value={this.state.value}
+                                                onChange={this.onChange}>
+                                            </input>
+                                            </div>    
+                                        </div>
+                                    <div className="col-2"></div>
                                 </div>
-                            <div className="col-sm"></div>
-                        </div>
-                        
-                        <div className="row">
-                            <div className="col-sm"></div>    
-                            <div className="col-sm">
-                                <div className = "form-group">
-                                    <input type="password" className="form-control"
-                                        placeholder="Password"
-                                        id="password"
-                                        name="password"
-                                        value={this.state.value}
-                                        onChange={this.onChange}>
-                                    </input>                          
-                                    </div>    
-                                </div>
-                            <div className="col-sm"></div>
-                        </div>  
-                        
-                        <div className="row">
-                            <div className="col-sm"></div>    
-                            <div className="col-sm">
-                                <div className = "form-group">
-                                    <input type="text" className="form-control"
-                                        placeholder="Phone"
-                                        id="phone"
-                                        name="phone"
-                                        value={this.state.value}
-                                        onChange={this.onChange}>
-                                    </input>
-                                    </div>
-                                </div>    
-                            <div className="col-sm"></div>
-                        </div>
-                        
                                 
-                        <div className="row">
-                            <div className="col-sm"></div>    
-                            <div className="col-sm">
-                                <div className = "form-group">
-                                    <input type="text" className="form-control"
-                                        placeholder="Address"
-                                        id="address"
-                                        name="address"
-                                        value={this.state.value}
-                                        onChange={this.onChange}>
-                                    </input>
+                                <div className="row">
+                                    <div className="col-2"></div>    
+                                    <div className="col-8">
+                                        <div className = "form-group">
+                                            <input type="password" className="form-control"
+                                                placeholder="Password"
+                                                id="password"
+                                                name="password"
+                                                value={this.state.value}
+                                                onChange={this.onChange}>
+                                            </input>                          
+                                            </div>    
+                                        </div>
+                                    <div className="col-2"></div>
+                                </div>  
+                                
+                                <div className="row">
+                                    <div className="col-2"></div>    
+                                    <div className="col-8">
+                                        <div className = "form-group">
+                                            <input type="text" className="form-control"
+                                                placeholder="Phone"
+                                                id="phone"
+                                                name="phone"
+                                                value={this.state.value}
+                                                onChange={this.onChange}>
+                                            </input>
+                                            </div>
+                                        </div>    
+                                    <div className="col-2"></div>
+                                </div>
+                                
+                                        
+                                <div className="row">
+                                    <div className="col-2"></div>    
+                                    <div className="col-8">
+                                        <div className = "form-group">
+                                            <input type="text" className="form-control"
+                                                placeholder="Address"
+                                                id="address"
+                                                name="address"
+                                                value={this.state.value}
+                                                onChange={this.onChange}>
+                                            </input>
+                                            </div>
+                                        </div>    
+                                    <div className="col-2"></div>
+                                </div>
+
+                                <div className="row">
+                                    <div className="col-2"></div>    
+                                    <div className="col-8">
+                                        <div className = "form-group">
+                                            <input type="text" className="form-control"
+                                                placeholder="Firstname"
+                                                id="firstName"
+                                                name="firstName"
+                                                value={this.state.value}
+                                                onChange={this.onChange}>
+                                            </input>
+                                            </div>
+                                        </div>    
+                                    <div className="col-2"></div>
+                                </div>
+
+
+                                <div className="row">
+                                    <div className="col-2"></div>    
+                                    <div className="col-8">
+                                        <div className = "form-group">
+                                            <input type="text" className="form-control"
+                                                placeholder="Lastname"
+                                                id="lastName"
+                                                name="lastName"
+                                                value={this.state.value}
+                                                onChange={this.onChange}>
+                                            </input>
+                                            </div>
+                                        </div>    
+                                    <div className="col-2"></div>
+                                </div>
+
+
+                                <div className="form-user">
+                                <div className="row">
+                            
+                                    <div className="col-2"></div>
+                                    <div className="col-8">
+                                        <Select name="user" id="user" placeholder="User type" value={this.state.userType} options={this.state.userTypes}
+                                                onChange={this.onTypeChange} components={animatedComponents} required/>
                                     </div>
-                                </div>    
-                            <div className="col-sm"></div>
-                        </div>
-
-                        <div className="row">
-                            <div className="col-sm"></div>    
-                            <div className="col-sm">
-                                <div className = "form-group">
-                                    <input type="text" className="form-control"
-                                        placeholder="Firstname"
-                                        id="firstName"
-                                        name="firstName"
-                                        value={this.state.value}
-                                        onChange={this.onChange}>
-                                    </input>
+                                    <div className="col-2"></div>
+                                </div>
+                                </div><br/>
+                                <div className="row">
+                                    <div className="col-2"></div>
+                                    <div className="col-8">
+                                        <input type="submit" className="btn btn-outline-dark" id="navButton"/>
                                     </div>
-                                </div>    
-                            <div className="col-sm"></div>
-                        </div>
-
-
-                        <div className="row">
-                            <div className="col-sm"></div>    
-                            <div className="col-sm">
-                                <div className = "form-group">
-                                    <input type="text" className="form-control"
-                                        placeholder="Lastname"
-                                        id="lastName"
-                                        name="lastName"
-                                        value={this.state.value}
-                                        onChange={this.onChange}>
-                                    </input>
+                                    <div className="col-2"></div>
+                                </div>
+                                <br/>
+                                <div className="row">
+                                    <div className="col-2"></div>    
+                                    <div className="col-8">
+                                        <a href="/login" className="btn btn-outline-dark" id="navButton">{this.state.cancelTxt}</a>
                                     </div>
-                                </div>    
-                            <div className="col-sm"></div>
+                                    <div className="col-2"></div>    
+                                </div>                            
+                            </form>
+                            <br/><br/><br/><br/>
+                            </div>
+
                         </div>
-
-
-                        <div className="form-user">
-                        <label htmlFor={"user"}>Select user type:</label>
-                        <div className="row">
+                        <div className="col-sm"></div>
                         
-                            <div className="col-sm"></div>
-                            <div className="col-sm">
-                                <Select name="user" id="user" value={this.state.userType} options={this.state.userTypes}
-                                        onChange={this.onTypeChange} components={animatedComponents} required/>
-                            </div>
-                            <div className="col-sm"></div>
-                        </div>
-                        </div><br/>
-                        <div className="row">
-                            <div className="col-sm"></div>
-                            <div className="col-sm">
-                                <input type="submit" className="btn btn-sm btn-dark" id="navButton"/>
-                            </div>
-                            <div className="col-sm"></div>
-                        </div>
-                        </form>
                     <Footer/>
+            
                 </div>
+
+            </div>
+
             )
         }
     }

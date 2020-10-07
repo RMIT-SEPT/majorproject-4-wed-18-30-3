@@ -10,12 +10,68 @@ import axios from "axios";
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
 
-// const axiosConfig = {headers: {'Content-Type': 'application/json'}}
+async function getBookings(token, userType, userName) {
 
-async function getBookings() {
-    return await axios.get(DNS_URI + '/api/booking').then(response => {
+    if (userType === "ADMIN") {
+        return await axios.get(DNS_URI + '/api/booking', {
+            headers: { 
+                'Authorization': token }
+        }).then(function(response) {
+            console.log('Authenticated');
+            return response.data
+        }).catch(function(error) {
+            console.error("getBookings()", error)
+            console.log(error.response.data)
+        });
+    } else if (userType === "CUSTOMER") {
+        return await axios.get(DNS_URI + '/api/customer/' + userName, {
+            headers: { 
+                'Authorization': token }
+        }).then(function(response) {
+            console.log('Authenticated');
+            return response.data.bookings
+        }).catch(function(error) {
+            console.error("getBookings()", error)
+            console.log(error.response.data)
+        });
+    } 
+}
+
+async function getWorkers(token, userType, userName) {
+
+    if(userType !== undefined && userType !== "CUSTOMER") {
+        var urlString = '/api/worker'
+        if (userType !== "ADMIN")
+            urlString = urlString + '/' + userName
+
+        return await axios.get(DNS_URI + urlString, {
+        headers: { 
+            'Authorization': token }
+        }).then(function(response) {
+            console.log('Authenticated');
+            return response.data
+        }).catch(function(error) {
+            console.error("getWorkers()", error)
+            console.log(error.response.data)
+        });
+    }
+}
+
+async function getCustomers(token, userType, userName) {
+
+    var urlString = '/api/customer' 
+    if (userType !== "ADMIN")
+        urlString = urlString + '/' + userName
+    return await axios.get(DNS_URI + urlString, {
+        headers: { 
+            'Authorization': token }
+        }).then(function(response) {
+        console.log('Authenticated');
         return response.data
-    })
+        }).catch(function(error) {
+        console.error("getCustomers()", error)
+        console.log(error.response.data)
+        });
 }
 
 const capitalise = (string) => {
@@ -43,9 +99,12 @@ class Dashboard extends Component {
             userName: null,
             userType: null,
             bookings: this.getUserBookings(),
+            workers: this.loadWorkers(),
+            customers: this.loadCustomers(),
             bookingMsg: null
         }
-
+        this.loadCustomers = this.loadCustomers.bind(this)
+        this.loadWorkers = this.loadWorkers.bind(this)
         this.storeLoginToken = this.storeLoginToken.bind(this)
         this.storeLoginToken()
     }
@@ -66,75 +125,114 @@ class Dashboard extends Component {
         // TODO: persist state between refreshes
     }
 
-    async getUserBookings() {
-        // Only load bookings if a customer or worker is logged in 
-        if (this.props.userType !== null && this.props.userType !== "ADMIN" && this.props.userType !== undefined) {
+    async loadCustomers() {
+        if (this.props.token !== undefined) {
+            const customers = await getCustomers(this.props.token, this.props.userType, this.props.userName).then()
+            var customerList = []
+            if (customers !== undefined) {
+                for (let i = 0; i < customers.length; i++) {
+                    var nextBooking = "No bookings yet"
+                    var bookingCount = 0
+                    if (customers[i].bookings.length > 0)
+                        nextBooking = customers[i].bookings[0].timeslot.date
+                        bookingCount = customers[i].bookings.length
+                    customerList.push({
+                        user: customers[i].user.userName,
+                        nextBooking: nextBooking,
+                        bookingCount: bookingCount
+                    })
+                }
+                this.setState({customers: customerList})
+                return customerList
+            }
+        }
+    }
 
-            const bkgs = await getBookings().then()
+    async loadWorkers() {
+        if (this.props.token !== undefined) {
+            const workers = await getWorkers(this.props.token, this.props.userType, this.props.userName).then()
+            var workerList = []
+            if (workers !== undefined) {
+                for (let i = 0; i < workers.length; i++) {
+                    var services = workers[i].services[0]["name"]
+                    var serviceCount = workers[i].services.length
+                    workerList.push({
+                        user: workers[i].user.userName,
+                        company: workers[i].companyName,
+                        services: services,
+                        serviceCount: serviceCount
+                    })
+                }    
+            }
+            this.setState({workers: workerList})
+            return workerList
+        }
+    }
+
+
+    async getUserBookings() {
+
+        // Only load bookings if a customer or worker is logged in 
+        if (this.props.userType !== "ADMIN" && this.props.userType !== undefined) {
+
+            const bkgs = await getBookings(this.props.token, this.props.userType, this.props.userName).then()
             var userBkgs = []
             var msgString = "No bookings found : ("
 
-            // Filter bookings for customers
-            if (this.props.userType === "CUSTOMER") {
-                for (let i = 0; i < bkgs.length; i++) {
-                    if (bkgs[i]["customer"] !== null) {
-                        if (bkgs[i]["customer"]["user"]["userName"] === this.props.userName) {
-                            userBkgs.push(bkgs[i])
-                        }
-                    }
-                }
-                if (userBkgs.length > 1)
-                    msgString = "You have " + userBkgs.length + " upcoming bookings."
-                else if (userBkgs.length === 1)
-                    msgString = "You have " + userBkgs.length + " upcoming booking."
-                this.setState({bookingMsg: msgString})
-                this.setState({bookings: userBkgs})
+            if (bkgs !== undefined) {
+                // Only add bookings if theyre in the future
+                
+                
 
-            // Filter bookings for workers
-            } else if (this.props.userType === "WORKER") {
-                for (let i = 0; i < bkgs.length; i++) {
-                    if (bkgs[i]["worker"] !== null && bkgs[i]["customer"] !== null) {
-                        if (bkgs[i]["worker"]["user"]["userName"] === this.props.userName) {
+                if (Array.isArray(bkgs)) {
+                    for (let i = 0; i < bkgs.length; i++) {
+                        if(parseDateString(bkgs[i]["timeslot"]["date"]) > new Date()) {
                             userBkgs.push(bkgs[i])
                         }
                     }
+                } else if (bkgs.constructor === Object) {
+                    if(parseDateString(bkgs["timeslot"]["date"]) > new Date()) {
+                        userBkgs = bkgs
+                    }
                 }
+
+                
+                
+
+                var typeString = "job"
+                if (this.props.userType === "CUSTOMER")
+                    typeString = "booking"
+
                 if (userBkgs.length > 1)
-                    msgString = "You have " + userBkgs.length + " upcoming jobs."
+                    msgString = "You have " + userBkgs.length + " upcoming " + typeString + "s."
                 else if (userBkgs.length === 1)
-                    msgString = "You have " + userBkgs.length + " upcoming job."
+                    msgString = "You have " + userBkgs.length + " upcoming " + typeString + "."
                 this.setState({bookingMsg: msgString})
                 this.setState({bookings: userBkgs})
             }
-        }        
-    }
-
+        }
+    }        
+    
     render() {
         
         // Use the most recent element in state history
         const index = this.props.user.length - 1
 
-        var headerText = "AGME Booking App"
+        var headerText = ""
         if (this.props.userType === "CUSTOMER")
-            headerText = "AGME Booking App - Customer portal"
+            headerText = "Customer portal"
         else if (this.props.userType === "WORKER")
-            headerText = "AGME Booking App - Worker portal"
+            headerText = "Worker portal"
         else if (this.props.userType === "ADMIN")
-            headerText = "AGME Booking App - Admin portal"      
+            headerText = "Admin portal"      
 
         // Check user is logged in
         if (this.props.userName === undefined && this.props.userType === undefined) {
             return (
                 <div className="profile_screen_editprofile" id="profile_screen_editprofile">
-                <Header
-                    id={this.props.user[index]["id"]}
-                    userName={this.props.user[index]["userName"]}
-                    address={this.props.user[index]["address"]}
-                    phone={this.props.user[index]["phone"]}
-                    userType={this.props.user[index]["userType"]}
-                    token={this.props.user[index]["token"]}/>
+                <Header/>
                     <br/><br/><br/><br/>
-                <b>Please log in first.</b>
+                <b>Please <a href="/login">log in </a> to use the app.</b>
                 <br/><br/>
                 <Footer/>
                 </div>
@@ -142,10 +240,68 @@ class Dashboard extends Component {
         
         } else {
 
+            const customers = this.state.customers
+            const workers = this.state.workers
             const bookings = this.state.bookings
             var bookingDisplay
+            var customerHeader
+            var workerHeader
+            var customerDisplay
+            var workerDisplay
 
-            // Wait for promise fulfillment
+            // Show app stats for admins
+            if (this.props.userType === "ADMIN") {           
+                if(Array.isArray(customers)) {
+                    
+                    
+                    var count = 0                    
+                    customerDisplay = customers.map((user) => { 
+                        return (
+                            <div className="list-group-item d-flex justify-content-between align-items-center" key={++count}>
+                                {user.user} | Next booking: {user.nextBooking}
+                                <span className="badge badge-primary badge-pill">{user.bookingCount} active bookings</span>
+                            </div>
+                        )
+                    })
+
+                    customerHeader = (
+                        <div>
+                        <br/>
+                        <p className="text-left"><b>Customers at a glance</b></p>
+                        </div>
+                    )
+
+                    workerHeader = (
+                        <div>
+                        <br/>
+                        <p className="text-left"><b>Workers at a glance</b></p>
+                        </div>
+                    )   
+                        
+                }
+            
+            
+                if(Array.isArray(workers)) {
+                    
+                    
+                    var countW = 0                    
+                    workerDisplay = workers.map((user) => { 
+                        return (
+                            <div className="list-group-item d-flex justify-content-between align-items-center" key={++countW}>
+                                {user.user} from {user.company}
+                                <span className="badge badge-primary badge-pill">{user.serviceCount} service(s) offered</span>
+                            </div>
+                        )
+                    })
+                        
+
+
+                }
+
+            }
+
+
+            // Show users and workers their bookings
             if(Array.isArray(bookings)) {
 
                 // Customer
@@ -201,6 +357,10 @@ class Dashboard extends Component {
                             
                             <div className="list-group list-group-flush" id="scrollable">              
                                 {bookingDisplay}
+                                {workerHeader}
+                                {workerDisplay}
+                                {customerHeader}
+                                {customerDisplay}
                             </div>
 
                         </div>

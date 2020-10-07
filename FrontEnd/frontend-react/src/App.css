@@ -27,6 +27,11 @@
 #header {
   position: fixed;
   background-color: #282c34;
+  /* background-image: linear-gradient(#363b3d, white); */
+  /* color: black; */
+  padding-top: 5px;
+  padding-bottom: 5px;
+  color: white;
   left: 0;
   right: 0;
 }
@@ -36,13 +41,15 @@
   right: 0;
   bottom: 0;
   width: 100%;
+  /* background-image: linear-gradient(white, #363b3d); */
   background-color: #363b3d;
+  /* color: black; */
   color: white;
   text-align: center;
 }
 
 #scrollable {
-  height: 60%;
+  height: 80%;
   overflow-x: hidden;
   overflow-y: auto;
   text-align: center;

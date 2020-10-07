@@ -6,7 +6,7 @@ class CancelButton extends Component {
     render() {
         return (
             <React.Fragment>
-            <Link to="/dashboard" className="btn btn-sm btn-dark" id="navButton">
+            <Link to="/dashboard" className="btn btn-outline-dark" id="navButton">
             Cancel
             </Link>
             </React.Fragment>
