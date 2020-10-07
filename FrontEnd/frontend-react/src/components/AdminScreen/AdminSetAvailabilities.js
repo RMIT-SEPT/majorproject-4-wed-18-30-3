@@ -30,11 +30,11 @@ async function setAvailability(availability, token, userType, userName) {
             'Authorization': token }
     })
     .then(res => {
-        console.log(res)
         return true
     })
     .catch(error => {
         console.error("setAvailability()", error)
+        console.error(error.response.data)
         return false
     })
 }
@@ -122,6 +122,7 @@ class AdminSetAvailabilities extends Component {
             dateOptions: null,
             selectedService: null,
             serviceOptions: null,
+            selectedWorker: null,
             lastDateShown: null,
 
             showSubmitPanel: false,
@@ -155,7 +156,9 @@ class AdminSetAvailabilities extends Component {
 
     onChange(e){
         this.setState({[e.value.target]: e.value.value})
+        
         if (e.value.target === "selectedService") {
+            this.setState({dateOptions: this.getDateOptions()})
             this.setState({disableService: true})
             this.setState({disableTimeslot: false})
             this.setState({showMultiPanel: true})
@@ -163,24 +166,41 @@ class AdminSetAvailabilities extends Component {
 
         } else if (e.value.target === "selectedDate") {
             this.setState({showSubmitPanel: true})
-            var msg = "You're offering " + this.state.selectedService + " service on " + parseDateString(e.value.value)
+            var msg = this.state.selectedService + " service by " + this.state.selectedWorker + " on " + parseDateString(e.value.value)
             this.setState({submitMessage: msg})
+        
         } else if (e.value.target === "selectedWorker") {
-            
+            this.setState({serviceOptions: this.getServiceOptions()})
+            this.setState({disableWorker: true})
+            this.setState({disableService: false})
         }
     }
 
     async getWorkerOptions() {
-
+        if (this.props.userName !== undefined && this.props.userType !== undefined) {
+            const wks = await getWorkers(this.props.token, this.props.userType, this.props.userName).then()            
+            var workerOptions = []
+            for (let i = 0; i < wks.length; i++) { 
+                workerOptions.push({
+                    value: {
+                        target: "selectedWorker",
+                        value: wks[i].user.userName,                              
+                        services: wks[i].services,
+                        company: wks[i].companyName
+                    },
+                    label: wks[i].user.userName
+                })
+            }
+            this.setState({workerOptions: workerOptions})
+        }
     }
 
     async getDateOptions() {
 
         if (this.props.userName !== undefined && this.props.userType !== undefined) {
-            // Assume app state has populated timeslots
-            const ts = await getTimeslots(this.props.token, this.props.userType, this.props.userName).then()
-        
+            
             // Get a list of the workers existing bookings, if any
+            const ts = await getTimeslots(this.props.token, this.props.userType, this.props.userName).then()
             var bkgTimes = []
             const bkgs = await getBookings(this.props.token, this.props.userType, this.props.userName).then()
             
@@ -272,12 +292,23 @@ class AdminSetAvailabilities extends Component {
     }
 
     async getServiceOptions() {
-
+        const wks = await getWorkers(this.props.token, this.props.userType, this.props.userName).then()            
         var serviceOptions = []
-        if (this.props.userName !== undefined && this.props.userType !== undefined) {
-
-            this.setState({serviceOptions: serviceOptions})
+        for (let i = 0; i < wks.length; i++) { 
+            for (let j = 0; j < wks[i].services.length; j++) { 
+                if(wks[i].user.userName === this.state.selectedWorker) {
+                    serviceOptions.push({
+                        value: {
+                            target: "selectedService",
+                            value: wks[i].services[j].name                              
+                        },
+                        label: wks[i].services[j].name
+                    })
+                }
+            }
         }
+        this.setState({serviceOptions: serviceOptions})
+        
     }
 
     oneDay() {this.setAvailByDay(1)}
@@ -323,7 +354,7 @@ class AdminSetAvailabilities extends Component {
                 if (i < timeslotDates.length) {
                 
                     var result = await setAvailability({
-                        worker: {user: {userName: this.props.userName}},
+                        worker: {user: {userName: this.state.selectedWorker}},
                         timeslot: {date: timeslotDates[i]},
                         service: this.state.selectedService
                     }, this.props.token, this.props.userType, this.props.userName)
@@ -394,7 +425,7 @@ class AdminSetAvailabilities extends Component {
 
     async singleSlotAvail() {
         var newAvailability = {
-            worker: {user: {userName: this.props.userName}},
+            worker: {user: {userName: this.state.selectedWorker}},
             timeslot: {date: this.state.selectedDate},
             service: this.state.selectedService
         }
@@ -411,12 +442,12 @@ class AdminSetAvailabilities extends Component {
     render() {
         
         var reset_url
-        if (window.location.pathname === "/set_availabilites" ) {
-            reset_url = "/set_availabilites_reset"
-        } else if (window.location.pathname === "/set_availabilites_reset") {
-            reset_url = "/set_availabilites"
+        if (window.location.pathname === "/admin_set_availabilites" ) {
+            reset_url = "/admin_set_availabilites_reset"
+        } else if (window.location.pathname === "/admin_set_availabilites_reset") {
+            reset_url = "/admin_set_availabilites"
         } else 
-            reset_url = "/set_availabilites" 
+            reset_url = "/admin_set_availabilites" 
         
         const animatedComponents = makeAnimated()
         
@@ -534,7 +565,7 @@ class AdminSetAvailabilities extends Component {
                             {
                             this.state.showMultiPanel? 
                             <div>
-                                <p>...or make yourself availabile according to your open slots</p>
+                                <p>...or make {this.state.selectedWorker} availabile broadly</p>
                                 <div className="row">
                                 <div className="col-sm-3">
                                     <div className="card shadow-sm bg-white rounded">
