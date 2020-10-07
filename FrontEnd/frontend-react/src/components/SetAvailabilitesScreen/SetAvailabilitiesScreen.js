@@ -12,13 +12,8 @@ import CancelButton from '../AvailabilitiesScreen/CancelButton'
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
 
-const MIN_DURATION = 30
-
-// Header config for REST requests
-const axiosConfig = {headers: {'Content-Type': 'application/json'}}
-
 // Send a create booking request to bookings endpoint
-async function setAvailability(availability) {
+async function setAvailability(availability, token, userType, userName) {
 
     console.log(JSON.stringify({
         created_At: currentTime(),
@@ -31,7 +26,9 @@ async function setAvailability(availability) {
         updated_At: currentTime(),
         worker: availability.worker,
         timeslot: availability.timeslot,
-    }, axiosConfig)
+    },  { headers: { 
+            'Authorization': token }
+    })
     .then(res => {
         console.log(res)
         return true
@@ -50,55 +47,34 @@ const capitalise = (string) => {
 // Create date object from "YYYY-MM-DD-hh-mm-ss" string
 function parseDateString(dStr) {
     var date = new Date()
-
-    date.setUTCFullYear(dStr.slice(0, 4))
-    date.setUTCMonth(parseInt((dStr.slice(5, 7)) - 1, 10))
-    date.setUTCDate(dStr.slice(8, 10))
-    date.setUTCHours(dStr.slice(11, 13))
-    date.setUTCMinutes(dStr.slice(14, 16))
-    date.setUTCSeconds(dStr.slice(17, 19))  
+    date.setFullYear(dStr.slice(0, 4))
+    date.setMonth(parseInt((dStr.slice(5, 7)) - 1, 10))
+    date.setDate(dStr.slice(8, 10))
+    date.setHours(dStr.slice(11, 13))
+    date.setMinutes(dStr.slice(14, 16))
+    date.setSeconds(dStr.slice(17, 19))  
     return date
-}
-
-// Return datestring in backend-friendly format 
-function formatDate(date) {
-    if (date === undefined || date === null)
-        var date = new Date();
-    
-    var dateString =
-        date.getUTCFullYear() + "-" +
-        ("0" + (date.getUTCMonth()+1)).slice(-2) + "-" +
-        ("0" + date.getUTCDate()).slice(-2) + "-" +
-        ("0" + date.getUTCHours()).slice(-2) + "-" +
-        ("0" + date.getUTCMinutes()).slice(-2) + "-" +
-        ("0" + date.getUTCSeconds()).slice(-2);
-    return dateString
 }
 
 // Return the current time in backend-friendly format 
 function currentTime() {
     var date = new Date();
     var dateString =
-        date.getUTCFullYear() + "-" +
-        ("0" + (date.getUTCMonth()+1)).slice(-2) + "-" +
-        ("0" + date.getUTCDate()).slice(-2) + "-" +
-        ("0" + date.getUTCHours()).slice(-2) + "-" +
-        ("0" + date.getUTCMinutes()).slice(-2) + "-" +
-        ("0" + date.getUTCSeconds()).slice(-2);
+        date.getFullYear() + "-" +
+        ("0" + (date.getMonth()+1)).slice(-2) + "-" +
+        ("0" + date.getDate()).slice(-2) + "-" +
+        ("0" + date.getHours()).slice(-2) + "-" +
+        ("0" + date.getMinutes()).slice(-2) + "-" +
+        ("0" + date.getSeconds()).slice(-2);
     return dateString
 }
 
-// Return current time as Date object rounded to its next upper increment
-function roundedCurrentTime(increment) {
-    var date = new Date()
-    var ms = 1000 * 60 * increment;
-    var rDate = new Date(Math.round(date.getTime() / ms) * ms);
-    rDate.setMinutes(rDate.getMinutes() + increment)
-    return rDate 
-}
-
-async function getTimelots() {
-    return await axios.get(DNS_URI + '/api/timeslot').then(response => {
+async function getTimeslots(token, userType, userName) {
+    
+    return await axios.get(DNS_URI + '/api/timeslot', {
+        headers: { 
+            'Authorization': token }
+    }).then(response => {
         console.log("getTimeslots()", response)
         return response.data
     }).catch(error => {
@@ -106,21 +82,38 @@ async function getTimelots() {
     })
 }
 
-async function getWorker(worker) {
-    return await axios.get(DNS_URI + '/api/worker/' + worker).then(response => {
-        console.log("getWorker()", response)
-        return response.data
-    }).catch(error => {
-        console.error("getWorker()", error)
-    })
+async function getWorker(token, userType, userName) {
+
+    if(userType !== undefined && userType !== "CUSTOMER") {
+        var urlString = '/api/worker'
+        if (userType !== "ADMIN")
+            urlString = urlString + '/' + userName
+
+        return await axios.get(DNS_URI + urlString, {
+        headers: { 
+            'Authorization': token }
+        }).then(function(response) {
+            console.log('Authenticated');
+            return response.data
+        }).catch(function(error) {
+            console.error("getWorkers()", error)
+            console.log(error.response.data)
+        });
+    }
 }
 
-async function getBookings() {
-    return await axios.get(DNS_URI + '/api/booking').then(response => {
+async function getBookings(token, userType, userName) {
+
+    return await axios.get(DNS_URI + '/api/booking', {
+        headers: { 
+            'Authorization': token }
+      }).then(function(response) {
+        console.log('Authenticated');
         return response.data
-    }).catch(error => {
+      }).catch(function(error) {
         console.error("getBookings()", error)
-    })
+        console.log(error.response.data)
+      });
 }
 
 class SetAvailabilitiesScreen extends Component {
@@ -178,53 +171,57 @@ class SetAvailabilitiesScreen extends Component {
 
     async getDateOptions() {
 
-        // Assume app state has populated timeslots
-        const ts = await getTimelots().then()
-    
-        // Get a list of the workers existing bookings, if any
-        var bkgTimes = []
-        const bkgs = await getBookings().then()
-        for (let i = 0; i < bkgs.length; i++) { 
-            if (bkgs[i]["customer"] !== null && bkgs[i]["worker"]["user"]["userName"] === this.props.userName) 
-                bkgTimes.push(bkgs[i]["timeslot"]["date"])
-        }
-
-        // If worker has existing bookings, dont show them in the list of timeslots (double booking).
-        var count = 0
-        var dateOptions = []
-        if (ts[0] !== undefined) {            
-            for (let i = 0; i < ts.length; i++) { 
-                // Only show 50 timeslots at a time
-                if (count < 50) {
-                    if (!bkgTimes.includes(ts[i]["date"])) {
-                        
-                        // Only show timeslots in the future.
-                        if (parseDateString(ts[i]["date"]) > new Date()) {
-                        dateOptions.push({
-                            value: {
-                                date: ts[i]["date"],
-                                value: ts[i]["date"],
-                                target: "selectedDate"},
-                            label: parseDateString(ts[i]["date"]).toString()
-                        })
-                        count++ 
-                        }
-                    } 
-                }
+        if (this.props.userName !== undefined && this.props.userType !== undefined) {
+            // Assume app state has populated timeslots
+            const ts = await getTimeslots(this.props.token, this.props.userType, this.props.userName).then()
+        
+            // Get a list of the workers existing bookings, if any
+            var bkgTimes = []
+            const bkgs = await getBookings(this.props.token, this.props.userType, this.props.userName).then()
+            
+            for (let i = 0; i < bkgs.length; i++) { 
+                if (bkgs[i]["customer"] !== null && bkgs[i]["worker"]["user"]["userName"] === this.props.userName) 
+                    bkgTimes.push(bkgs[i]["timeslot"]["date"])
             }
-        } else {
-            console.log("Timeslots not populated. Ensure timeslots have been created before attempting to create availabilites.")
+
+            // If worker has existing bookings, dont show them in the list of timeslots (double booking).
+            var count = 0
+            var dateOptions = []
+            if (ts[0] !== undefined) {            
+                for (let i = 0; i < ts.length; i++) { 
+                    // Only show 50 timeslots at a time
+                    if (count < 50) {
+                        if (!bkgTimes.includes(ts[i]["date"])) {
+                            
+                            // Only show timeslots in the future.
+                            if (parseDateString(ts[i]["date"]) > new Date()) {
+                            dateOptions.push({
+                                value: {
+                                    date: ts[i]["date"],
+                                    value: ts[i]["date"],
+                                    target: "selectedDate"},
+                                label: parseDateString(ts[i]["date"]).toString()
+                            })
+                            count++ 
+                            }
+                        } 
+                    }
+                }
+            } else {
+                console.log("Timeslots not populated. Ensure timeslots have been created before attempting to create availabilites.")
+            }
+            this.setState({dateOptions: dateOptions})
+            // log the last displayed timeslot
+            this.setState({lastDateShown: dateOptions[dateOptions.length - 1]["value"]["date"]})
         }
-        this.setState({dateOptions: dateOptions})
-        // log the last displayed timeslot
-        this.setState({lastDateShown: dateOptions[dateOptions.length - 1]["value"]["date"]})
     }
 
     // Load next batch of timeslots, starting from the last previously displayed
     async next() {
+
         this.setState({showSubmitPanel : false})
         this.setState({selectedDate: null})
-        const ts = await getTimelots().then()
+        const ts = await getTimeslots().then()
         var bkgTimes = []
         const bkgs = await getBookings().then()
         for (let i = 0; i < bkgs.length; i++) { 
@@ -270,25 +267,28 @@ class SetAvailabilitiesScreen extends Component {
     }
 
     async getServiceOptions() {
-        const worker = await getWorker(this.props.userName).then()
-        var serviceOptions = []
+        
+        if (this.props.userName !== undefined && this.props.userType !== undefined) {
+            const worker = await getWorker(this.props.token, this.props.userType, this.props.userName).then()
+            var serviceOptions = []
 
-        // Only create the display if user logged in
-        if (this.props.userName !== undefined) {
-            
-            // Display all the workers services
-            for (let i = 0; i < worker["services"].length; i++) { 
-                serviceOptions.push({
-                    value: { 
-                        service: worker["services"][i],
-                        value: worker["services"][i]["name"],
-                        target: "selectedService"},
-                    label: capitalise(worker["services"][i]["name"]) 
-                })
-            }       
+            // Only create the display if user logged in
+            if (this.props.userName !== undefined) {
+                
+                // Display all the workers services
+                for (let i = 0; i < worker["services"].length; i++) { 
+                    serviceOptions.push({
+                        value: { 
+                            service: worker["services"][i],
+                            value: worker["services"][i]["name"],
+                            target: "selectedService"},
+                        label: capitalise(worker["services"][i]["name"]) 
+                    })
+                }       
+            }
+
+            this.setState({serviceOptions: serviceOptions})
         }
-
-        this.setState({serviceOptions: serviceOptions})
     }
 
     oneDay() {this.setAvailByDay(1)}
@@ -302,8 +302,8 @@ class SetAvailabilitiesScreen extends Component {
         this.setState({success: "pending"})
 
         // Get a list of the workers next open timeslots
-        const rawTimeslots = await getTimelots().then()
-        const bkgs = await getBookings().then()
+        const rawTimeslots = await getTimeslots(this.props.token, this.props.userType, this.props.userName).then()
+        const bkgs = await getBookings(this.props.token, this.props.userType, this.props.userName).then()
         var timeslotDates = []
         var bkgTimes = []
         for (let i = 0; i < bkgs.length; i++) { 
@@ -324,8 +324,6 @@ class SetAvailabilitiesScreen extends Component {
             }
         }
        
-        console.log("timeslotDates", timeslotDates)
-
         // Only make bookings if the backend has timeslots
         if (timeslotDates.length > 1) {
             
@@ -339,7 +337,7 @@ class SetAvailabilitiesScreen extends Component {
                         worker: {user: {userName: this.props.userName}},
                         timeslot: {date: timeslotDates[i]},
                         service: this.state.selectedService
-                    })
+                    }, this.props.token, this.props.userType, this.props.userName)
                     results.push(result)
                 }
             }
@@ -372,34 +370,36 @@ class SetAvailabilitiesScreen extends Component {
 
     async checkTimeslotsExist() {
         
-        // Get a list of the workers next open timeslots
-        const rawTimeslots = await getTimelots().then()
-        const bkgs = await getBookings().then()
-        var timeslotDates = []
-        var bkgTimes = []
-        for (let i = 0; i < bkgs.length; i++) { 
-            
-            // check for booked timeslots
-            if (bkgs[i]["customer"] !== null && bkgs[i]["worker"]["user"]["userName"] === this.props.userName) 
-                bkgTimes.push(bkgs[i]["timeslot"]["date"])
+        if (this.props.userName !== undefined && this.props.userType !== undefined) {
+            // Get a list of the workers next open timeslots
+            const rawTimeslots = await getTimeslots(this.props.token, this.props.userType, this.props.userName).then()
+            const bkgs = await getBookings(this.props.token, this.props.userType, this.props.userName).then()
+            var timeslotDates = []
+            var bkgTimes = []
+            for (let i = 0; i < bkgs.length; i++) { 
+                
+                // check for booked timeslots
+                if (bkgs[i]["customer"] !== null && bkgs[i]["worker"]["user"]["userName"] === this.props.userName) 
+                    bkgTimes.push(bkgs[i]["timeslot"]["date"])
 
-            // check for availability timeslots
-            if (bkgs[i]["customer"] === null && bkgs[i]["worker"]["user"]["userName"] === this.props.userName) 
-                bkgTimes.push(bkgs[i]["timeslot"]["date"])
-        }
-    
-        // Subtract taken (booked or availability open) timeslots from list of all timeslots
-        for (let i = 0; i < rawTimeslots.length; i++) { 
-            if(!bkgTimes.includes(rawTimeslots[i]["date"])) {
-                timeslotDates.push(rawTimeslots[i]["date"])
+                // check for availability timeslots
+                if (bkgs[i]["customer"] === null && bkgs[i]["worker"]["user"]["userName"] === this.props.userName) 
+                    bkgTimes.push(bkgs[i]["timeslot"]["date"])
             }
-        }
-       
-        // Critical error if there are no timeslots
-        if (timeslotDates.length < 1) {
-            console.log("Unable to place bookings, no timeslots available in system. Add more timeslots in the backend.")
-            alert("No more timeslots available to book. Contact a system administrator to add more timeslots for you.")
-            this.setState({success: false})
+        
+            // Subtract taken (booked or availability open) timeslots from list of all timeslots
+            for (let i = 0; i < rawTimeslots.length; i++) { 
+                if(!bkgTimes.includes(rawTimeslots[i]["date"])) {
+                    timeslotDates.push(rawTimeslots[i]["date"])
+                }
+            }
+        
+            // Critical error if there are no timeslots
+            if (timeslotDates.length < 1) {
+                console.log("Unable to place bookings, no timeslots available in system. Add more timeslots in the backend.")
+                alert("No more timeslots available to book. Contact a system administrator to add more timeslots for you.")
+                this.setState({success: false})
+            }
         }
     }
 
@@ -410,7 +410,7 @@ class SetAvailabilitiesScreen extends Component {
             service: this.state.selectedService
         }
 
-        const result = await setAvailability(newAvailability)
+        const result = await setAvailability(newAvailability, this.props.token, this.props.userType, this.props.userName)
 
         if (result) {
             this.setState({success: true})
@@ -430,6 +430,19 @@ class SetAvailabilitiesScreen extends Component {
             reset_url = "/set_availabilites" 
         
         const animatedComponents = makeAnimated()
+        
+        // Check user is logged in
+        if (this.props.userName === undefined && this.props.userType === undefined) {
+            return (
+                <div className="profile_screen_editprofile" id="profile_screen_editprofile">
+                <Header/>
+                    <br/><br/><br/><br/>
+                <b>Please <a href="/login">log in </a> to use the app.</b>
+                <br/><br/>
+                <Footer/>
+                </div>
+            )
+        }
 
         if (this.state.success === null) {
         

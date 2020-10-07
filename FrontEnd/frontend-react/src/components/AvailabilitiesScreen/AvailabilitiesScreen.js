@@ -7,6 +7,20 @@ import AvailabilitiesPane from './AvailabilitiesPane'
 
 class AvailabilitiesScreen extends Component {
     render() {
+
+        // Check user is logged in
+        if (this.props.userName === undefined && this.props.userType === undefined) {
+            return (
+                <div className="profile_screen_editprofile" id="profile_screen_editprofile">
+                <Header/>
+                    <br/><br/><br/><br/>
+                <b>Please <a href="/login">log in </a> to use the app.</b>
+                <br/><br/>
+                <Footer/>
+                </div>
+            )
+        }
+
         return (
             <div className="container" id="cancel_screen_container">
                 <Header id={this.props.id}

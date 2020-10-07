@@ -10,30 +10,68 @@ import axios from "axios";
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
 
-// const axiosConfig = {headers: {'Content-Type': 'application/json'}}
+async function getBookings(token, userType, userName) {
 
-async function getBookings() {
-    return await axios.get(DNS_URI + '/api/booking').then(response => {
-        return response.data
-    })
+    if (userType === "ADMIN") {
+        return await axios.get(DNS_URI + '/api/booking', {
+            headers: { 
+                'Authorization': token }
+        }).then(function(response) {
+            console.log('Authenticated');
+            return response.data
+        }).catch(function(error) {
+            console.error("getBookings()", error)
+            console.log(error.response.data)
+        });
+    } else if (userType === "CUSTOMER") {
+        return await axios.get(DNS_URI + '/api/customer/' + userName, {
+            headers: { 
+                'Authorization': token }
+        }).then(function(response) {
+            console.log('Authenticated');
+            return response.data.bookings
+        }).catch(function(error) {
+            console.error("getBookings()", error)
+            console.log(error.response.data)
+        });
+    } 
 }
 
-async function getWorkers() {
-    return await axios.get(DNS_URI + '/api/worker').then(response => {
-        console.log("getWorker()", response)
-        return response.data
-    }).catch(error => {
-        console.error("getWorker()", error)
-    })
+async function getWorkers(token, userType, userName) {
+
+    if(userType !== undefined && userType !== "CUSTOMER") {
+        var urlString = '/api/worker'
+        if (userType !== "ADMIN")
+            urlString = urlString + '/' + userName
+
+        return await axios.get(DNS_URI + urlString, {
+        headers: { 
+            'Authorization': token }
+        }).then(function(response) {
+            console.log('Authenticated');
+            return response.data
+        }).catch(function(error) {
+            console.error("getWorkers()", error)
+            console.log(error.response.data)
+        });
+    }
 }
 
-async function getCustomers() {
-    return await axios.get(DNS_URI + '/api/customer').then(response => {
-        console.log("getCustomers()", response)
+async function getCustomers(token, userType, userName) {
+
+    var urlString = '/api/customer' 
+    if (userType !== "ADMIN")
+        urlString = urlString + '/' + userName
+    return await axios.get(DNS_URI + urlString, {
+        headers: { 
+            'Authorization': token }
+        }).then(function(response) {
+        console.log('Authenticated');
         return response.data
-    }).catch(error => {
+        }).catch(function(error) {
         console.error("getCustomers()", error)
-    })
+        console.log(error.response.data)
+        });
 }
 
 const capitalise = (string) => {
@@ -61,11 +99,10 @@ class Dashboard extends Component {
             userName: null,
             userType: null,
             bookings: this.getUserBookings(),
-            customers: this.loadCustomers(),
             workers: this.loadWorkers(),
+            customers: this.loadCustomers(),
             bookingMsg: null
         }
-
         this.loadCustomers = this.loadCustomers.bind(this)
         this.loadWorkers = this.loadWorkers.bind(this)
         this.storeLoginToken = this.storeLoginToken.bind(this)
@@ -89,102 +126,93 @@ class Dashboard extends Component {
     }
 
     async loadCustomers() {
-        const customers = await getCustomers()
-        var customerList = []
-        
-        for (let i = 0; i < customers.length; i++) {
-            var nextBooking = "No bookings yet"
-            var bookingCount = 0
-            if (customers[i].bookings.length > 0)
-                nextBooking = customers[i].bookings[0].timeslot.date
-                bookingCount = customers[i].bookings.length
-            customerList.push({
-                user: customers[i].user.userName,
-                nextBooking: nextBooking,
-                bookingCount: bookingCount
-            })
+        if (this.props.token !== undefined) {
+            const customers = await getCustomers(this.props.token, this.props.userType, this.props.userName).then()
+            var customerList = []
+            if (customers !== undefined) {
+                for (let i = 0; i < customers.length; i++) {
+                    var nextBooking = "No bookings yet"
+                    var bookingCount = 0
+                    if (customers[i].bookings.length > 0)
+                        nextBooking = customers[i].bookings[0].timeslot.date
+                        bookingCount = customers[i].bookings.length
+                    customerList.push({
+                        user: customers[i].user.userName,
+                        nextBooking: nextBooking,
+                        bookingCount: bookingCount
+                    })
+                }
+                this.setState({customers: customerList})
+                return customerList
+            }
         }
-
-        console.log(customerList)
-
-        this.setState({customers: customerList})
-        return customerList
     }
 
     async loadWorkers() {
-        const workers = await getWorkers()
-        var workerList = []
-
-
-        for (let i = 0; i < workers.length; i++) {
-            var services = workers[i].services[0]["name"]
-            var serviceCount = workers[i].services.length
-            workerList.push({
-                user: workers[i].user.userName,
-                company: workers[i].companyName,
-                services: services,
-                serviceCount: serviceCount
-            })
+        if (this.props.token !== undefined) {
+            const workers = await getWorkers(this.props.token, this.props.userType, this.props.userName).then()
+            var workerList = []
+            if (workers !== undefined) {
+                for (let i = 0; i < workers.length; i++) {
+                    var services = workers[i].services[0]["name"]
+                    var serviceCount = workers[i].services.length
+                    workerList.push({
+                        user: workers[i].user.userName,
+                        company: workers[i].companyName,
+                        services: services,
+                        serviceCount: serviceCount
+                    })
+                }    
+            }
+            this.setState({workers: workerList})
+            return workerList
         }
-
-        console.log(workerList)
-
-        this.setState({workers: workerList})
-        return workerList
     }
 
 
     async getUserBookings() {
-        // Only load bookings if a customer or worker is logged in 
-        if (this.props.userType !== null && this.props.userType !== "ADMIN" && this.props.userType !== undefined) {
 
-            const bkgs = await getBookings().then()
+        // Only load bookings if a customer or worker is logged in 
+        if (this.props.userType !== "ADMIN" && this.props.userType !== undefined) {
+
+            const bkgs = await getBookings(this.props.token, this.props.userType, this.props.userName).then()
             var userBkgs = []
             var msgString = "No bookings found : ("
 
-            // Filter bookings for customers
-            if (this.props.userType === "CUSTOMER") {
-                for (let i = 0; i < bkgs.length; i++) {
-                    if (bkgs[i]["customer"] !== null) {
-                        if (bkgs[i]["customer"]["user"]["userName"] === this.props.userName) {
-                            
-                            // Only add bookings if theyre in the future
-                            if(parseDateString(bkgs[i]["timeslot"]["date"]) > new Date()) {
-                                userBkgs.push(bkgs[i])
-                            }
+            if (bkgs !== undefined) {
+                // Only add bookings if theyre in the future
+                
+                
+
+                if (Array.isArray(bkgs)) {
+                    for (let i = 0; i < bkgs.length; i++) {
+                        if(parseDateString(bkgs[i]["timeslot"]["date"]) > new Date()) {
+                            userBkgs.push(bkgs[i])
                         }
                     }
-                }
-                if (userBkgs.length > 1)
-                    msgString = "You have " + userBkgs.length + " upcoming bookings."
-                else if (userBkgs.length === 1)
-                    msgString = "You have " + userBkgs.length + " upcoming booking."
-                this.setState({bookingMsg: msgString})
-                this.setState({bookings: userBkgs})
-
-            // Filter bookings for workers
-            } else if (this.props.userType === "WORKER") {
-                for (let i = 0; i < bkgs.length; i++) {
-                    if (bkgs[i]["worker"] !== null && bkgs[i]["customer"] !== null) {
-                        if (bkgs[i]["worker"]["user"]["userName"] === this.props.userName) {
-
-                            // Only add bookings if theyre in the future
-                            if(parseDateString(bkgs[i]["timeslot"]["date"]) > new Date()) {
-                                userBkgs.push(bkgs[i])
-                            }
-                        }
+                } else if (bkgs.constructor === Object) {
+                    if(parseDateString(bkgs["timeslot"]["date"]) > new Date()) {
+                        userBkgs = bkgs
                     }
                 }
+
+                
+                
+
+                var typeString = "job"
+                if (this.props.userType === "CUSTOMER")
+                    typeString = "booking"
+
                 if (userBkgs.length > 1)
-                    msgString = "You have " + userBkgs.length + " upcoming jobs."
+                    msgString = "You have " + userBkgs.length + " upcoming " + typeString + "s."
                 else if (userBkgs.length === 1)
-                    msgString = "You have " + userBkgs.length + " upcoming job."
+                    msgString = "You have " + userBkgs.length + " upcoming " + typeString + "."
                 this.setState({bookingMsg: msgString})
                 this.setState({bookings: userBkgs})
             }
-        }        
-    }
-
+        }
+    }        
+    
     render() {
         
         // Use the most recent element in state history
@@ -202,13 +230,7 @@ class Dashboard extends Component {
         if (this.props.userName === undefined && this.props.userType === undefined) {
             return (
                 <div className="profile_screen_editprofile" id="profile_screen_editprofile">
-                <Header
-                    id={this.props.user[index]["id"]}
-                    userName={this.props.user[index]["userName"]}
-                    address={this.props.user[index]["address"]}
-                    phone={this.props.user[index]["phone"]}
-                    userType={this.props.user[index]["userType"]}
-                    token={this.props.user[index]["token"]}/>
+                <Header/>
                     <br/><br/><br/><br/>
                 <b>Please <a href="/login">log in </a> to use the app.</b>
                 <br/><br/>
@@ -226,14 +248,12 @@ class Dashboard extends Component {
             var workerHeader
             var customerDisplay
             var workerDisplay
-            var custCount
-            var wkrCount
 
             // Show app stats for admins
             if (this.props.userType === "ADMIN") {           
                 if(Array.isArray(customers)) {
                     
-                    custCount = customers.length
+                    
                     var count = 0                    
                     customerDisplay = customers.map((user) => { 
                         return (
@@ -263,11 +283,11 @@ class Dashboard extends Component {
             
                 if(Array.isArray(workers)) {
                     
-                    wkrCount = workers.length
-                    var count = 0                    
+                    
+                    var countW = 0                    
                     workerDisplay = workers.map((user) => { 
                         return (
-                            <div className="list-group-item d-flex justify-content-between align-items-center" key={++count}>
+                            <div className="list-group-item d-flex justify-content-between align-items-center" key={++countW}>
                                 {user.user} from {user.company}
                                 <span className="badge badge-primary badge-pill">{user.serviceCount} service(s) offered</span>
                             </div>

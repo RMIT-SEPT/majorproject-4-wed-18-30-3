@@ -30,17 +30,16 @@ const axiosConfig = {
 
 async function getUserConfirm(userName, password) {
 
-    console.log(JSON.stringify({
-        "userName": userName,
-        "password": password
-    }))
+    // console.log(JSON.stringify({
+    //     "userName": userName,
+    //     "password": password
+    // }))
 
     return await axios.post(DNS_URI + '/api/user/login', {
         "userName": userName,
         "password": password
     }, axiosConfig)
         .then(res => {
-            console.log(res.data)
             return [true, res]
         })
         .catch(error => {
@@ -84,13 +83,6 @@ class LoginScreen extends Component {
         // Set state accoring to the REST response
         const success = await getUserConfirm(this.state.userName, this.state.password).then()
         if (success[0]) {
-            console.log(success[1].data["userType"])
-            console.log(success[1].data["token"])
-            this.setState({id: success[1].data["id"]})
-            this.setState({userName: success[1].data["userName"]})
-            this.setState({password: success[1].data["password"]})
-            this.setState({address: success[1].data["address"]})
-            this.setState({phone: success[1].data["phone"]})
             this.setState({userType: success[1].data["userType"]})
             this.setState({token: success[1].data["token"]})
             this.setState({hasFail: false})
@@ -186,10 +178,7 @@ class LoginScreen extends Component {
             <div className = "Login_Ui">
                 <Route exact path="/dashboard" render={(props) => (
                     <Dashboard {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
@@ -204,162 +193,117 @@ class LoginScreen extends Component {
                 
                 <Route exact path="/bookings" render={(props) => (
                     <BookingScreen {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
 
                 <Route exact path="/bookings_reset" render={(props) => (
                     <BookingScreen {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
 
                 <Route exact path="/my_bookings" render={(props) => (
                     <MyBookingsScreen {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
                 <Route exact path="/cancel" render={(props) => (
                     <CancelBookingScreen {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
                 <Route exact path="/profile" render={(props) => (
                     <ProfileScreen {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
                 <Route exact path="/availabilites" render={(props) => (
                     <AvailabilitiesScreen {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
                 <Route exact path="/set_availabilites" render={(props) => (
                     <SetAvailabilitiesScreen {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+                <Route exact path="/set_availabilites_reset" render={(props) => (
+                    <SetAvailabilitiesScreen {...props}
+                        userName={this.state.userName}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
                 <Route exact path="/register" render={(props) => (
                     <RegisterScreen {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
                 <Route exact path="/weekly_view" render={(props) => (
                     <WeeklyViewScreen {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
                 <Route exact path="/calendar_view" render={(props) => (
                     <CalendarViewScreen {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
 
                 <Route exact path="/history" render={(props) => (
                     <HistoryScreen {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
                 <Route exact path="/about" render={(props) => (
                     <AboutScreen {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
                 
                 <Route exact path="/admin_set_availabilites" render={(props) => (
                     <AdminSetAvailabilities {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
 
                 <Route exact path="/admin_booking_summary" render={(props) => (
                     <AdminBookingSummary {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
 
                 <Route exact path="/admin_add_worker" render={(props) => (
                     <AdminAddWorker {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
 
                 <Route exact path="/admin_edit_user" render={(props) => (
                     <AdminEditUser {...props}
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
                 
                 <Redirect to="/dashboard" render={(props) => (
                     <Dashboard {...props} 
-                        id={this.state.id}
                         userName={this.state.userName}
-                        address={this.state.address}
-                        phone={this.state.phone}
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
