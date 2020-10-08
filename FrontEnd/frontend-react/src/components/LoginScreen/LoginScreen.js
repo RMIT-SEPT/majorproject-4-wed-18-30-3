@@ -280,6 +280,13 @@ class LoginScreen extends Component {
                         token={this.state.token}/>
                 )}/>
 
+                <Route exact path="/admin_set_availabilites_reset" render={(props) => (
+                    <AdminSetAvailabilities {...props}
+                        userName={this.state.userName}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+
                 <Route exact path="/admin_booking_summary" render={(props) => (
                     <AdminBookingSummary {...props}
                         userName={this.state.userName}
