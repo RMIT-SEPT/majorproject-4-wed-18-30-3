@@ -1,10 +1,8 @@
 package labwed18303.demo;
 
-import labwed18303.demo.Repositories.TimeslotRepository;
+
 import labwed18303.demo.model.*;
 import labwed18303.demo.services.*;
-import labwed18303.demo.web.UserController;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -18,6 +16,8 @@ import java.util.List;
 @SpringBootApplication
 public class DemoApplication {
 public static int MIN_DURATION = 30;
+public static int NUM_STARTING_TIMESLOTS = 2880;
+public static int NUM_STARTING_AVAILABILITIES = 744;
 
     public static void main(String[] args) {
         ConfigurableApplicationContext app = SpringApplication.run(DemoApplication.class, args);
@@ -33,7 +33,7 @@ public static int MIN_DURATION = 30;
        long minDurationMillis = 1000 * 60 * MIN_DURATION;
        long trimmed = now.getTime() / minDurationMillis;
        long rounded = trimmed * minDurationMillis;
-       for(int i = 0; i < 1440; ++i){
+       for(int i = 0; i < NUM_STARTING_TIMESLOTS; ++i){
            timeslotService.saveOrUpdateTimeslot(new Timeslot(i, 30, new Date(rounded + minDurationMillis * i), now, now));
        }
 
@@ -73,9 +73,8 @@ public static int MIN_DURATION = 30;
         }
 
 
-        List<Booking> bookings = new ArrayList<>();
         int bookingCounter = 0;
-        for(int i = 0; i<100; ++i){
+        for(int i = 0; i<NUM_STARTING_AVAILABILITIES; ++i){
             Date itDate = new Date(rounded + (bookingCounter * minDurationMillis));
             while(itDate.getHours() > 16 || itDate.getHours() < 9){
                 ++bookingCounter;
