@@ -115,10 +115,10 @@ public class BookingService {
     }
 
     public Iterable<Booking> findAllBookings(){
-        return bookingRepository.findAll();
+        return bookingRepository.findAllByOrderByTimeslot();
     }
     public Iterable<Booking> findAllBookingsWithoutCustomers(){
-        return bookingRepository.findByCustomerIsNull();
+        return bookingRepository.findByCustomerIsNullOrderByTimeslot();
     }
 
 //    If the booking has no customer, it can be removed.
