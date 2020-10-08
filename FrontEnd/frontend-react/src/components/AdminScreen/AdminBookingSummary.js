@@ -225,7 +225,7 @@ class AdminBookingSummary extends Component {
         }
         return (
             <div>
-            <p className="text-left">There are a total of {workers.length} workers from {companies.length} companies offering {servicesOffered.length} unqiue services on this day.</p>
+            <p className="text-left">There are a total of {workers.length} workers from {companies.length} companies offering {servicesOffered.length} unique services on this day.</p>
             <p className="text-left">{bkgCount} appointments are booked so far.</p>
             <p className="text-left">There are a total of {avCount} open (non-elapsed) timeslots left to book. </p>
             </div>
