@@ -644,7 +644,7 @@ class AvailabilitiesPane extends Component {
                     <br/>    
                     <b>Booking placed successfully. Thanks, {this.props.userName}.</b>
                     <br/><br/>   
-                    <Link to="/my_bookings">View your bookings.</Link>
+                    <Link to="/dashboard">View your bookings.</Link>
                     <br/><br/>  
                     <div className="row">
                         <div className="col-sm">
