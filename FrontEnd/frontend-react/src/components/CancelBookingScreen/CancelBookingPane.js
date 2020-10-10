@@ -16,28 +16,46 @@ const DNS_URI = "http://localhost:8080"
 // Return all availability objects
 async function getBookings(token, userType, userName) {
 
-    return await axios.get(DNS_URI + '/api/booking', {
-        headers: { 
-            'Authorization': token }
-      }).then(function(response) {
-        console.log('Authenticated');
-        return response.data
-      }).catch(function(error) {
-        console.error("getBookings()", error)
-        console.log(error.response.data)
-      });
+    if (userType === "ADMIN") {
+        return await axios.get(DNS_URI + '/api/booking', {
+            headers: { 
+                'Authorization': token }
+        }).then(function(response) {
+            console.log('Authenticated');
+            return response.data
+        }).catch(function(error) {
+            console.error("getBookings()", error)
+            console.log(error.response.data)
+        });
+    } else if (userType === "CUSTOMER") {
+        return await axios.get(DNS_URI + '/api/customer/' + userName, {
+            headers: { 
+                'Authorization': token }
+        }).then(function(response) {
+            console.log('Authenticated');
+            return response.data.bookings
+        }).catch(function(error) {
+            console.error("getBookings()", error)
+            console.log(error.response.data)
+        });
+    } 
 }
 
-async function logReason(reasonInfo, token, userType, userName) {
+async function logReason(reasonInfo, bkgInfo, token, userType, userName) {
 
     // console.log(logReson)
     // just for test post request !!!
     // return await axios.post(DNS_URI + '/api/booking', {
 
+        // bookingReference: reasonInfo.bookingReference,
+        // reason : reasonInfo.reason
+
+    
+
         // ------use this correct api/booking/delete for post log reason ------
-     return await axios.post(DNS_URI + '/api/booking/delete', {
-        bookingReference: reasonInfo.bookingReference,
-        reason : reasonInfo.reason
+     return await axios.delete(DNS_URI + '/api/booking', {
+        timeslot: {date: bkgInfo.date },
+        worker: {user: {userName: bkgInfo.userName}}
     },  { headers: { 
         'Authorization': token }
     })
@@ -127,20 +145,21 @@ class CancelBookingPane extends Component {
 
             const bkgs = await getBookings(this.props.token, this.props.userType, this.props.userName).then()
             var userBkgs = []
+
+            console.log(bkgs)
             var msgString = "Booking History Is Empty!!!"
 
-            // Filter bookings for customers
-            if (this.props.userType === "CUSTOMER") {
-                for (let i = 0; i < bkgs.length; i++) {
-                    if (bkgs[i]["customer"] !== null) {
-                        //  match bookings by user name 
-                        if (bkgs[i]["customer"]["user"]["userName"] === this.props.userName) {
-                            
-                              //add logic that show 'coming booking' and customer can cancel them
-                              if(parseDateString(bkgs[i]["timeslot"]["date"]) > new Date()){
-                                userBkgs.push(bkgs[i])
-                            }
+            if (bkgs !== undefined) {
+                // Only add bookings if theyre in the future
+                if (Array.isArray(bkgs)) {
+                    for (let i = 0; i < bkgs.length; i++) {
+                        if(parseDateString(bkgs[i]["timeslot"]["date"]) > new Date()) {
+                            userBkgs.push(bkgs[i])
                         }
+                    }
+                } else if (bkgs.constructor === Object) {
+                    if(parseDateString(bkgs["timeslot"]["date"]) > new Date()) {
+                        userBkgs = bkgs
                     }
                 }
                 if (userBkgs.length > 1)
@@ -190,8 +209,13 @@ class CancelBookingPane extends Component {
             bookingReference: this.state.bookingReference,
             reason : this.state.reason
         }
-
-         logReason(reasonInfo, this.props.token, this.props.userType, this.props.userName);
+        
+        const bkgInfo = {
+            date: [],
+            user: {userName: []}
+        }
+        
+        logReason(reasonInfo, bkgInfo, this.props.token, this.props.userType, this.props.userName);
 
     }
    
@@ -236,11 +260,13 @@ class CancelBookingPane extends Component {
             if(Array.isArray(bookings)) {
 
                 // Customer
+                var count = 0
                 if (this.props.userType === "CUSTOMER") {
                     bookingDisplay = bookings.map((bkg) => { 
                         return (
-                            <div>
-                            <div className="list-group-item d-flex justify-content-between align-items-center" key={bkg["id"]}>
+                            <div key={count++}>
+                            <br/>
+                            <div className="list-group-item d-flex justify-content-between align-items-center" >
                                 {bkg["id"]}---{capitalise(bkg["service"]["name"])}---{bkg["worker"]["user"]["userName"]}--------{bkg["service"]["minDuration"]}
                                 
                             </div>
