@@ -5,6 +5,7 @@ import labwed18303.demo.model.Booking;
 import labwed18303.demo.model.User;
 import labwed18303.demo.payload.AuthorizationErrorResponse;
 import labwed18303.demo.security.JwtTokenProvider;
+import labwed18303.demo.model.CancelBooking;
 import labwed18303.demo.services.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,8 +26,8 @@ public class BookingController {
 
     @Autowired
     private JwtTokenProvider tokenProvider;
-
 //    Must have a valid timeslot.
+
 //    Must have a valid worker.
 //    Can add a booking with no Customer or Service. I.e. A worker availability.
 //    If the booking has a customer, it must have a valid service. -> The service must exist and be a service the associated worker provides.
@@ -69,10 +70,13 @@ public class BookingController {
             }
         }
         return toReturn;
+
     }
+
     @GetMapping("/{bookingId}")
     public ResponseEntity<?> getBookingById(@RequestHeader(HEADER_STRING) String auth, @PathVariable Long bookingId){
         ResponseEntity<?> toReturn = null;
+
 
         Booking booking = bookingService.findByBookingIdentifier(bookingId);
         User authUser = tokenProvider.getUserFromHeader(auth);
@@ -97,6 +101,7 @@ public class BookingController {
     @GetMapping("/search")
     public ResponseEntity<?> getBookingByTimeslotWorker(@RequestHeader(HEADER_STRING) String auth, @RequestBody Booking booking){
         ResponseEntity<?> toReturn = null;
+
 
         User authUser = tokenProvider.getUserFromHeader(auth);
         Booking foundBooking = bookingService.findByTimeslotWorker(booking);
@@ -133,22 +138,22 @@ public class BookingController {
         }
 
         return toReturn;
+
     }
 
-//    If the booking has no customer, it can be removed.
+    //    If the booking has no customer, it can be removed.
 //    If it has a customer, i.e. "Cancelling", it cannot be removed if it is less than 48 hours from the booking date.
     @DeleteMapping("")
-    public ResponseEntity<?> deleteBooking(@RequestHeader(HEADER_STRING) String auth, @RequestBody Booking booking){
+    public ResponseEntity<?> deleteBooking(@RequestHeader(HEADER_STRING) String auth, @RequestBody Booking booking) {
         ResponseEntity<?> toReturn = null;
         User authUser = tokenProvider.getUserFromHeader(auth);
         Booking savedBooking = null;
         try {
             savedBooking = bookingService.findByTimeslotWorker(booking);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             toReturn = new ResponseEntity(e.getMessage(), HttpStatus.valueOf(400));
         }
-        if(savedBooking != null) {
+        if (savedBooking != null) {
             if (savedBooking.getCustomer() == null) {
                 if (authUser == null || savedBooking.getWorker() == null || savedBooking.getWorker().getUser() == null || savedBooking.getWorker().getUser().getUserName() == null ||
                         (savedBooking.getWorker().getUser().getUserName().compareTo(authUser.getUserName()) != 0 && authUser.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) == false)) {
@@ -170,5 +175,11 @@ public class BookingController {
             }
         }
         return toReturn;
+    }
+    @PostMapping("/delete")
+    public ResponseEntity<?> storeDeleteBooking(@RequestBody CancelBooking cancelBooking) {
+        CancelBooking cb1 = bookingService.deleteBookingWithCancelBooking(cancelBooking);
+
+        return new ResponseEntity<CancelBooking>(cb1, HttpStatus.OK);
     }
 }
