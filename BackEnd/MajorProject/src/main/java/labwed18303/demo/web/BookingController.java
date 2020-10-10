@@ -5,6 +5,7 @@ import labwed18303.demo.model.Booking;
 import labwed18303.demo.model.User;
 import labwed18303.demo.payload.AuthorizationErrorResponse;
 import labwed18303.demo.security.JwtTokenProvider;
+
 import labwed18303.demo.model.CancelBooking;
 import labwed18303.demo.services.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class BookingController {
     @Autowired
     private JwtTokenProvider tokenProvider;
 //    Must have a valid timeslot.
+
 
 //    Must have a valid worker.
 //    Can add a booking with no Customer or Service. I.e. A worker availability.
@@ -78,6 +80,7 @@ public class BookingController {
         ResponseEntity<?> toReturn = null;
 
 
+
         Booking booking = bookingService.findByBookingIdentifier(bookingId);
         User authUser = tokenProvider.getUserFromHeader(auth);
 
@@ -101,6 +104,7 @@ public class BookingController {
     @GetMapping("/search")
     public ResponseEntity<?> getBookingByTimeslotWorker(@RequestHeader(HEADER_STRING) String auth, @RequestBody Booking booking){
         ResponseEntity<?> toReturn = null;
+
 
 
         User authUser = tokenProvider.getUserFromHeader(auth);
