@@ -5,7 +5,7 @@ import Footer from '../Layout/Footer'
 import axios from "axios";
 import { connect } from 'react-redux'
 
-
+function refresh() {window.location.reload(false)}
 
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
@@ -18,56 +18,79 @@ async function getBookings(token, userType, userName) {
 
     if (userType === "ADMIN") {
         return await axios.get(DNS_URI + '/api/booking', {
-            headers: { 
-                'Authorization': token }
-        }).then(function(response) {
+            headers: {
+                'Authorization': token
+            }
+        }).then(function (response) {
             console.log('Authenticated');
             return response.data
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.error("getBookings()", error)
             console.log(error.response.data)
         });
     } else if (userType === "CUSTOMER") {
         return await axios.get(DNS_URI + '/api/customer/' + userName, {
-            headers: { 
-                'Authorization': token }
-        }).then(function(response) {
+            headers: {
+                'Authorization': token
+            }
+        }).then(function (response) {
             console.log('Authenticated');
             return response.data.bookings
-        }).catch(function(error) {
+        }).catch(function (error) {
             console.error("getBookings()", error)
             console.log(error.response.data)
         });
-    } 
+    }
 }
+//  --------delete axios method here -------
+// async function logReason(reasonInfo, bkgInfo, token, userType, userName) {
 
-async function logReason(reasonInfo, bkgInfo, token, userType, userName) {
 
-    // console.log(logReson)
-    // just for test post request !!!
-    // return await axios.post(DNS_URI + '/api/booking', {
 
-        // bookingReference: reasonInfo.bookingReference,
-        // reason : reasonInfo.reason
 
-    
+//     ------use this correct api/booking/delete for post log reason ------
+//      return await axios.delete(DNS_URI + '/api/booking', {
+//         timeslot: {date: bkgInfo.date },
+//         worker: {user: {userName: bkgInfo.userName}}
+//     },  { headers: { 
+//         'Authorization': token }
+//     })
+//     .then(res => {
+//         console.log(`statusCode: ${res.status}`)
+//         console.log(res.data)
+//         return [true, res.status]
+//     })
+//     .catch(error => {
+//         console.log(error.message)
+//         return [false, error.response.status]
+//     })
+// }
 
-        // ------use this correct api/booking/delete for post log reason ------
-     return await axios.delete(DNS_URI + '/api/booking', {
-        timeslot: {date: bkgInfo.date },
-        worker: {user: {userName: bkgInfo.userName}}
-    },  { headers: { 
-        'Authorization': token }
+
+async function logReason(reasonInfo, token) {
+
+     console.log(logReason)
+
+//  ------use this correct api/booking/delete for post log reason and backend will delete bookings in database ------
+
+    return await axios.post(DNS_URI + '/api/booking/delete', {
+
+        bookingReference: reasonInfo.bookingReference,
+        reason: reasonInfo.reason
+    }, {
+        headers: {
+            'Authorization': token
+        }
     })
-    .then(res => {
-        console.log(`statusCode: ${res.status}`)
-        console.log(res.data)
-        return [true, res.status]
-    })
-    .catch(error => {
-        console.log(error.message)
-        return [false, error.response.status]
-    })
+        .then(res => {
+            console.log(`statusCode: ${res.status}`)
+            console.log(res.data)
+            return [true, res.status]
+        })
+        .catch(error => {
+            console.log(error.message)
+            return [false, error.response.status]
+        })
 }
 
 
@@ -100,7 +123,7 @@ function parseDateString(dStr) {
     date.setUTCDate(dStr.slice(8, 10))
     date.setUTCHours(dStr.slice(11, 13))
     date.setUTCMinutes(dStr.slice(14, 16))
-    date.setUTCSeconds(dStr.slice(17, 19))  
+    date.setUTCSeconds(dStr.slice(17, 19))
     return date
 }
 
@@ -109,12 +132,12 @@ class CancelBookingPane extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            bookingReference: 1,
+            bookingReference: '',
             userName: null,
             userType: null,
             bookings: this.getUserBookings(),
             bookingMsg: null,
-            reason : null
+            reason: ''
         }
         this.onSubmit = this.onSubmit.bind(this);
         this.onChange = this.onChange.bind(this);
@@ -130,7 +153,7 @@ class CancelBookingPane extends Component {
             payload: {
                 'id': this.props.id,
                 'userName': this.props.userName,
-                'address': this.props.address, 
+                'address': this.props.address,
                 'phone': this.props.phone,
                 'userType': this.props.userType,
                 'token': this.props.token
@@ -153,29 +176,29 @@ class CancelBookingPane extends Component {
                 // Only add bookings if theyre in the future
                 if (Array.isArray(bkgs)) {
                     for (let i = 0; i < bkgs.length; i++) {
-                        if(parseDateString(bkgs[i]["timeslot"]["date"]) > new Date()) {
+                        if (parseDateString(bkgs[i]["timeslot"]["date"]) > new Date()) {
                             userBkgs.push(bkgs[i])
                         }
                     }
                 } else if (bkgs.constructor === Object) {
-                    if(parseDateString(bkgs["timeslot"]["date"]) > new Date()) {
+                    if (parseDateString(bkgs["timeslot"]["date"]) > new Date()) {
                         userBkgs = bkgs
                     }
                 }
                 if (userBkgs.length > 1)
-                msgString = "You have " + userBkgs.length + " uncompeleted bookings for now."
+                    msgString = "You have " + userBkgs.length + " uncompeleted bookings for now."
                 else if (userBkgs.length === 1)
-                msgString = "You have " + userBkgs.length + " uncompeleted booking for now."
-                
-                this.setState({bookingMsg: msgString})
-                this.setState({bookings: userBkgs})
-            } 
-        }        
+                    msgString = "You have " + userBkgs.length + " uncompeleted booking for now."
+
+                this.setState({ bookingMsg: msgString })
+                this.setState({ bookings: userBkgs })
+            }
+        }
     }
 
 
-    onChange(e){
-        this.setState({[e.target.name]: e.target.value});
+    onChange(e) {
+        this.setState({ [e.target.name]: e.target.value });
     }
 
     //delete booking by click the red "Button"(line223) in each booking
@@ -188,12 +211,12 @@ class CancelBookingPane extends Component {
     //         return response.data
     //     })
     // }
-    
 
-    // submit booking id with cancel reason 
 
-    async onSubmit(e){      
-        const bookingReference = 1
+    // submit booking id and  cancel reason   only send bookingReference and reason is enough
+
+    async onSubmit(e) {
+
 
         e.preventDefault();
         if (this.state.bookingReference == null) {
@@ -203,25 +226,42 @@ class CancelBookingPane extends Component {
         if (this.state.reason == null) {
             alert("Please enter a reason.")
             return
-        }        
+        }
 
         const reasonInfo = {
             bookingReference: this.state.bookingReference,
-            reason : this.state.reason
+            reason: this.state.reason
         }
-        
+
         const bkgInfo = {
             date: [],
-            user: {userName: []}
+            user: { userName: [] }
         }
-        
-        logReason(reasonInfo, bkgInfo, this.props.token, this.props.userType, this.props.userName);
+
+        logReason(reasonInfo, this.props.token);
+        console.log(reasonInfo,this.props.token)
 
     }
-   
+
+
+   //test post and see what will be send (bookingReference and reason)
+    onSubmit1 = (e) =>{
+        e.preventDefault();
+        const reasonInfo = {
+            bookingReference: this.state.bookingReference,
+            reason: this.state.reason
+        }
+        logReason(reasonInfo, this.props.token);
+        console.log(reasonInfo,this.props.token)
+
+    }
+
+
+
+
 
     render() {
-        
+
         // Use the most recent element in state history
         const index = this.props.user.length - 1
 
@@ -231,45 +271,65 @@ class CancelBookingPane extends Component {
         else if (this.props.userType === "WORKER")
             headerText = "AGME Booking App - Worker portal"
         else if (this.props.userType === "ADMIN")
-            headerText = "AGME Booking App - Admin portal"      
+            headerText = "AGME Booking App - Admin portal"
 
         // Check user is logged in
         if (this.props.userName === undefined && this.props.userType === undefined) {
             return (
                 <div className="profile_screen_editprofile" id="profile_screen_editprofile">
-                <Header
-                    id={this.props.user[index]["id"]}
-                    userName={this.props.user[index]["userName"]}
-                    address={this.props.user[index]["address"]}
-                    phone={this.props.user[index]["phone"]}
-                    userType={this.props.user[index]["userType"]}
-                    token={this.props.user[index]["token"]}/>
-                    <br/><br/><br/><br/>
-                <b>Please log in first.</b>
-                <br/><br/>
-                <Footer/>
+                    <Header
+                        id={this.props.user[index]["id"]}
+                        userName={this.props.user[index]["userName"]}
+                        address={this.props.user[index]["address"]}
+                        phone={this.props.user[index]["phone"]}
+                        userType={this.props.user[index]["userType"]}
+                        token={this.props.user[index]["token"]} />
+                    <br /><br /><br /><br />
+                    <b>Please log in first.</b>
+                    <br /><br />
+                    <Footer />
                 </div>
             )
-        
+
         } else {
 
             const bookings = this.state.bookings
             var bookingDisplay
 
             // Wait for promise fulfillment
-            if(Array.isArray(bookings)) {
+            if (Array.isArray(bookings)) {
 
                 // Customer
                 var count = 0
                 if (this.props.userType === "CUSTOMER") {
-                    bookingDisplay = bookings.map((bkg) => { 
+                    bookingDisplay = bookings.map((bkg) => {
                         return (
                             <div key={count++}>
-                            <br/>
-                            <div className="list-group-item d-flex justify-content-between align-items-center" >
-                                {bkg["id"]}---{capitalise(bkg["service"]["name"])}---{bkg["worker"]["user"]["userName"]}--------{bkg["service"]["minDuration"]}
-                                
-                            </div>
+                                <br />
+
+                                <div className="list-group-item d-flex justify-content-between align-items-center" >
+
+                                    <table width="2000%" border="2">
+                                        <tr>
+                                            <th>Booking ID </th>
+                                            <th>ServiceName</th>
+                                            <th>WorkerName</th>
+                                            <th>Duration</th>
+                                            
+                                        </tr>
+                                        <tr>
+                                            <td>{bkg["id"]}</td>
+                                            <td>{capitalise(bkg["service"]["name"])}</td>
+                                            <td>{bkg["worker"]["user"]["userName"]}</td>
+                                            <td>{bkg["service"]["minDuration"]}</td>
+                                            
+                                        </tr>
+
+
+                                    </table>
+
+                                </div>
+
                             </div>
 
 
@@ -277,91 +337,156 @@ class CancelBookingPane extends Component {
                     })
                 }
 
-               
-            }   
-            
+
+            }
+
             // Check user is logged in
             if (this.props.userName === undefined && this.props.userType === undefined) {
                 return (
                     <div className="cancel_pane" id="cancel_pane">
-                        <br/>
+                        <br />
                         <b>Please log in to view availabilites</b>
-                        <br/><br/>
+                        <br /><br />
                     </div>
                 )
             }
+            // design for successful cancel page
+            // if (!this.state.hasSuccess && !this.state.hasFail) { 
 
             //    post booking id & reason to api/delete
             return (
                 <div className="container" id="cancelbooking_container">
-                    
-                    <br/><br/><br/>
-                    
+
+                    <br /><br /><br />
+
                     <div className="row">
-                        
+
                         <div className="col-sm-9">
-                            
+
                             <b>User- {this.props.user[index]["userName"]} - Booking History</b> &nbsp; {this.state.bookingMsg}
-                            <br/> <br/>
-                            
-             <div className="cancelpane">
+                            <br /> <br />
 
-            
-          
-            <form onSubmit = {this.onSubmit}>
-              <br></br>
-              <span>Please enter the ID of the reservation you need to cancel and tell us your reason</span><br></br>
+                            <div className="cancelpane">
 
-              <br></br>
-              <div>
-              <input type="text" className="form-control" 
-                    placeholder="booking ID" 
-                    name="bookingReference" 
-                    value={this.state.value} 
-                    onChange = {this.onChange}/>
 
-              </div>
-              <br></br>
-              <div>
-              <input type="text"
-                    className="form-control" 
-                    placeholder="Cancel Reason"     
-                    name="reason" 
-                    value={this.state.value} 
-                    onChange = {this.onChange}/>
 
-              </div>
-              <br></br>
-              
-              <div className="form1">
-                            <div className="col-sm">
-                                <input type="submit"  value="delete" className="btn btn-outline-dark" id="navButton"
-                                        />
-                            </div>
-                            <div className="col-sm">
-                            </div>
+                                <form onSubmit={this.onSubmit}>
+                                    <br></br>
+                                    <span>Please enter the ID of the reservation you need to cancel and tell us your reason</span><br></br>
+
+                                    <br></br>
+                                    <div>
+                                        <input type="text" className="form-control"
+                                            placeholder="booking ID"
+                                            name="bookingReference"
+                                            value={this.state.value}
+                                            onChange={this.onChange} />
+
+                                    </div>
+                                    <br></br>
+                                    <div>
+                                        <input type="text"
+                                            className="form-control"
+                                            placeholder="Cancel Reason"
+                                            name="reason"
+                                            value={this.state.value}
+                                            onChange={this.onChange} />
+
+                                    </div>
+                                    <br></br>
+
+                                    <div className="form1">
+                                        <div className="col-sm">
+                                            <input type="submit" value="delete" className="btn btn-outline-dark" id="navButton" 
+                                            />
+                                        </div>
+                                        <div className="col-sm">
+                                        <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
+                                Cancel another booking
+                            </button>    
                         </div>
-            </form>
-            </div>
+                                    </div>
+                                </form>
+                            </div>
                             <div className="history-part-col">
-                            <span> BookingID--------ServiceName--------WorkerName--------Duration   </span>
-                            
+                                
 
-                            <div className="list-group list-group-flush" id="scrollable">              
-                                {bookingDisplay}
-                            </div>
+
+                                <div className="list-group list-group-flush" id="scrollable">
+                                    {bookingDisplay}
+                                </div>
                             </div>
 
-                            
+
 
                         </div>
                     </div>
-                    
+
                 </div>
             )
+        // ------for successful cancel page--------
+
+        // }if (this.state.hasSuccess) {
+        //     return (
+        //         <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
+        //             <br/>    
+        //             <b>CancelBooking successfully.</b>
+        //             <br/><br/>   
+    
+        //             <div className="row">
+        //                 <div className="col-sm">
+        //                     <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
+        //                         Cancel another booking
+        //                     </button> 
+        //                 </div>
+        //                 <div className="col-sm">
+        //                     <CancelButton/>
+        //                 </div>
+        //             </div>
+        //         </div>   
+        //     )
+    
+        // // Failed booking
+        // } else if (this.state.hasFail) {
+        //     return (
+        //         <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
+        //             <br/>    
+        //             <b>CancelBooking failed. Please try again.</b>
+        //             <br/><br/>   
+                
+        //         <div className="row">
+        //             <div className="col-sm">
+        //                 <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
+        //                     Cancel another booking
+        //                 </button> 
+        //             </div>
+        //             <div className="col-sm">
+        //                 <CancelButton/>
+        //             </div>
+        //         </div>
+        //     </div>  
+        //     )
+        // }
+
+
+
+
+        
         }
     }
 }
+
+
+    
+       
+
+
+
+
+
+
+
+
 
 const mapStateToProps = state => {
     return { user: state.user }
