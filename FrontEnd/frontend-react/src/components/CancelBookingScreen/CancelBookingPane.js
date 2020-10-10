@@ -13,13 +13,22 @@ const DNS_URI = "http://localhost:8080"
 // const axiosConfig = {headers: {'Content-Type': 'application/json'}}
 
 
-async function getBookings() {
-    return await axios.get(DNS_URI + '/api/booking').then(response => {
+// Return all availability objects
+async function getBookings(token, userType, userName) {
+
+    return await axios.get(DNS_URI + '/api/booking', {
+        headers: { 
+            'Authorization': token }
+      }).then(function(response) {
+        console.log('Authenticated');
         return response.data
-    })
+      }).catch(function(error) {
+        console.error("getBookings()", error)
+        console.log(error.response.data)
+      });
 }
 
-async function logReason(reasonInfo) {
+async function logReason(reasonInfo, token, userType, userName) {
 
     // console.log(logReson)
     // just for test post request !!!
@@ -29,6 +38,8 @@ async function logReason(reasonInfo) {
      return await axios.post(DNS_URI + '/api/booking/delete', {
         bookingReference: reasonInfo.bookingReference,
         reason : reasonInfo.reason
+    },  { headers: { 
+        'Authorization': token }
     })
     .then(res => {
         console.log(`statusCode: ${res.status}`)
@@ -40,8 +51,6 @@ async function logReason(reasonInfo) {
         return [false, error.response.status]
     })
 }
-
-
 
 
 // async function deleteBooking2() {
@@ -58,7 +67,6 @@ async function logReason(reasonInfo) {
 //         return [false, error.response.status]
 //     })
 // }
-
 
 
 const capitalise = (string) => {
@@ -117,7 +125,7 @@ class CancelBookingPane extends Component {
         // Only load bookings if a customer is logged in 
         if (this.props.userType !== null && this.props.userType !== "ADMIN" && this.props.userType !== undefined) {
 
-            const bkgs = await getBookings().then()
+            const bkgs = await getBookings(this.props.token, this.props.userType, this.props.userName).then()
             var userBkgs = []
             var msgString = "Booking History Is Empty!!!"
 
@@ -132,10 +140,6 @@ class CancelBookingPane extends Component {
                               if(parseDateString(bkgs[i]["timeslot"]["date"]) > new Date()){
                                 userBkgs.push(bkgs[i])
                             }
-
-                            
-
-
                         }
                     }
                 }
@@ -146,20 +150,14 @@ class CancelBookingPane extends Component {
                 
                 this.setState({bookingMsg: msgString})
                 this.setState({bookings: userBkgs})
-
-            
             } 
         }        
     }
 
 
-
     onChange(e){
         this.setState({[e.target.name]: e.target.value});
     }
-
-
-
 
     //delete booking by click the red "Button"(line223) in each booking
 
@@ -167,29 +165,15 @@ class CancelBookingPane extends Component {
     //     return  axios.get(DNS_URI + '/api/booking'+'id').then(response => {
     //         if (response.data !== null){
     //             alert("booking delete successfully");
-           
-
-    //         }
-          
+    //         }      
     //         return response.data
     //     })
     // }
     
 
-
-
-
-
-
-
-
     // submit booking id with cancel reason 
 
-    async onSubmit(e){
-
-
-        
-        // 
+    async onSubmit(e){      
         const bookingReference = 1
 
         e.preventDefault();
@@ -207,10 +191,9 @@ class CancelBookingPane extends Component {
             reason : this.state.reason
         }
 
-         logReason(reasonInfo);
+         logReason(reasonInfo, this.props.token, this.props.userType, this.props.userName);
 
     }
-
    
 
     render() {
@@ -271,6 +254,17 @@ class CancelBookingPane extends Component {
                
             }   
             
+            // Check user is logged in
+            if (this.props.userName === undefined && this.props.userType === undefined) {
+                return (
+                    <div className="cancel_pane" id="cancel_pane">
+                        <br/>
+                        <b>Please log in to view availabilites</b>
+                        <br/><br/>
+                    </div>
+                )
+            }
+
             //    post booking id & reason to api/delete
             return (
                 <div className="container" id="cancelbooking_container">
