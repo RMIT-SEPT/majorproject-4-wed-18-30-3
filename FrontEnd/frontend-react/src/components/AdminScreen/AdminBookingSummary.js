@@ -184,8 +184,6 @@ class AdminBookingSummary extends Component {
             var workers = []
             var companies = [] 
 
-            // console.log(dayData)
-
             for (let i = 0; i < dayData.length; i++) {
                 
                 // Null customer means its an availability

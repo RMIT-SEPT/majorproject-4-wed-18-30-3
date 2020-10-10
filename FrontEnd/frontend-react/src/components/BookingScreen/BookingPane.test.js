@@ -4,12 +4,43 @@ import { expect } from 'chai';
 import Adapter from 'enzyme-adapter-react-16.3'
 import BookingPane from './BookingPane';
 import Select from 'react-select';
-import CancelButton from './CancelButton';
 
 configure({ adapter: new Adapter() });
 
+// FUNCTIONAL TESTS
+describe('<BookingPane/>', function() {
+  it('enables the service textbox once company is selected', function() {
+    const wrapper = shallow(<BookingPane/>);
+    const instance = wrapper.instance()
+    instance.setState({companyName: "testCompanyName"})
+    expect(instance.state.disableCompany).to.equal(false);
+  });
+});
 
 
+describe('<BookingPane/>', function() {
+  it('disable worker selection once service is selected', function() {
+    const wrapper = shallow(<BookingPane/>);
+    const instance = wrapper.instance()
+    instance.setState({companyName: "testCompanyName"})
+    instance.setState({service: "testServiceName"})
+    expect(instance.state.disableWorker).to.equal(true);
+  });
+});
+
+describe('<BookingPane/>', function() {
+  it('disable timeslot selection once a worker is selected', function() {
+    const wrapper = shallow(<BookingPane/>);
+    const instance = wrapper.instance()
+    instance.onWorkerChange("TestWorker")
+    instance.setState({worker: "TestWorker"})
+    expect(instance.state.disableAvailability).to.equal(true);
+  });
+});
+
+
+
+// RENDER TESTS
 describe('<BookingPane/>', function() {
   it('renders three <Select/> components', function() {
     const wrapper = shallow(<BookingPane/>);
