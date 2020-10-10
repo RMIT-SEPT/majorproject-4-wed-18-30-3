@@ -1,6 +1,7 @@
 package labwed18303.demo.services;
 
 import labwed18303.demo.Repositories.BookingRepository;
+import labwed18303.demo.Repositories.CancelBookingRepository;
 import labwed18303.demo.exceptions.BookingException;
 import labwed18303.demo.exceptions.TimeslotException;
 import labwed18303.demo.model.*;
@@ -21,6 +22,8 @@ public class BookingService {
     private ServiceProvidedService serviceService;
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private CancelBookingRepository cancelBookingRepository;
 
 //    Must have a valid timeslot.
 //    Must have a valid worker.
@@ -140,9 +143,28 @@ public class BookingService {
                 throw new BookingException("Cannot remove Booking within 48 hours");
             }
         }
-
         bookingRepository.delete(booking);
     }
+
+    public CancelBooking deleteBookingWithCancelBooking(CancelBooking cancelBooking){
+
+        Booking originBooking = bookingRepository.findByid(cancelBooking.getBookingReference());
+
+        CancelBooking cancelBooking1 = new CancelBooking();
+
+        cancelBooking1.setCustomerName(originBooking.getCustomer().getUser().getUserName());
+
+        cancelBooking1.setWorkerName(originBooking.getWorker().getUser().getUserName());
+
+        cancelBooking1.setReason(cancelBooking.getReason());
+
+        cancelBookingRepository.save(cancelBooking1);
+
+        this.deleteBookingByIdentifier(originBooking.getId());
+
+        return cancelBooking1;
+    }
+
 
     public Booking findByTimeslotWorker(Booking booking) {
         if(booking.getTimeslot() == null  || booking.getTimeslot().getDate() == null
