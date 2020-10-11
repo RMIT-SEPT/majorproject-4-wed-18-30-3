@@ -51,7 +51,10 @@ class ContextualButtonPane extends Component {
                 <Link to="/admin_booking_summary" className="btn btn-outline-dark" id="navButton">7-day summary</Link>
                 <br/><br/>
                 
-                <Link to="/admin_set_availabilites" className="btn btn-outline-dark" id="navButton">Set worker availability</Link>
+                <Link to="/admin_set_availabilities" className="btn btn-outline-dark" id="navButton">Set worker availability</Link>
+                <br/><br/>
+
+                <Link to="/admin_view_user" className="btn btn-outline-dark" id="navButton">Search customer</Link>
                 <br/><br/>
 
                 <Link to="/admin_add_worker" className="btn btn-outline-dark" id="navButton">Add new worker</Link>
