@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
 import Header from '../Layout/Header';
-import makeAnimated from 'react-select/animated';
 import axios from "axios";
 import Footer from "../Layout/Footer";
 
@@ -18,16 +17,6 @@ async function getUser(token, userName) {
         console.error("getUser()", error)
         console.log(error.response.data)
         });
-}
-function parseDateString(dStr) {
-    var date = new Date()
-    date.setUTCFullYear(dStr.slice(0, 4))
-    date.setUTCMonth(parseInt((dStr.slice(5, 7)) - 1, 10))
-    date.setUTCDate(dStr.slice(8, 10))
-    date.setUTCHours(dStr.slice(11, 13))
-    date.setUTCMinutes(dStr.slice(14, 16))
-    date.setUTCSeconds(dStr.slice(17, 19))
-    return date
 }
 class AdminViewUser extends Component {
     //usertype in state at the moment only if i require to check if its an admin or not
@@ -74,7 +63,6 @@ class AdminViewUser extends Component {
     }
     async viewAppointment(booking){
         alert(booking.toString());
-        return
     }
     async onSubmit(e) {
         e.preventDefault()
