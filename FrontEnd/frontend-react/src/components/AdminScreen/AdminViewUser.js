@@ -3,42 +3,32 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import Header from '../Layout/Header';
 import makeAnimated from 'react-select/animated';
 import axios from "axios";
+import Footer from "../Layout/Footer";
 
 const DNS_URI = "http://localhost:8080"
-const axiosConfig = {headers: {'Content-Type': 'application/json'}}
-async function getUser(userName) {
-    return await axios.post(DNS_URI + '/api/Customer', {
-        userName: userName
-    }, axiosConfig)
-        .then(res => {
-            return [true, res]
-        })
-        .catch(error => {
-            console.error(error)
-            return [false, error]
+async function getUser(token, userName) {
+    var urlString = '/api/customer' + userName;
+    return await axios.post(DNS_URI + urlString,{
+        headers: {
+            'Authorization': token }
+        }).then(function(response) {
+        console.log('Authenticated');
+        return response.data
+        }).catch(function(error) {
+        console.error("getUser()", error)
+        console.log(error.response.data)
         });
 }
-const capitalise = (string) => {
-    if (typeof string !== 'string') return ''
-    return string.charAt(0).toUpperCase() + string.slice(1)
+function parseDateString(dStr) {
+    var date = new Date()
+    date.setUTCFullYear(dStr.slice(0, 4))
+    date.setUTCMonth(parseInt((dStr.slice(5, 7)) - 1, 10))
+    date.setUTCDate(dStr.slice(8, 10))
+    date.setUTCHours(dStr.slice(11, 13))
+    date.setUTCMinutes(dStr.slice(14, 16))
+    date.setUTCSeconds(dStr.slice(17, 19))
+    return date
 }
-async function getBookings() {
-    return await axios.get(DNS_URI + '/api/Customer', {
-        userName: this.state.userName
-    }).then(response => {
-        return response.data
-    })
-}
-async function getBookingDetails() {
-    const bks = await getBookings().then()
-
-    for (let i = 0; i < bks.length; i++) {
-        this.state.bookingList.push({
-            value: {id: bks[i]["user"]["userName"], userName: bks[i]["user"]["userName"]},
-            label: capitalise(bks[i]["user"]["userName"])})
-    }
-}
-
 class AdminViewUser extends Component {
     //usertype in state at the moment only if i require to check if its an admin or not
     constructor() {
@@ -47,109 +37,137 @@ class AdminViewUser extends Component {
             userName: null,
             userType: null,
             hasSuccess: false,
-            bookingList:"Booking 1",
+            totalBookings: 0,
+            bookings:this.loadCustomer(),
         }
         this.onSubmit = this.onSubmit.bind(this);
         this.onChange = this.onChange.bind(this);
-        this.onUserChange = this.onUserChange.bind(this);
+        this.viewAppointment = this.viewAppointment(this)
     }
     onChange(e){
         this.setState({[e.target.name]: e.target.value});
     }
-    async onUserChange(userName) {
-        const success = await getUser(userName).then()
-        if (success[1]) {
-            this.setState({userName: userName})
-            this.setState({userType: "CUSTOMER"})
-            this.setState({disableUser: true})
-        }
-        else{
-            if(success[0]){
-                alert("Invalid customer, please try again")
+    async loadCustomer() {
+        if (this.props.token !== undefined) {
+            const customer = await getUser(this.props.token, this.props.userName).then()
+            var customerBookings = []
+            if (customer !== undefined) {
+                var Booking = "No bookings yet"
+                var bookingCount = 0
+                var time = ""
+                if (customer.bookings.length > 0) {
+                    for (let i = 0; i < customer.bookings.length; i++) {
+                            Booking = customer.bookings[i]
+                            time = customer.bookings[i].timeslot.date
+                            bookingCount++
+                            customerBookings.push({
+                                booking: Booking,
+                                date: time,
+                            })
+                    }
+                    this.setState({bookings: customerBookings})
+                    this.setState({totalBookings: bookingCount})
+                    return customerBookings
+                }
             }
         }
+    }
+    async viewAppointment(booking){
+        alert(booking.toString());
+        return
     }
     async onSubmit(e) {
         e.preventDefault()
         //you enter a username, if its valid it locks it in otherwise it throws an error.
         //gets bookings for username, and displays the upcoming bookings,
         // admin selects one and submits, after submission it shows details of the appointment.
-        const forNow = true;
-        if (forNow) {
-            //this.props.userName != null && this.props.userType != null
-            // Validate user type
-            if (!forNow) {
-                //this.props.userType != "ADMIN"
-                alert("You must be an Admin to look at a customers bookings please try again!.")
-                return
-            }
-            else{
-                //const success = await getBookingDetails();
-                if(forNow){
-                        document.getElementById('Bookings').innerHTML += "1";
-                    this.setState({hasSuccess: true});
-                }
+        if (this.props.userType === "ADMIN") {
+                const success = await this.loadCustomer();
+                if(success){
+                this.setState({hasSuccess: true});
             }
         }
         else{
-            alert("you must login!")
-            return
+            alert("you must be an admin to view customer appointments!")
         }
-
     }
     render() {
-        const animatedComponents = makeAnimated();
-        if(this.state.hasSuccess){
-            return(
-                <div className = "AdminViewUser">
+        if (this.props.userName === undefined && this.props.userType === undefined) {
+            return (
+                <div className="profile_screen_editprofile" id="profile_screen_editprofile">
                     <Header/>
                     <br/><br/><br/><br/>
-                    <div className = "Heading">
-                        <h1>Search for appointment</h1>
-                        <p>Enter a username of a customer and click submit to view all their bookings!</p>
-                        <br/><br/>
-                    </div>
-                    <form onSubmit={this.onSubmit}>
-                        <div className="row">
-                            <div className="col-sm"></div>
-                            <div className="col-sm">
-                                <div className = "form-group">
-
-                                    <input type="text" className="form-control"
-                                           placeholder="Username"
-                                           id="userName"
-                                           name={"userName"}
-                                           value={this.state.value}
-                                           onChange={this.onChange}>
-                                    </input>
-
-                                </div>
-                            </div>
-                            <div className="col-sm"></div>
-                        </div>
-                        <div className="row">
-                            <div className="col-sm"></div>
-                            <div className="col-sm">
-                                <input type="submit" className="btn btn-sm btn-dark" placeholder="Search" id="navButton"/>
-                            </div>
-                            <div className="col-sm"></div>
-                        </div>
-                    </form>
+                    <b>Please <a href="/login">log in </a> to use the app.</b>
+                    <br/><br/>
+                    <Footer/>
                 </div>
             )
-        }
-        else{
-            // show appointments with buttons
-            return(
-                <div className = "adminViewUser">
-                    <h1>Bookings:</h1>
-                    <form><div className="col-sm">
-                        <input type="submit" className="btn btn-sm btn-dark" placeholder="Search" id="navButton"/>
-                    </div></form>
-                    <p id={"Bookings"}>
-                    </p>
-                </div>
+
+        } else {
+            const bookings = this.state.bookings;
+            const bookingsAmount = this.state.totalBookings;
+            var bookingDisplay
+
+
+            var count = 0;
+            bookingDisplay = bookings.map((user) => {
+                return (
+                    <div className="list-group-item d-flex justify-content-between align-items-center" key={++count}>
+                        {user.date}
+                        <button onClick={this.viewAppointment()}>View Appointment</button>
+                        <span className="badge badge-primary badge-pill">{bookingsAmount} total bookings</span>
+                    </div>
                 )
+            })
+            if (this.state.hasSuccess === false) {
+                return (
+                    <div className="AdminViewUser">
+                        <Header/>
+                        <br/><br/><br/><br/>
+                        <div className="Heading">
+                            <h1>Search for appointment</h1>
+                            <p>Enter a username of a customer and click submit to view all their bookings!</p>
+                            <br/><br/>
+                        </div>
+                        <form onSubmit={this.onSubmit}>
+                            <div className="row">
+                                <div className="col-sm"></div>
+                                <div className="col-sm">
+                                    <div className="form-group">
+
+                                        <input type="text" className="form-control"
+                                               placeholder="Username"
+                                               id="userName"
+                                               name={"userName"}
+                                               value={this.state.value}
+                                               onChange={this.onChange}>
+                                        </input>
+
+                                    </div>
+                                </div>
+                                <div className="col-sm"></div>
+                            </div>
+                            <div className="row">
+                                <div className="col-sm"></div>
+                                <div className="col-sm">
+                                    <input type="submit" className="btn btn-sm btn-dark" placeholder="Search"
+                                           id="navButton"/>
+                                </div>
+                                <div className="col-sm"></div>
+                            </div>
+                        </form>
+                    </div>
+                )
+            } else {
+                return (
+                    <div className="adminViewUser">
+                        <h1>Bookings:</h1>
+                            <div className="col-sm">
+                                {bookingDisplay}
+                            </div>
+                    </div>
+                )
+            }
         }
     }
 }
