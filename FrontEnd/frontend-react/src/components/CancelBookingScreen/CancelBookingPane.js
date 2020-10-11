@@ -5,7 +5,7 @@ import Footer from '../Layout/Footer'
 import axios from "axios";
 import { connect } from 'react-redux'
 
-function refresh() {window.location.reload(false)}
+
 
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
@@ -42,29 +42,32 @@ async function getBookings(token, userType, userName) {
         });
     }
 }
+
+function refresh() {window.location.reload(false)}
+
+
+
+
 //  --------delete axios method here -------
-// async function logReason(reasonInfo, bkgInfo, token, userType, userName) {
+async function deleteB(reasonInfo, bkgInfo, token, userType, userName) {
 
-
-
-
-//     ------use this correct api/booking/delete for post log reason ------
-//      return await axios.delete(DNS_URI + '/api/booking', {
-//         timeslot: {date: bkgInfo.date },
-//         worker: {user: {userName: bkgInfo.userName}}
-//     },  { headers: { 
-//         'Authorization': token }
-//     })
-//     .then(res => {
-//         console.log(`statusCode: ${res.status}`)
-//         console.log(res.data)
-//         return [true, res.status]
-//     })
-//     .catch(error => {
-//         console.log(error.message)
-//         return [false, error.response.status]
-//     })
-// }
+    // ------use this correct api/booking/delete for post log reason ------
+     return await axios.delete(DNS_URI + '/api/booking', {
+        timeslot: {date: bkgInfo.date },
+        worker: {user: {userName: bkgInfo.userName}}
+    },  { headers: { 
+        'Authorization': token }
+    })
+    .then(res => {
+        console.log(`statusCode: ${res.status}`)
+        console.log(res.data)
+        return [true, res.status]
+    })
+    .catch(error => {
+        console.log(error.message)
+        return [false, error.response.status]
+    })
+}
 
 
 async function logReason(reasonInfo, token) {
@@ -216,8 +219,6 @@ class CancelBookingPane extends Component {
     // submit booking id and  cancel reason   only send bookingReference and reason is enough
 
     async onSubmit(e) {
-
-
         e.preventDefault();
         if (this.state.bookingReference == null) {
             alert("Please enter a bookingId.")
@@ -234,17 +235,34 @@ class CancelBookingPane extends Component {
         }
 
         const bkgInfo = {
-            date: [],
-            user: { userName: [] }
+            date: [this.state.bookings.date],
+            worker: { userName: [this.state.bookings.userName] }
         }
 
         logReason(reasonInfo, this.props.token);
         console.log(reasonInfo,this.props.token)
+    }
 
+    async deleteBooking(e) {
+        e.preventDefault();
+       
+        const reasonInfo = {
+            bookingReference: this.state.bookingReference,
+            reason: this.state.reason
+        }
+
+        const bkgInfo = {
+            date: [this.state.bookings.date],
+            worker: { userName: [this.state.bookings.userName] }
+        }
+
+        deleteB(bkgInfo, this.props.token);
+        console.log(bkgInfo,this.props.token)
     }
 
 
-   //test post and see what will be send (bookingReference and reason)
+
+   //just test post and see what will be send (bookingReference and reason)
     onSubmit1 = (e) =>{
         e.preventDefault();
         const reasonInfo = {
@@ -414,6 +432,7 @@ class CancelBookingPane extends Component {
 
                                 <div className="list-group list-group-flush" id="scrollable">
                                     {bookingDisplay}
+                                    {/* <button oonClick={this.delete111}>  cancel  </button> */}
                                 </div>
                             </div>
 
