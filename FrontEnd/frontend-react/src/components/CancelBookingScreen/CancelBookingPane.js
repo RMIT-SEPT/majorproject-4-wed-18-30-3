@@ -432,7 +432,7 @@ class CancelBookingPane extends Component {
 
                                 <div className="list-group list-group-flush" id="scrollable">
                                     {bookingDisplay}
-                                    {/* <button oonClick={this.delete111}>  cancel  </button> */}
+                                    {/* <button oonClick={this.deleteBooking}>  cancel  </button> */}
                                 </div>
                             </div>
 
