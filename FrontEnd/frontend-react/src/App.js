@@ -20,6 +20,7 @@ import AdminBookingSummary from './components/AdminScreen/AdminBookingSummary';
 import AdminAddWorker from './components/AdminScreen/AdminAddWorker';
 import AdminSetAvailabilities from './components/AdminScreen/AdminSetAvailabilities';
 import AdminEditUser from './components/AdminScreen/AdminEditUser';
+import AdminViewUser from './components/AdminScreen/AdminViewUser';
 
 
 // need to add a redirect from the landing page to dashboard
@@ -53,6 +54,7 @@ function App() {
       <Route exact path="/admin_set_availabilites" component={AdminSetAvailabilities}/>
       <Route exact path="/admin_set_availabilites_reset" component={AdminSetAvailabilities}/>
       <Route exact path="/admin_edit_user" component={AdminEditUser}/>
+      <Route exact path="/admin_view_user" component={AdminViewUser}/>
       <Route exact path="/about" component={AboutScreen}/>
       <Route exact path="/history" component={HistoryScreen}/>
 

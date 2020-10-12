@@ -5,23 +5,29 @@ import axios from "axios";
 import Footer from "../Layout/Footer";
 
 const DNS_URI = "http://localhost:8080"
-async function getUser(token, userName) {
-    var urlString = '/api/customer' + userName;
-    console.log(token)
-    return await axios.post(DNS_URI + urlString,{
-        headers: {
+// const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
+
+async function getUsers(token, userName, userType) {
+
+    var urlString = '/api/customer' 
+    if (userType !== "ADMIN")
+        urlString = urlString + '/' + userName
+    return await axios.get(DNS_URI + urlString, {
+        headers: { 
             'Authorization': token }
         }).then(function(response) {
         console.log('Authenticated');
         return response.data
         }).catch(function(error) {
-        console.error("getUser()", error)
+        console.error("getCustomers()", error)
         console.log(error.response.data)
         });
 }
+
 class AdminViewUser extends Component {
-    constructor() {
-        super();
+    //usertype in state at the moment only if i require to check if its an admin or not
+    constructor(props) {
+        super(props)
         this.state = {
             userName: null,
             userType: null,
@@ -33,36 +39,40 @@ class AdminViewUser extends Component {
         this.onChange = this.onChange.bind(this);
         this.viewAppointment = this.viewAppointment(this)
     }
+    
     onChange(e){
         this.setState({[e.target.name]: e.target.value});
     }
+
     async loadCustomer() {
-        if (this.props.token !== undefined) {
-            const customer = await getUser(this.props.token, this.props.userName).then()
+    
+        if (this.props.token !== undefined && this.props.token !== null) {
+            const customers = await getUsers(this.props.token, this.props.userName, this.props.userType).then()
             var customerBookings = []
-            if (customer !== undefined) {
+            
+            if (customers !== undefined) {
                 var Booking = "No bookings yet"
                 var bookingCount = 0
                 var time = ""
-                if (customer.bookings.length > 0) {
-                    for (let i = 0; i < customer.bookings.length; i++) {
-                            Booking = customer.bookings[i]
-                            time = customer.bookings[i].timeslot.date
-                            bookingCount++
-                            customerBookings.push({
-                                booking: Booking,
-                                date: time,
-                            })
-                    }
-                    this.setState({bookings: customerBookings})
-                    this.setState({totalBookings: bookingCount})
-                    return customerBookings
-                }
+                // if (customers.bookings.length > 0) {
+                //     for (let i = 0; i < customers.bookings.length; i++) {
+                //             Booking = customers.bookings[i]
+                //             time = customers.bookings[i].timeslot.date
+                //             bookingCount++
+                //             customerBookings.push({
+                //                 booking: Booking,
+                //                 date: time,
+                //             })
+                //     }
+                //     this.setState({bookings: customerBookings})
+                //     this.setState({totalBookings: bookingCount})
+                //     return customerBookings
+                // }
             }
         }
     }
     async viewAppointment(booking){
-        alert(booking.toString());
+        // alert(booking.toString());
     }
     async onSubmit(e) {
         e.preventDefault()
@@ -100,7 +110,7 @@ class AdminViewUser extends Component {
                         <div className="list-group-item d-flex justify-content-between align-items-center"
                              key={++count}>
                             {user.date}
-                            <button onClick={this.viewAppointment()}>View Appointment</button>
+                            <button onClick={this.viewAppointment}>View Appointment</button>
                             <span className="badge badge-primary badge-pill">{bookingsAmount} total bookings</span>
                         </div>
                     )
