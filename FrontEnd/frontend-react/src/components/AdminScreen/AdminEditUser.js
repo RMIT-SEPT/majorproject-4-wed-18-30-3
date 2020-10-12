@@ -233,12 +233,15 @@ class AdminEditUser extends Component {
         // Check user is logged in
         if (this.props.userName === undefined && this.props.userType === undefined) {
             return (
-                <div className="admin_screen_editUser" id="admin_screen_editUser">
-                    <br />
-                    <b>Please log in to edit User profile.</b>
-                    <br /><br />
+                <div className="profile_screen_editprofile" id="profile_screen_editprofile">
+                <Header/>
+                    <br/><br/><br/><br/>
+                <b>Please <a href="/login">log in </a> to use the app.</b>
+                <br/><br/>
+                <Footer/>
                 </div>
             )
+        
 
         } else {
             return (
@@ -268,7 +271,7 @@ class AdminEditUser extends Component {
 
                             <div className="admin_screen_editUser" id="admin_screen_editUser">
 
-
+                                <br/>
                                 <b>Edit Personal Profile</b>
                                 <p>Please make sure to enter the correct user name to be modified, otherwise the user information will be modified by mistake</p>
 
@@ -332,7 +335,7 @@ class AdminEditUser extends Component {
                                     <div>
                                         <input type="phone"
                                             className="form-control"
-                                            placeholder="Phone"
+                                            placeholder="Phone. Must be ten digits and start with 0"
                                             name="phone"
                                             value={this.state.value}
                                             onChange={this.onChange} />
@@ -355,7 +358,6 @@ class AdminEditUser extends Component {
                                 </form>
 
                             </div>
-            )
                             <br /><br />
 
 
