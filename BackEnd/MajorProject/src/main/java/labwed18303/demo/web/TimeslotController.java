@@ -14,7 +14,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.BindingResult;
 
-import javax.validation.Valid;
 import java.util.Date;
 
 import static labwed18303.demo.security.SecurityConstants.HEADER_STRING;

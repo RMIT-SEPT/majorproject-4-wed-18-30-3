@@ -3,6 +3,7 @@ package labwed18303.demo.web;
 import labwed18303.demo.exceptions.BookingException;
 import labwed18303.demo.model.Booking;
 import labwed18303.demo.model.User;
+import labwed18303.demo.model.UserType;
 import labwed18303.demo.payload.AuthorizationErrorResponse;
 import labwed18303.demo.security.JwtTokenProvider;
 
@@ -181,8 +182,17 @@ public class BookingController {
         return toReturn;
     }
     @PostMapping("/delete")
-    public ResponseEntity<?> storeDeleteBooking(@RequestBody CancelBooking cancelBooking) {
-        CancelBooking cb1 = bookingService.deleteBookingWithCancelBooking(cancelBooking);
+    public ResponseEntity<?> storeDeleteBooking(@RequestHeader(HEADER_STRING) String auth, @RequestBody CancelBooking cancelBooking) {
+        User authUser = tokenProvider.getUserFromHeader(auth);
+        CancelBooking cb1 = null;
+
+        if(authUser == null ||authUser.getUserName() != cancelBooking.getCustomerName()||authUser.getUserName()!= cancelBooking.getWorkerName()){
+            AuthorizationErrorResponse error = new AuthorizationErrorResponse("auth fail");
+            return new ResponseEntity(error, HttpStatus.valueOf(401));
+        }
+        else{
+            cb1 = bookingService.deleteBookingWithCancelBooking(cancelBooking);
+        }
 
         return new ResponseEntity<CancelBooking>(cb1, HttpStatus.OK);
     }
