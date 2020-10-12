@@ -95,18 +95,20 @@ class AdminViewUser extends Component {
             const bookings = this.state.bookings;
             const bookingsAmount = this.state.totalBookings;
             var bookingDisplay
+            if(Array.isArray(bookings)) {
 
-
-            var count = 0;
-            bookingDisplay = bookings.map((user) => {
-                return (
-                    <div className="list-group-item d-flex justify-content-between align-items-center" key={++count}>
-                        {user.date}
-                        <button onClick={this.viewAppointment()}>View Appointment</button>
-                        <span className="badge badge-primary badge-pill">{bookingsAmount} total bookings</span>
-                    </div>
-                )
-            })
+                var count = 0;
+                bookingDisplay = bookings.map((user) => {
+                    return (
+                        <div className="list-group-item d-flex justify-content-between align-items-center"
+                             key={++count}>
+                            {user.date}
+                            <button onClick={this.viewAppointment()}>View Appointment</button>
+                            <span className="badge badge-primary badge-pill">{bookingsAmount} total bookings</span>
+                        </div>
+                    )
+                })
+            }
             if (this.state.hasSuccess === false) {
                 return (
                     <div className="AdminViewUser">
