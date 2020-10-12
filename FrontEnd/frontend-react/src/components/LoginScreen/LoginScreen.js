@@ -18,6 +18,7 @@ import CancelBookingScreen from '../CancelBookingScreen/CancelBookingScreen';
 import SetAvailabilitiesScreen from '../SetAvailabilitesScreen/SetAvailabilitiesScreen';
 import AdminBookingSummary from '../AdminScreen/AdminBookingSummary';
 import AdminAddWorker from '../AdminScreen/AdminAddWorker';
+import AdminViewUser from '../AdminScreen/AdminViewUser';
 import AdminSetAvailabilities from '../AdminScreen/AdminSetAvailabilities';
 import AdminEditUser from '../AdminScreen/AdminEditUser';
 
@@ -272,7 +273,14 @@ class LoginScreen extends Component {
                         userType={this.state.userType}
                         token={this.state.token}/>
                 )}/>
-                
+    
+                <Route exact path="/admin_view_user" render={(props) => (
+                    <AdminViewUser {...props}
+                        userName={this.state.userName}
+                        userType={this.state.userType}
+                        token={this.state.token}/>
+                )}/>
+
                 <Route exact path="/admin_set_availabilites" render={(props) => (
                     <AdminSetAvailabilities {...props}
                         userName={this.state.userName}
