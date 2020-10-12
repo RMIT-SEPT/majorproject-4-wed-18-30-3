@@ -7,6 +7,7 @@ import Footer from "../Layout/Footer";
 const DNS_URI = "http://localhost:8080"
 async function getUser(token, userName) {
     var urlString = '/api/customer' + userName;
+    console.log(token)
     return await axios.post(DNS_URI + urlString,{
         headers: {
             'Authorization': token }
@@ -19,7 +20,6 @@ async function getUser(token, userName) {
         });
 }
 class AdminViewUser extends Component {
-    //usertype in state at the moment only if i require to check if its an admin or not
     constructor() {
         super();
         this.state = {
@@ -66,9 +66,6 @@ class AdminViewUser extends Component {
     }
     async onSubmit(e) {
         e.preventDefault()
-        //you enter a username, if its valid it locks it in otherwise it throws an error.
-        //gets bookings for username, and displays the upcoming bookings,
-        // admin selects one and submits, after submission it shows details of the appointment.
         if (this.props.userType === "ADMIN") {
                 const success = await this.loadCustomer();
                 if(success){
