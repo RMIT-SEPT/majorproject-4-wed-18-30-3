@@ -154,7 +154,12 @@ class Dashboard extends Component {
             var workerList = []
             if (workers !== undefined) {
                 for (let i = 0; i < workers.length; i++) {
-                    var services = workers[i].services[0]["name"]
+                    
+                    if (workers[i].services[0] !== undefined) {
+                        var services = workers[i].services[0]["name"]
+                    } else {
+                        var services = "None"
+                    }
                     var serviceCount = workers[i].services.length
                     workerList.push({
                         user: workers[i].user.userName,
@@ -288,7 +293,7 @@ class Dashboard extends Component {
                     workerDisplay = workers.map((user) => { 
                         return (
                             <div className="list-group-item d-flex justify-content-between align-items-center" key={++countW}>
-                                {user.user} from {user.company}
+                                {user.user} | {user.company}
                                 <span className="badge badge-primary badge-pill">{user.serviceCount} service(s) offered</span>
                             </div>
                         )
