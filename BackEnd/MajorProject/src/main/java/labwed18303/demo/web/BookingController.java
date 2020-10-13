@@ -186,7 +186,9 @@ public class BookingController {
         User authUser = tokenProvider.getUserFromHeader(auth);
         CancelBooking cb1 = null;
 
-        if(authUser == null ||authUser.getUserName() != cancelBooking.getCustomerName()||authUser.getUserName()!= cancelBooking.getWorkerName()){
+        Booking original = bookingService.findByBookingIdentifier(cancelBooking.getBookingReference());
+
+        if(authUser == null ||authUser.getUserName() != original.getCustomer().getUser().getUserName()){
             AuthorizationErrorResponse error = new AuthorizationErrorResponse("auth fail");
             return new ResponseEntity(error, HttpStatus.valueOf(401));
         }
