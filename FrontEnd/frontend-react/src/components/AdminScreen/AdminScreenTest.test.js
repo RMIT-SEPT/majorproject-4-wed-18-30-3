@@ -9,9 +9,6 @@ import AdminSetAvailabilities from './AdminSetAvailabilities';
 
 configure({ adapter: new Adapter() });
 
-
-const testDayData =
-
 describe('<AdminScreen>', function() {
     it('renders header text', function() {
       const wrapper = shallow(<AdminScreen/>); 
@@ -19,7 +16,6 @@ describe('<AdminScreen>', function() {
       expect(wrapper.contains(content)).to.equal(true);
     });
 });
-  
 
 
 describe('<AdminBookingSummary/>', function() {
@@ -32,22 +28,24 @@ describe('<AdminBookingSummary/>', function() {
         expect(instance.state.collapse1).to.equal(true);
     });
 });
-  
 
 describe('<AdminSetAvailabilities/>', function() {
-    it('', function() {
-      const wrapper = shallow(<AdminSetAvailabilities/>);
-      
+    it('service select enables when user selects a worker', function() {
+        const wrapper = shallow(<AdminSetAvailabilities/>);
+        const instance = wrapper.instance()
+
     });
 
-    it('', function() {
+    it('timeslot select enables when user selects a service', function() {
         const wrapper = shallow(<AdminSetAvailabilities/>);
+        const instance = wrapper.instance()  
         
     });
 
-    it('', function() {
+    it('selection confirmation div is show when user selects a timeslot', function() {
     const wrapper = shallow(<AdminSetAvailabilities/>);
-    
+        const instance = wrapper.instance()
+
     });
 });
   
