@@ -76,6 +76,7 @@ class RegisterScreen extends Component {
             firstName: null,
             lastName: null,
             userType: null,
+            service: null,
             hasSuccess: false,
             hasFail: false,
             response: null,
@@ -94,20 +95,26 @@ class RegisterScreen extends Component {
     }
     
     onChange(e){this.setState({[e.target.name]: e.target.value})}
-    onTypeChange(Type) {this.setState({ userType: Type})}
+    
+    onTypeChange(type) {
+        this.setState({ userType: type})
+        if (type.value == "WORKER") {
+            this.setState({ showService: true})
+        }
+    }
 
     async onSubmit(e) {
         e.preventDefault();
 
-        if(this.state.userName == null){
+        if(this.state.userName === null){
             alert("Please enter a username!")
             return
         }
-        if(this.state.password == null){
+        if(this.state.password === null){
             alert("Please enter a password!")
             return
         }
-        if(this.state.phone == null){
+        if(this.state.phone === null){
             alert("Please enter a valid phone number!")
             return
         }
@@ -120,20 +127,24 @@ class RegisterScreen extends Component {
             alert("invalid phone number!")
             return
         }
-        if(this.state.address == null){
+        if(this.state.address === null){
             alert("Please enter your address!")
             return
         }
-        if(this.state.firstName == null){
+        if(this.state.firstName === null){
             alert("Please enter a first name!")
             return
         }
-        if(this.state.lastName == null) {
+        if(this.state.lastName === null) {
             alert("Please enter a last name!")
             return
         }
-        if(this.state.userType == null){
+        if(this.state.userType === null){
             alert("Please select what type of user you are!")
+            return
+        }
+        if(this.state.showService === true && this.state.service === null){
+            alert("Please add a service.")
             return
         }
 
@@ -174,13 +185,13 @@ class RegisterScreen extends Component {
             return(
                 <div className = "Register_Ui">
                 <Header/>
-                <br/><br/>
+                <br/>
                 <br/><br/><br/>
                 <div className="row">
                 <div className="col-sm"></div>
                     <div className="col-sm">
                         <div className="card shadow-sm p-3 mb-5 bg-white rounded">
-                            <br/><br/><br/>
+                            
                             <h1>Register</h1>
                             <p>Phone no. must be 10 digits and start with 0</p>
                             
@@ -288,17 +299,39 @@ class RegisterScreen extends Component {
                                 </div>
 
 
-                                <div className="form-user">
-                                <div className="row">
-                            
-                                    <div className="col-2"></div>
-                                    <div className="col-8">
-                                        <Select name="user" id="user" placeholder="User type" value={this.state.userType} options={this.state.userTypes}
-                                                onChange={this.onTypeChange} components={animatedComponents} required/>
+                                <div className="form-group">
+                                    <div className="row">
+                                        <div className="col-2"></div>
+                                        <div className="col-8">
+                                            <Select name="user" id="user" placeholder="User type" value={this.state.userType} options={this.state.userTypes}
+                                                    onChange={this.onTypeChange} components={animatedComponents} required/>
+                                        </div>
+                                        <div className="col-2"></div>
                                     </div>
+                                </div>  
+
+                                {
+                                this.state.showService? 
+                                <div>
+                                <div className="row">
+                                    <div className="col-2"></div>    
+                                    <div className="col-8">
+                                        <div className = "form-group">
+                                            <input type="service" className="form-control"
+                                                placeholder="Service offered"
+                                                id="service"
+                                                name="service"
+                                                value={this.state.value}
+                                                onChange={this.onChange}>
+                                            </input>
+                                            </div>
+                                        </div>    
                                     <div className="col-2"></div>
                                 </div>
-                                </div><br/>
+                                </div> : null
+                                }
+    
+
                                 <div className="row">
                                     <div className="col-2"></div>
                                     <div className="col-8">
@@ -315,7 +348,7 @@ class RegisterScreen extends Component {
                                     <div className="col-2"></div>    
                                 </div>                            
                             </form>
-                            <br/><br/><br/><br/>
+                            <br/>
                             </div>
 
                         </div>
