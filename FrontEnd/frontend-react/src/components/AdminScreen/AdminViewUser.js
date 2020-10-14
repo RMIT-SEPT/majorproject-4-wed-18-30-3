@@ -6,6 +6,7 @@ import Footer from "../Layout/Footer";
 import Select from "react-select";
 import makeAnimated from "react-select/animated/dist/react-select.esm";
 import NavPane from "../Layout/NavPane";
+import {Link} from "react-router-dom";
 
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
@@ -45,7 +46,7 @@ async function getCustomerNames(token) {
         for (let i = 0; i < cstmr.length; i++) {
             if(cstmr[i].user.userName !== null) {
                 if (!temp.includes(cstmr[i].user.userName)) {
-                    customers.push(cstmr[i].user.userName)
+                    customers.push(cstmr[i].user)
                     temp.push(cstmr[i].user.userName)
                 }
             }
@@ -60,10 +61,11 @@ class AdminViewUser extends Component {
             userName: null,
             userType: null,
             hasSuccess: false,
-            totalBookings: 0,
             bookings:null,
             optionsCustomers: this.getOptionCustomers(),
             disableCustomer: false,
+            viewApp:false,
+            count: 0,
         }
         this.onSubmit = this.onSubmit.bind(this);
         this.onCustomerChange = this.onCustomerChange.bind(this);
@@ -71,49 +73,70 @@ class AdminViewUser extends Component {
     }
     
     onCustomerChange(customer){
-        this.setState({userName: customer});
+        console.log("customer -" + customer.label)
+        this.setState({userName: customer.label});
         this.setState({disableCustomer: true});
-        this.setState({bookings: this.loadCustomer()})
     }
     async getOptionCustomers(){
         const options = await getCustomerNames(this.props.token)
+        var customerOptions = []
         this.setState({optionsCustomers: options})
+        if(options !== undefined){
+            for (let i = 0; i < options.length; i++) {
+                    customerOptions.push({
+                        label: options[i]["userName"],
+                        value: options[i]
+                    })
+            }
+        }
+        console.log(customerOptions)
+        this.setState({optionsCustomers: customerOptions})
+        return customerOptions
     }
     async loadCustomer() {
-    
+        console.log(this.state.userName)
         if (this.props.token !== undefined && this.props.token !== null) {
             const customers = await getUser(this.props.token, this.state.userName).then()
             var customerBookings = []
             
             if (customers !== undefined) {
-                var Booking = "No bookings yet"
-                var bookingCount = 0
-                var time = ""
+                var Booking = ""
+                var time = "No bookings yet"
                 if(customers.bookings !== undefined){
                     if (customers.bookings.length > 0) {
                         for (let i = 0; i < customers.bookings.length; i++) {
                             Booking = customers.bookings[i]
                             time = customers.bookings[i].timeslot.date
-                            bookingCount++
                             customerBookings.push({
                                 booking: Booking,
                                 date: time,
                             })
                         }
                         this.setState({bookings: customerBookings})
-                        this.setState({totalBookings: bookingCount})
-                        return customerBookings
                 }
+                    else{
+                        customerBookings.push({
+                            booking: Booking,
+                            date: time,
+                        })
+                    }
                 }
             }
+            return customerBookings
         }
+    }
+    async viewAppointment(e){
+        this.setState({viewApp:true})
+        this.setState({count:e.target.value})
+        console.log(this.state.count)
     }
     async onSubmit(e) {
         e.preventDefault()
         if (this.props.userType === "ADMIN") {
                 const success = await this.loadCustomer();
-                if(!success){
+                if(success){
                     this.setState({hasSuccess: true});
+                    this.setState({bookings: this.loadCustomer()})
                 }
                 else{
                     alert("invalid username!")
@@ -124,14 +147,6 @@ class AdminViewUser extends Component {
         }
     }
     render() {
-        function viewAppointment(booking){
-            return(
-                <div>
-                    <p>{booking}</p>
-                </div>
-            )
-            // alert(booking.toString());
-        }
         const animatedComponents = makeAnimated();
         if (this.props.userName === undefined && this.props.userType === undefined) {
             return (
@@ -155,23 +170,18 @@ class AdminViewUser extends Component {
             )
         } else {
             const bookings = this.state.bookings;
-            const bookingsAmount = this.state.totalBookings;
             var bookingDisplay
             if(Array.isArray(bookings)) {
                 var count = 0;
                 bookingDisplay = bookings.map((user) => {
                     return (
                         <div className="list-group-item d-flex justify-content-between align-items-center"
-                             key={++count}>
+                             key={++count} >
                             {user.date}
-                            <button type="button" onClick={viewAppointment(bookings[count])}>View Appointment</button>
-                            <span className="badge badge-primary badge-pill">{bookingsAmount} total bookings</span>
+                            <button type="button" value={count} onClick={e=>this.viewAppointment(e)}>View Appointment</button>
                         </div>
                     )
                 })
-            }
-            else if(bookings !== null){
-                bookingDisplay = bookings.date + bookings.booking
             }
             if (!this.state.hasSuccess) {
                 return (
@@ -194,17 +204,15 @@ class AdminViewUser extends Component {
                             <p>Select the username of a customer and click submit to view all their bookings!</p>
                             <br/><br/>
                         </div>
-                            <div className="row">
+                            <div className="list-group-item d-flex justify-content-between align-items-center">
                         <form onSubmit={this.onSubmit}>
                                 <div className="col-sm">
-                                    <div className="row">
+
                                     <div className="form-group">
                                         <label htmlFor="companyName">Select a customer:</label>
                                         <Select name={"customerNames"} value={this.state.value} options={this.state.optionsCustomers}
                                                 onChange={this.onCustomerChange} components={animatedComponents} isDisabled={this.state.disableCustomer}/>
                                     </div>
-                                    </div>
-                                <div className="col-sm"></div>
                             </div>
                             <div className="row">
                                 <div className="col-sm"></div>
@@ -220,7 +228,11 @@ class AdminViewUser extends Component {
                     </div>
                     </div>
                 )
-            } else {
+            } else{
+                console.log(bookingDisplay)
+                if(this.state.viewApp){
+                    bookingDisplay = this.state.bookings[this.state.count]
+                }
                 return (
                     <div className="adminViewUser">
                         <div className="row">
@@ -233,9 +245,11 @@ class AdminViewUser extends Component {
                                     userType={this.props.userType}
                                     token={this.props.token}/>
                             </div>
-                        <h1>Bookings:</h1>
                             <div className="col-sm">
+                                <h1>Bookings:</h1>
                                 {bookingDisplay}
+                                <div className="row"/>
+                                <Link to="/dashboard">Home</Link>
                             </div>
                         </div>
                     </div>
