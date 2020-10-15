@@ -37,7 +37,9 @@ public class Customer {
     public Customer(String name, String password, String fullName, String address, int phone){
         user = new User(name, password, fullName, address, phone, UserType.CUSTOMER);
     }
-
+    public Customer(User user){
+        this.user = user;
+    }
 
     public User getUser(){
         return user;
