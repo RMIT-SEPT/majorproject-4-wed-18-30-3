@@ -254,7 +254,7 @@ class AdminEditUser extends Component {
                         token={this.props.token} />
                     <br /><br /><br />
 
-                    <h2>Edit a user's details</h2>
+                    <h2>Edit a users details</h2>
 
                     <div className="row">
                         <div className="col-sm-3">

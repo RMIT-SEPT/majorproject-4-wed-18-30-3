@@ -32,7 +32,7 @@ class AboutScreen extends Component {
                         <p>123 High St, Fort Lauderdale</p>
                         <p>33301 FL, United States</p>
                         <br/>
-                        <p>Thank you for choosing AGME booking software : )</p>
+                        <p>Thank you for choosing AGME booking software.</p>
                         
                         
 

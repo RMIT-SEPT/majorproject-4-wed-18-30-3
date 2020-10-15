@@ -476,7 +476,7 @@ class AdminSetAvailabilities extends Component {
                         token={this.props.token}/>
                     <br/><br/><br/>
                     
-                    <h2>Set availabilities</h2>
+                    <h2>Set worker availabilities</h2>
 
                     <div className="row">
                         <div className="col-sm-3">
