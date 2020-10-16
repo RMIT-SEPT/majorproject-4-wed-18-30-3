@@ -62,15 +62,20 @@ describe('<AdminSetAvailabilities/>', function() {
 });
 
 // Zhihang need to fix
-describe('<AdminEditUser>', function() {
-    it('renders header text', function() {
-        const wrapper = shallow(
-            <AdminEditUser>
-                <div className="container">
-                    <h2>Edit a users details</h2>
-                </div>
-            </AdminEditUser>); 
-      const content = <h2>Edit a user's details</h2>
+
+describe('<AdminScreen>', function() {
+    it('renders alert if not login', function() {
+      const wrapper = shallow(<AdminEditUser/>); 
+      const content =  <b>Please <a href="/login">log in </a> to use the app.</b>
       expect(wrapper.contains(content)).to.equal(true);
+    });
+});
+
+
+describe('<AdminScreen>', function() {
+    it('try to show edit page if not login', function() {
+      const wrapper = shallow(<AdminEditUser/>); 
+      const content =  <b>Edit Personal Profile</b>
+      expect(wrapper.contains(content)).to.equal(false);
     });
 });

@@ -102,6 +102,7 @@ class EditProfile extends Component {
     }
 
     render() {
+        
 
         // Check user is logged in
         if (this.props.userName === undefined && this.props.userType === undefined) {
@@ -137,6 +138,7 @@ class EditProfile extends Component {
                         name="userName" 
                         value={this.state.value} 
                         onChange = {this.onChange}/>
+                
 
                 </div>
                 <br></br>
@@ -196,6 +198,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return { dispatch }
 }
+
+
 
 export default connect(
     mapStateToProps,

@@ -11,10 +11,10 @@ describe('<RegisterScreen/>', function() {
     it('renders heading text', function() {
         const wrapper = shallow(
             <RegisterScreen>
-                <h1>Register</h1>
+                <p>Phone no. must be 10 digits and start with 0</p>
             </RegisterScreen>
         );
-        expect(wrapper.contains(<h1>Register</h1>)).to.equal(true);
+        expect(wrapper.contains(<p>Phone no. must be 10 digits and start with 0</p>)).to.equal(true);
     });
 });
 // describe('<RegisterScreen/>', function() {

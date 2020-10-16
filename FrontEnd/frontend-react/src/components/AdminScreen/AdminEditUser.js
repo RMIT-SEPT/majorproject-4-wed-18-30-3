@@ -228,6 +228,11 @@ class AdminEditUser extends Component {
 
 
     render() {
+        <div>
+
+        <h2>Edit a user's details</h2>
+        </div>
+
         const animatedComponents = makeAnimated();
 
         // Check user is logged in
@@ -254,7 +259,7 @@ class AdminEditUser extends Component {
                         token={this.props.token} />
                     <br /><br /><br />
 
-                    <h2>Edit a users details</h2>
+                    
 
                     <div className="row">
                         <div className="col-sm-3">
