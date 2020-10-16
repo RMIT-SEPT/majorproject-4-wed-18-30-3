@@ -71,7 +71,7 @@ class AdminViewUser extends Component {
         this.onCustomerChange = this.onCustomerChange.bind(this);
         this.getOptionCustomers = this.getOptionCustomers(this);
     }
-    
+
     onCustomerChange(customer){
         console.log("customer -" + customer.label)
         this.setState({userName: customer.label});
@@ -98,7 +98,7 @@ class AdminViewUser extends Component {
         if (this.props.token !== undefined && this.props.token !== null) {
             const customers = await getUser(this.props.token, this.state.userName).then()
             var customerBookings = []
-            
+
             if (customers !== undefined) {
                 var Booking = ""
                 var time = "No bookings yet"
@@ -125,9 +125,10 @@ class AdminViewUser extends Component {
             return customerBookings
         }
     }
-    async viewAppointment(e){
+    async viewAppointment(count){
+        console.log(count)
         this.setState({viewApp:true})
-        this.setState({count:e.target.value})
+        await this.setState({count:count-1})
         console.log(this.state.count)
     }
     async onSubmit(e) {
@@ -176,10 +177,11 @@ class AdminViewUser extends Component {
                 bookingDisplay = bookings.map((user) => {
                     return (
                         <div className="list-group-item d-flex justify-content-between align-items-center"
-                             key={++count} >
+                             key={count++} >
                             {user.date}
-                            <button type="button" value={count} onClick={e=>this.viewAppointment(e)}>View Appointment</button>
+                            {<button type="button" value={count} onClick={e=>this.viewAppointment(e.target.value)}>View Appointment</button>}
                         </div>
+
                     )
                 })
             }
@@ -189,52 +191,89 @@ class AdminViewUser extends Component {
                         <Header/>
                         <br/><br/><br/><br/>
                         <div className="row">
-                        <div className="col-sm-3">
-                            <NavPane
-                                id={this.props.id}
-                                userName={this.props.userName}
-                                address={this.props.address}
-                                phone={this.props.phone}
-                                userType={this.props.userType}
-                                token={this.props.token}/>
-                        </div>
                             <div className="col-sm-3">
-                        <div className="Heading">
-                            <h1>Search for appointment</h1>
-                            <p>Select the username of a customer and click submit to view all their bookings!</p>
-                            <br/><br/>
-                        </div>
-                            <div className="list-group-item d-flex justify-content-between align-items-center">
-                        <form onSubmit={this.onSubmit}>
-                                <div className="col-sm">
-
-                                    <div className="form-group">
-                                        <label htmlFor="companyName">Select a customer:</label>
-                                        <Select name={"customerNames"} value={this.state.value} options={this.state.optionsCustomers}
-                                                onChange={this.onCustomerChange} components={animatedComponents} isDisabled={this.state.disableCustomer}/>
-                                    </div>
+                                <NavPane
+                                    id={this.props.id}
+                                    userName={this.props.userName}
+                                    address={this.props.address}
+                                    phone={this.props.phone}
+                                    userType={this.props.userType}
+                                    token={this.props.token}/>
                             </div>
-                            <div className="row">
-                                <div className="col-sm"></div>
-                                <div className="col-sm">
-                                    <input type="submit" className="btn btn-sm btn-dark" placeholder="Search"
-                                           id="navButton"/>
+                            <div className="col">
+                                <div className="Heading">
+                                    <h1>Search for appointment</h1>
+                                    <p>Select the username of a customer and click submit to view all their bookings!</p>
+                                    <br/><br/>
                                 </div>
-                                <div className="col-sm"></div>
+                                <br/><br/><br/>
+                                <form onSubmit={this.onSubmit}>
+                                    <div className="col-sm">
+                                        <div className="form-group">
+                                            <label htmlFor="companyName">Select a customer:</label>
+                                            <Select name={"customerNames"} value={this.state.value} options={this.state.optionsCustomers}
+                                                    onChange={this.onCustomerChange} components={animatedComponents} isDisabled={this.state.disableCustomer}/>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-sm"></div>
+                                        <div className="col-sm">
+                                            <input type="submit" className="btn btn-sm btn-dark" placeholder="Search"
+                                                   id="navButton"/>
+                                        </div>
+                                        <div className="col-sm"></div>
+                                    </div>
+                                </form>
                             </div>
-                        </form>
-                            </div>
-                            </div>
-                    </div>
+                        </div>
+                            <div className="row"/>
+                        <Footer/>
                     </div>
                 )
-            } else{
-                console.log(bookingDisplay)
-                if(this.state.viewApp){
-                    bookingDisplay = this.state.bookings[this.state.count]
-                }
+            } else if(this.state.viewApp){
+                const dateOfApp = "Date of Appointment: " + this.state.bookings[this.state.count].date
+                const worker = "Worker name: " + this.state.bookings[this.state.count].booking.worker.user.userName
+                const service = "Service: " + this.state.bookings[this.state.count].booking.service.name
+                const duration = "Duration: " + this.state.bookings[this.state.count].booking.service.minDuration
+                const id = "ID: " + this.state.bookings[this.state.count].booking.id
+                return(
+                    <div className="adminViewUser">
+                        <Header/>
+                        <br/><br/><br/>
+                        <div className="row">
+                            <div className="col-sm-3">
+                                <NavPane
+                                    id={this.props.id}
+                                    userName={this.props.userName}
+                                    address={this.props.address}
+                                    phone={this.props.phone}
+                                    userType={this.props.userType}
+                                    token={this.props.token}/>
+                            </div>
+                            <div className="col-sm">
+                                <h1>Bookings:</h1>
+                                {dateOfApp}
+                                <br/>
+                                {worker}
+                                <br/>
+                                {service}
+                                <br/>
+                                {duration}
+                                <br/>
+                                {id}
+                                <div className="row"/>
+                                <Link to="/dashboard">Home</Link>
+                            </div>
+                        </div>
+                        <Footer/>
+                    </div>
+                )
+                console.log(this.state.bookings)
+            }else{
                 return (
                     <div className="adminViewUser">
+                        <Header/>
+                        <br/><br/><br/>
                         <div className="row">
                             <div className="col-sm-3">
                                 <NavPane
@@ -252,10 +291,12 @@ class AdminViewUser extends Component {
                                 <Link to="/dashboard">Home</Link>
                             </div>
                         </div>
+                        <Footer/>
                     </div>
                 )
             }
         }
     }
 }
-export default AdminViewUser;
+
+export default AdminViewUser
