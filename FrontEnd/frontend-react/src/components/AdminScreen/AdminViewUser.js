@@ -75,8 +75,9 @@ class AdminViewUser extends Component {
     onCustomerChange(customer){
         console.log("customer -" + customer.label)
         this.setState({userName: customer.label});
-        this.setState({disableCustomer: true});
+        // this.setState({disableCustomer: true});
     }
+
     async getOptionCustomers(){
         const options = await getCustomerNames(this.props.token)
         var customerOptions = []
@@ -93,6 +94,7 @@ class AdminViewUser extends Component {
         this.setState({optionsCustomers: customerOptions})
         return customerOptions
     }
+
     async loadCustomer() {
         console.log(this.state.userName)
         if (this.props.token !== undefined && this.props.token !== null) {
@@ -125,12 +127,14 @@ class AdminViewUser extends Component {
             return customerBookings
         }
     }
+
     async viewAppointment(count){
         console.log(count)
         this.setState({viewApp:true})
-        await this.setState({count:count-1})
+        this.setState({count:count-1})
         console.log(this.state.count)
     }
+
     async onSubmit(e) {
         e.preventDefault()
         if (this.props.userType === "ADMIN") {
@@ -147,6 +151,7 @@ class AdminViewUser extends Component {
             alert("you must be an admin to view customer appointments!")
         }
     }
+
     render() {
         const animatedComponents = makeAnimated();
         if (this.props.userName === undefined && this.props.userType === undefined) {
@@ -179,7 +184,7 @@ class AdminViewUser extends Component {
                         <div className="list-group-item d-flex justify-content-between align-items-center"
                              key={count++} >
                             {user.date}
-                            {<button type="button" value={count} onClick={e=>this.viewAppointment(e.target.value)}>View Appointment</button>}
+                            {<button type="button" className="btn btn-outline-dark" value={count} onClick={e=>this.viewAppointment(e.target.value)}>View booking details</button>}
                         </div>
 
                     )
@@ -187,9 +192,10 @@ class AdminViewUser extends Component {
             }
             if (!this.state.hasSuccess) {
                 return (
-                    <div className="AdminViewUser">
+                    <div className="container">
                         <Header/>
-                        <br/><br/><br/><br/>
+                        <br/><br/><br/>
+                        <h2>Booking details by customer</h2>
                         <div className="row">
                             <div className="col-sm-3">
                                 <NavPane
@@ -201,16 +207,11 @@ class AdminViewUser extends Component {
                                     token={this.props.token}/>
                             </div>
                             <div className="col">
-                                <div className="Heading">
-                                    <h1>Search for appointment</h1>
-                                    <p>Select the username of a customer and click submit to view all their bookings!</p>
-                                    <br/><br/>
-                                </div>
-                                <br/><br/><br/>
+                            <br/>
                                 <form onSubmit={this.onSubmit}>
                                     <div className="col-sm">
                                         <div className="form-group">
-                                            <label htmlFor="companyName">Select a customer:</label>
+                                            <label htmlFor="companyName">Select customer username to view all their bookings:</label>
                                             <Select name={"customerNames"} value={this.state.value} options={this.state.optionsCustomers}
                                                     onChange={this.onCustomerChange} components={animatedComponents} isDisabled={this.state.disableCustomer}/>
                                         </div>
@@ -218,7 +219,7 @@ class AdminViewUser extends Component {
                                     <div className="row">
                                         <div className="col-sm"></div>
                                         <div className="col-sm">
-                                            <input type="submit" className="btn btn-sm btn-dark" placeholder="Search"
+                                            <input type="submit" className="btn btn-outline-dark" placeholder="Search"
                                                    id="navButton"/>
                                         </div>
                                         <div className="col-sm"></div>
@@ -237,9 +238,10 @@ class AdminViewUser extends Component {
                 const duration = "Duration: " + this.state.bookings[this.state.count].booking.service.minDuration
                 const id = "ID: " + this.state.bookings[this.state.count].booking.id
                 return(
-                    <div className="adminViewUser">
+                    <div className="container">
                         <Header/>
                         <br/><br/><br/>
+                        <h2>Booking details by customer</h2>
                         <div className="row">
                             <div className="col-sm-3">
                                 <NavPane
@@ -251,7 +253,8 @@ class AdminViewUser extends Component {
                                     token={this.props.token}/>
                             </div>
                             <div className="col-sm">
-                                <h1>Bookings:</h1>
+                                <br/>
+                                <p>Bookings:</p>
                                 {dateOfApp}
                                 <br/>
                                 {worker}
@@ -262,6 +265,7 @@ class AdminViewUser extends Component {
                                 <br/>
                                 {id}
                                 <div className="row"/>
+                                <br/>
                                 <Link to="/dashboard">Home</Link>
                             </div>
                         </div>
@@ -271,9 +275,10 @@ class AdminViewUser extends Component {
                 console.log(this.state.bookings)
             }else{
                 return (
-                    <div className="adminViewUser">
+                    <div className="container">
                         <Header/>
                         <br/><br/><br/>
+                        <h2>Booking details by customer</h2>
                         <div className="row">
                             <div className="col-sm-3">
                                 <NavPane
@@ -285,9 +290,11 @@ class AdminViewUser extends Component {
                                     token={this.props.token}/>
                             </div>
                             <div className="col-sm">
-                                <h1>Bookings:</h1>
+                            <br/>
+                            <p>Bookings:</p>
                                 {bookingDisplay}
                                 <div className="row"/>
+                                <br/>
                                 <Link to="/dashboard">Home</Link>
                             </div>
                         </div>
