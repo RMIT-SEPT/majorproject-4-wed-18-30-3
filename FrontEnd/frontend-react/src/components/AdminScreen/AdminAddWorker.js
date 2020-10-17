@@ -8,7 +8,13 @@ import {Link} from "react-router-dom";
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
-async function createWorker(userName, password, phone, address) {
+
+async function createWorker(userName, password, phone, address, service, company) {
+    console.log(service)
+
+    // TODO check if service exists, if not, create it.
+    // For now, assign all new workers the company "Sunset Services"
+
     return await axios.post(DNS_URI + '/api/worker/register', {
         "user": {
             "userName": userName,
@@ -16,8 +22,8 @@ async function createWorker(userName, password, phone, address) {
             "address": address,
             "phone": phone,
             "userType": "WORKER"},
-        "services": [{}],
-        "companyName": " "
+        "services": [{name: "Pool Cleaning"}],
+        "companyName": company
 
     }, axiosConfig)
         .then(res => {
@@ -38,6 +44,8 @@ class AdminAddWorker extends Component {
             firstName: null,
             lastName: null,
             response: null,
+            company: null,
+            service: null,
             errorMessage: "",
             successMessage: "",
             cancelTxt: "Cancel",
@@ -83,15 +91,15 @@ class AdminAddWorker extends Component {
             return
         }
         const success = await createWorker(this.state.userName, this.state.password,
-            this.state.phone, this.state.address).then()
+            this.state.phone, this.state.address, this.state.service, this.state.company).then()
         this.setState({response: success[1]})
         console.log(this.state.response)
         if (this.state.response >= 200 && this.state.response <= 302) {
-            this.setState({successMessage: "User successfully created. Log in to get started."})
+            this.setState({successMessage: "Worker successfully created."})
             this.setState({errorMessage: ""})
             this.setState({cancelTxt: "Log in"})
         } else {
-            this.setState({errorMessage: "Account creation failed, please check your details and try again."})
+            this.setState({errorMessage: "Worker creation failed, please check your details and try again."})
             this.setState({successMessage: ""})
         }
     }
@@ -122,9 +130,8 @@ class AdminAddWorker extends Component {
                 <div className = "Register_worker">
                         <div className="col-sm"></div>
                         <div className="col-sm">
-                            <div className="card shadow-sm p-3 mb-5 bg-white rounded">
-                                <br/><br/><br/>
-                                <h1>Register</h1>
+                            <div>
+                                <br/>
                                 <p>Phone no. must be 10 digits and start with 0</p>
 
                                 <b><font color="red">{this.state.errorMessage}</font></b>
@@ -229,6 +236,40 @@ class AdminAddWorker extends Component {
                                         </div>
                                         <div className="col-2"></div>
                                     </div>
+
+
+                                    <div className="row">
+                                    <div className="col-2"></div>    
+                                    <div className="col-8">
+                                        <div className = "form-group">
+                                            <input type="company" className="form-control"
+                                                placeholder="Company name"
+                                                id="company"
+                                                name="company"
+                                                value={this.state.value}
+                                                onChange={this.onChange}>
+                                            </input>
+                                            </div>
+                                        </div>    
+                                    <div className="col-2"></div>
+                                </div>
+
+                                    <div className="row">
+                                    <div className="col-2"></div>    
+                                    <div className="col-8">
+                                        <div className = "form-group">
+                                            <input type="service" className="form-control"
+                                                placeholder="Service offered"
+                                                id="service"
+                                                name="service"
+                                                value={this.state.value}
+                                                onChange={this.onChange}>
+                                            </input>
+                                            </div>
+                                        </div>    
+                                    <div className="col-2"></div>
+                                </div>
+
                                     <div className="row">
                                         <div className="col-2"></div>
                                         <div className="col-8">
@@ -240,8 +281,7 @@ class AdminAddWorker extends Component {
                                     <div className="row">
                                         <div className="col-2"></div>
                                         <div className="col-8">
-                                            <Link to="/dashboard" className="btn btn-outline-dark" id="navButton">Return</Link>
-                                            <br/><br/>
+                                            
                                         </div>
                                         <div className="col-2"></div>
                                     </div>
