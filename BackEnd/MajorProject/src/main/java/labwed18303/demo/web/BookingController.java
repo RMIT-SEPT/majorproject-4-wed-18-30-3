@@ -187,8 +187,10 @@ public class BookingController {
         CancelBooking cb1 = null;
 
         Booking original = bookingService.findByBookingIdentifier(cancelBooking.getBookingReference());
-
-        if(authUser == null ||authUser.getUserName() != original.getCustomer().getUser().getUserName()){
+        if(original == null){
+            return new ResponseEntity<String>("Booking does not exist", HttpStatus.valueOf(400));
+        }
+        if(authUser == null || authUser.getUserName() != original.getCustomer().getUser().getUserName()){
             AuthorizationErrorResponse error = new AuthorizationErrorResponse("auth fail");
             return new ResponseEntity(error, HttpStatus.valueOf(401));
         }
