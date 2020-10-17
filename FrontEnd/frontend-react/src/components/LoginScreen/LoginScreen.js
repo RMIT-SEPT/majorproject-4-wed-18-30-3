@@ -20,6 +20,7 @@ import AdminBookingSummary from '../AdminScreen/AdminBookingSummary';
 import AdminAddWorker from '../AdminScreen/AdminAddWorker';
 import AdminSetAvailabilities from '../AdminScreen/AdminSetAvailabilities';
 import AdminEditUser from '../AdminScreen/AdminEditUser';
+import logo from './agme.png'
 
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
@@ -103,16 +104,17 @@ class LoginScreen extends Component {
                 <div className="row">
                     <div className="col-sm"></div>  
                     <div className="col-sm">
-                        <div className="card shadow-sm p-3 mb-5 bg-white rounded">
+                    <br/><br/>
+            
+                    <img src={logo} alt="AGME" id="login_image" className="border-right border-dark"/>
+                    
+                    </div>  
+                    <div className="col-sm">
                         <br/><br/><br/>
-                            <h1>Log in</h1>
-                            <p>Welcome back!</p>
-                            <br/><br/>
             
                             <form onSubmit={this.onSubmit}>
                             <div className="row">
-                                <div className="col-2"></div>    
-                                <div className="col-8">
+                                <div className="col-10">
                                     <div className = "form-group">
                                         
                                         <input type="text" className="form-control"
@@ -122,15 +124,14 @@ class LoginScreen extends Component {
                                                 value={this.state.value}
                                                 onChange={this.onChange}>
                                         </input>
-                                    
+
                                     </div>    
                                 </div>
-                                <div className="col-2"></div>
+                                <div className="col-1"></div>
                                 </div>
 
                                 <div className="row">
-                                    <div className="col-2"></div>    
-                                    <div className="col-8">    
+                                    <div className="col-10">    
                                         <div className = "form-group">
                                             
                                             <input type="password" className="form-control"
@@ -143,28 +144,25 @@ class LoginScreen extends Component {
                                             
                                             </div>    
                                         </div>
-                                    <div className="col-2"></div>
+                                    <div className="col-1"></div>
                                 </div>
 
                                 <div className="row form-group">
-                                    <div className="col-2"></div>    
-                                    <div className="col-8">
+                                    <div className="col-10">
                                         <input type="submit" value="Sign in" className="btn btn-outline-dark" id="navButton"/>
                                     </div>
-                                    <div className="col-2"></div>    
+                                    <div className="col-1"></div>    
                                 </div>
 
                                 <div className="row form-group">
-                                    <div className="col-2"></div>    
-                                    <div className="col-8">
+                                    <div className="col-10">
                                         <a href="/register" className="btn btn-outline-dark" id="navButton">Register</a>
                                     </div>
-                                    <div className="col-2"></div>    
+                                    <div className="col-1"></div>    
                                 </div>
 
                             </form>
                             <br/><br/><br/>
-                            </div>
                         </div>
                     <div className="col-sm"></div>  
                 </div>

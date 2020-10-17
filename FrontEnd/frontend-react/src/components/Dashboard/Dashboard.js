@@ -105,24 +105,6 @@ class Dashboard extends Component {
         }
         this.loadCustomers = this.loadCustomers.bind(this)
         this.loadWorkers = this.loadWorkers.bind(this)
-        this.storeLoginToken = this.storeLoginToken.bind(this)
-        this.storeLoginToken()
-    }
-
-    // Store session token and login details in Redux state
-    storeLoginToken() {
-        this.props.dispatch({
-            type: "LOGIN",
-            payload: {
-                'id': this.props.id,
-                'userName': this.props.userName,
-                'address': this.props.address, 
-                'phone': this.props.phone,
-                'userType': this.props.userType,
-                'token': this.props.token
-            }
-        })
-        // TODO: persist state between refreshes
     }
 
     async loadCustomers() {
@@ -220,9 +202,6 @@ class Dashboard extends Component {
     
     render() {
         
-        // Use the most recent element in state history
-        const index = this.props.user.length - 1
-
         var headerText = ""
         if (this.props.userType === "CUSTOMER")
             headerText = "Customer portal"
@@ -338,27 +317,21 @@ class Dashboard extends Component {
             return (
                 <div className="container" id="dashboard_container">
                     <Header
-                        id={this.props.user[index]["id"]}
-                        userName={this.props.user[index]["userName"]}
-                        address={this.props.user[index]["address"]}
-                        phone={this.props.user[index]["phone"]}
-                        userType={this.props.user[index]["userType"]}
-                        token={this.props.user[index]["token"]}/>
+                        userName={this.props.userName}
+                        userType={this.props.userType}
+                        token={this.props.token}/>
                     <br/><br/><br/>
                     <h2>{headerText}</h2>
                     <div className="row">
                         <div className="col-sm-3">
                             <NavPane
-                                id={this.props.user[index]["id"]}
-                                userName={this.props.user[index]["userName"]}
-                                address={this.props.user[index]["address"]}
-                                phone={this.props.user[index]["phone"]}
-                                userType={this.props.user[index]["userType"]}
-                                token={this.props.user[index]["token"]}/>
+                            userName={this.props.userName}
+                            userType={this.props.userType}
+                            token={this.props.token}/>
                         </div>
                         <div className="col-sm-9">
                             <br/>
-                            <b>Welcome, {this.props.user[index]["userName"]}!</b> &nbsp; {this.state.bookingMsg}
+                            <b>Welcome, {this.props.userName}!</b> &nbsp; {this.state.bookingMsg}
                             
                             <div className="list-group list-group-flush" id="scrollable">              
                                 {bookingDisplay}
@@ -377,15 +350,5 @@ class Dashboard extends Component {
     }
 }
 
-const mapStateToProps = state => {
-    return { user: state.user }
-}
 
-const mapDispatchToProps = dispatch => {
-    return { dispatch }
-}
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Dashboard)
+export default Dashboard

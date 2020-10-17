@@ -228,6 +228,8 @@ class AdminEditUser extends Component {
 
 
     render() {
+
+
         const animatedComponents = makeAnimated();
 
         // Check user is logged in
@@ -245,7 +247,9 @@ class AdminEditUser extends Component {
 
         } else {
             return (
+
                 <div className="container">
+
                     <Header id={this.props.id}
                         userName={this.props.userName}
                         address={this.props.address}
@@ -254,7 +258,7 @@ class AdminEditUser extends Component {
                         token={this.props.token} />
                     <br /><br /><br />
 
-                    <h2>Edit a user's details</h2>
+                    
 
                     <div className="row">
                         <div className="col-sm-3">

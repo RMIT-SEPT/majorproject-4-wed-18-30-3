@@ -7,13 +7,8 @@ import LoginScreen from './LoginScreen';
 configure({ adapter: new Adapter() });
 
 describe('<LoginScreen/>', function() {
-    it('renders heading text', function() {
-        const wrapper = shallow(
-            <LoginScreen>
-                <h1>Log in</h1>
-            </LoginScreen>
-        );
-        expect(wrapper.contains(<h1>Log in</h1>)).to.equal(true);
+    it('', function() {
+        
     });
 });
 // describe('<LoginScreen/>', function() {
