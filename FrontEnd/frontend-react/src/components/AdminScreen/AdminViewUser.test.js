@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import Adapter from 'enzyme-adapter-react-16.3'
 import AdminViewUser from './AdminViewUser';
 import Select from "react-select";
+import Link from "react-router-dom/modules/Link";
 
 
 configure({ adapter: new Adapter() });
