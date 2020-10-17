@@ -3,7 +3,6 @@ import { configure, shallow } from 'enzyme';
 import { expect } from 'chai';
 import Adapter from 'enzyme-adapter-react-16.3'
 import LoginScreen from './LoginScreen';
-import RegisterScreen from "../RegisterScreen/RegisterScreen";
 
 configure({ adapter: new Adapter() });
 //FUNCTIONAL TESTS
@@ -34,13 +33,13 @@ describe('<LoginScreen/>', function() {
 });
 describe('<LoginScreen/>', function() {
     it('renders username', function() {
-        const wrapper = shallow(<RegisterScreen/>);
+        const wrapper = shallow(<LoginScreen/>);
         expect(wrapper.find(<input type="text" id="userName"/>));
     });
 });
 describe('<LoginScreen/>', function() {
     it('renders password', function() {
-        const wrapper = shallow(<RegisterScreen/>);
+        const wrapper = shallow(<LoginScreen/>);
         expect(wrapper.find(<input type="text" id="password"/>));
     });
 });
