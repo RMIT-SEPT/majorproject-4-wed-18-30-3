@@ -305,4 +305,5 @@ class AdminViewUser extends Component {
         }
     }
 }
-export default AdminViewUser;
+
+export default AdminViewUser
