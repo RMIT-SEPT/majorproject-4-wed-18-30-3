@@ -4,7 +4,7 @@ import Header from '../Layout/Header';
 import axios from "axios";
 import Footer from "../Layout/Footer";
 import Select from "react-select";
-import makeAnimated from "react-select/animated/dist/react-select.esm";
+import makeAnimated from 'react-select/animated';
 import NavPane from "../Layout/NavPane";
 import {Link} from "react-router-dom";
 
