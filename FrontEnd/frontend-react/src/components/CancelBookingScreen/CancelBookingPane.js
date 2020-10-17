@@ -4,8 +4,8 @@ import Header from '../Layout/Header'
 import Footer from '../Layout/Footer'
 import axios from "axios";
 import { connect } from 'react-redux'
-
-
+import { Link } from 'react-router-dom';
+import CancelButton from './CancelButton';
 
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
@@ -32,18 +32,13 @@ async function getBookings(token, userType, userName) {
                 'Authorization': token
             }
         }).then(function (response) {
-            console.log('Authenticated');
             return response.data.bookings
         }).catch(function (error) {
-            console.error("getBookings()", error)
             console.log(error.response)
             console.log(error.response.data)
         });
     }
 }
-
-function refresh() {window.location.reload(false)}
-
 
 
 
@@ -58,20 +53,16 @@ async function deleteB(reasonInfo, bkgInfo, token, userType, userName) {
         'Authorization': token }
     })
     .then(res => {
-        console.log(`statusCode: ${res.status}`)
-        console.log(res.data)
-        return [true, res.status]
+        return [true, res.status, res.data, res]
     })
     .catch(error => {
-        console.log(error.message)
-        return [false, error.response.status]
+        return [false, error.response.status, error.response.data, error]
     })
 }
 
 
 async function logReason(reasonInfo, token) {
 
-     console.log(logReason)
 
 //  ------use this correct api/booking/delete for post log reason and backend will delete bookings in database ------
 
@@ -86,7 +77,6 @@ async function logReason(reasonInfo, token) {
     })
         .then(res => {
             console.log(`statusCode: ${res.status}`)
-            console.log(res.data)
             return [true, res.status]
         })
         .catch(error => {
@@ -134,34 +124,28 @@ class CancelBookingPane extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            bookingReference: '',
+            bookingReference: "",
             userName: null,
             userType: null,
             bookings: this.getUserBookings(),
             bookingMsg: null,
-            reason: ''
+            reason: "",
+            success: null
+
         }
         this.onSubmit = this.onSubmit.bind(this);
         this.onChange = this.onChange.bind(this);
 
-        this.storeLoginToken = this.storeLoginToken.bind(this)
-        this.storeLoginToken()
+        this.reset = this.reset.bind(this)
+
     }
 
-    // Store session token and login details in Redux state
-    storeLoginToken() {
-        this.props.dispatch({
-            type: "LOGIN",
-            payload: {
-                'id': this.props.id,
-                'userName': this.props.userName,
-                'address': this.props.address,
-                'phone': this.props.phone,
-                'userType': this.props.userType,
-                'token': this.props.token
-            }
-        })
-        // TODO: persist state between refreshes
+    reset() {
+        this.setState({bookingReference: "",})
+        this.setState({reason: ""})
+        this.setState({displayMessage: null})
+        this.setState({bookings: this.getUserBookings()})
+        this.setState({success: null})
     }
 
     async getUserBookings() {
@@ -188,9 +172,9 @@ class CancelBookingPane extends Component {
                     }
                 }
                 if (userBkgs.length > 1)
-                    msgString = "You have " + userBkgs.length + " uncompeleted bookings for now."
+                    msgString = "You have " + userBkgs.length + " active bookings."
                 else if (userBkgs.length === 1)
-                    msgString = "You have " + userBkgs.length + " uncompeleted booking for now."
+                    msgString = "You have " + userBkgs.length + " active booking."
 
                 this.setState({ bookingMsg: msgString })
                 this.setState({ bookings: userBkgs })
@@ -203,30 +187,23 @@ class CancelBookingPane extends Component {
         this.setState({ [e.target.name]: e.target.value });
     }
 
-    //delete booking by click the red "Button"(line223) in each booking
-
-    // deleteBook =(id) =>  {
-    //     return  axios.get(DNS_URI + '/api/booking'+'id').then(response => {
-    //         if (response.data !== null){
-    //             alert("booking delete successfully");
-    //         }      
-    //         return response.data
-    //     })
-    // }
-
 
     // submit booking id and  cancel reason   only send bookingReference and reason is enough
 
     async onSubmit(e) {
         e.preventDefault();
-        if (this.state.bookingReference == null) {
-            alert("Please enter a bookingId.")
+               
+        
+        // Validate input
+        if (this.state.bookingReference === "") {
+            alert("Please enter a valid booking ID")
             return
         }
-        if (this.state.reason == null) {
-            alert("Please enter a reason.")
+        if (this.state.reason === "") {
+            alert("Please enter a valid booking ID")
             return
         }
+
 
         const reasonInfo = {
             bookingReference: this.state.bookingReference,
@@ -238,8 +215,14 @@ class CancelBookingPane extends Component {
             worker: { userName: [this.state.bookings.userName] }
         }
 
-        logReason(reasonInfo, this.props.token);
-        console.log(reasonInfo,this.props.token)
+        const result = await logReason(reasonInfo, this.props.token);
+        console.log(result)
+        if(result[0] === true ){
+            this.setState({success: true})
+        } else {
+            this.setState({success: false})
+        }
+        
     }
 
     async deleteBooking(e) {
@@ -259,28 +242,31 @@ class CancelBookingPane extends Component {
         console.log(bkgInfo,this.props.token)
     }
 
-
-
    //just test post and see what will be send (bookingReference and reason)
     onSubmit1 = (e) =>{
         e.preventDefault();
+
         const reasonInfo = {
             bookingReference: this.state.bookingReference,
             reason: this.state.reason
         }
+
+        // Validate input
+        if (this.state.bookingReference === "") {
+            alert("Please enter a valid booking ID")
+            return
+        }
+        if (this.state.reason === "") {
+            alert("Please enter a valid booking ID")
+            return
+        }
+
         logReason(reasonInfo, this.props.token);
         console.log(reasonInfo,this.props.token)
 
     }
 
-
-
-
-
     render() {
-
-        // Use the most recent element in state history
-        const index = this.props.user.length - 1
 
         var headerText = "AGME Booking App"
         if (this.props.userType === "CUSTOMER")
@@ -295,12 +281,9 @@ class CancelBookingPane extends Component {
             return (
                 <div className="profile_screen_editprofile" id="profile_screen_editprofile">
                     <Header
-                        id={this.props.user[index]["id"]}
-                        userName={this.props.user[index]["userName"]}
-                        address={this.props.user[index]["address"]}
-                        phone={this.props.user[index]["phone"]}
-                        userType={this.props.user[index]["userType"]}
-                        token={this.props.user[index]["token"]} />
+                        userName={this.props.userName}
+                        userType={this.props.userType}
+                        token={this.props.token} />
                     <br /><br /><br /><br />
                     <b>Please log in first.</b>
                     <br /><br />
@@ -308,7 +291,7 @@ class CancelBookingPane extends Component {
                 </div>
             )
 
-        } else {
+        } else if (this.state.success === null) {
 
             const bookings = this.state.bookings
             var bookingDisplay
@@ -369,24 +352,17 @@ class CancelBookingPane extends Component {
             return (
                 <div className="container" id="cancelbooking_container">
 
-                    <br /><br /><br />
-
+                    <br />
                     <div className="row">
-
                         <div className="col-sm-9">
 
-                            <b>User- {this.props.user[index]["userName"]} - Booking History</b> &nbsp; {this.state.bookingMsg}
+                            <b>{this.props.userName} | Bookings</b> &nbsp; {this.state.bookingMsg}
                             <br /> <br />
 
                             <div className="cancelpane">
 
-
-
                                 <form onSubmit={this.onSubmit}>
-                                    <br></br>
-                                    <span>Please enter the ID of the reservation you need to cancel and tell us your reason</span><br></br>
-
-                                    <br></br>
+                                    <p>Please enter the ID of the reservation you need to cancel and provide a reason.</p>
                                     <div>
                                         <input type="text" className="form-control"
                                             placeholder="booking ID"
@@ -407,24 +383,17 @@ class CancelBookingPane extends Component {
                                     </div>
                                     <br></br>
 
-                                    <div className="form1">
+                                    <div className="row">
                                         <div className="col-sm">
-                                            <input type="submit" value="Cancel" className="btn btn-outline-dark" id="navButton" 
-                                            />
+                                            <input type="submit" value="Cancel booking" className="btn btn-outline-dark" id="navButton"/>
                                         </div>
-                                        <br/>
-                                        <div className="col-sm">
-                                        <button className="btn btn-outline-dark" id="navButton" onClick={refresh}>
-                                            Reset form
-                                        </button>    
-                        </div>
+                                            <br/>
+                                            
                                     </div>
                                 </form>
                             </div>
                             <div className="history-part-col">
                                 
-
-
                                 <div className="list-group list-group-flush" id="scrollable">
                                     {bookingDisplay}
                                     {/* <button oonClick={this.deleteBooking}>  cancel  </button> */}
@@ -437,83 +406,53 @@ class CancelBookingPane extends Component {
                     </div>
 
                 </div>
+            )        
+
+        // Successful cancel
+        } else if (this.state.success === true) {
+            return (
+                <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
+                    <br/>    
+                    <b>Booking cancelled successfully. Thanks, {this.props.userName}.</b>
+                    <br/><br/>   
+
+                    <div className="row">
+                        <div className="col-sm">
+                            <button className="btn btn-outline-dark" id="navButton" onClick={this.reset}>
+                                Cancel another another booking
+                            </button> 
+                        </div>
+                        <div className="col-sm">
+                            <CancelButton/>
+                        </div>
+                    </div>
+                </div>   
             )
-        // ------for successful cancel page--------
 
-        // }if (this.state.hasSuccess) {
-        //     return (
-        //         <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
-        //             <br/>    
-        //             <b>CancelBooking successfully.</b>
-        //             <br/><br/>   
-    
-        //             <div className="row">
-        //                 <div className="col-sm">
-        //                     <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
-        //                         Cancel another booking
-        //                     </button> 
-        //                 </div>
-        //                 <div className="col-sm">
-        //                     <CancelButton/>
-        //                 </div>
-        //             </div>
-        //         </div>   
-        //     )
-    
-        // // Failed booking
-        // } else if (this.state.hasFail) {
-        //     return (
-        //         <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
-        //             <br/>    
-        //             <b>CancelBooking failed. Please try again.</b>
-        //             <br/><br/>   
+        // Failed cancel
+        } else if (this.state.success === false) {
+            return (
+                <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
+                    <br/>    
+                    <b>Cancellation failed. Please try again.</b>
+                    <br/><br/>   
                 
-        //         <div className="row">
-        //             <div className="col-sm">
-        //                 <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
-        //                     Cancel another booking
-        //                 </button> 
-        //             </div>
-        //             <div className="col-sm">
-        //                 <CancelButton/>
-        //             </div>
-        //         </div>
-        //     </div>  
-        //     )
-        // }
-
-
-
-
-        
+                <div className="row">
+                    <div className="col-sm">
+                        <button className="btn btn-outline-dark" id="navButton" onClick={this.reset}>
+                            Cancel another another booking
+                        </button> 
+                    </div>
+                    <div className="col-sm">
+                        <CancelButton/>
+                    </div>
+                </div>
+            </div>  
+            )
         }
     }
 }
+   
 
 
-    
-       
-
-
-
-
-
-
-
-
-
-const mapStateToProps = state => {
-    return { user: state.user }
-}
-
-const mapDispatchToProps = dispatch => {
-    return { dispatch }
-}
-
-
-
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(CancelBookingPane)
+export default CancelBookingPane
