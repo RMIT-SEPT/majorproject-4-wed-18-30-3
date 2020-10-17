@@ -5,56 +5,10 @@ import Adapter from 'enzyme-adapter-react-16.3'
 import LoginScreen from './LoginScreen';
 
 configure({ adapter: new Adapter() });
-<<<<<<< HEAD
 //RENDER TESTS
 describe('<LoginScreen/>', function() {
     it('', function() {
-        
-    });
-});
-=======
-//FUNCTIONAL TESTS
-// describe('<RegisterScreen/>', function() {
-//     it('tests if creating user has succeeded', function() {
-//         const wrapper = shallow(<RegisterScreen/>);
-//         const instance = wrapper.instance();
-//         instance.setState({userName:"abcd"})
-//         instance.setState({password:"pass"})
-//         instance.setState({phone:"0000000000"})
-//         instance.setState({address:"123"})
-//         instance.setState({firstName:"abcd"})
-//         instance.setState({lastName:"efgh"})
-//         instance.setState({userType:{value:'CUSTOMER', label: 'Customer'}})
-//         expect(wrapper.state.response).to.equal("200");
-//     });
-// });
-//RENDER TESTS
->>>>>>> 2d7ca588a34f85f073cc66184f754806e02f4769
-describe('<LoginScreen/>', function() {
-    it('renders username', function() {
-        const wrapper = shallow(<LoginScreen/>);
-        expect(wrapper.find(<input type="text" id="userName"/>));
-    });
-});
-describe('<LoginScreen/>', function() {
-    it('renders password', function() {
-        const wrapper = shallow(<LoginScreen/>);
-        expect(wrapper.find(<input type="text" id="password"/>));
-    });
-});
-describe('<LoginScreen/>', function() {
-    it('renders button submit', function() {
-        const wrapper = shallow(
-            <LoginScreen>
-                <input type="submit" value="Sign in" className="btn btn-outline-dark" id="navButton"/>
-            </LoginScreen>
-        );
-        expect(wrapper.contains(<input type="submit" value="Sign in" className="btn btn-outline-dark" id="navButton"/>)).to.equal(true);
-    })});
-describe('<LoginScreen/>', function() {
-    it('renders button register', function() {
-        const wrapper = shallow(<LoginScreen/>);
-        expect(wrapper.find(<a href="/register" className="btn btn-outline-dark" id="navButton"/>));
+
     });
 });
 describe('<LoginScreen/>', function() {

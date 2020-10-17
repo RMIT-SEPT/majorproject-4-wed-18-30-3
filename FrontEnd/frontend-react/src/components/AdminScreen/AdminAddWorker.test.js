@@ -12,11 +12,7 @@ describe('<AdminAddWorker/>', function() {
                 <p>Phone no. must be 10 digits and start with 0</p>
             </AdminAddWorker>
         );
-<<<<<<< HEAD
         expect(wrapper.contains(<p>Phone no. must be 10 digits and start with 0</p>)).to.equal(true);
-=======
-        expect(wrapper.contains(<h1>Register</h1>)).to.equal(true);
->>>>>>> 2d7ca588a34f85f073cc66184f754806e02f4769
     });
 });
 describe('<AdminAddWorker/>', function() {
