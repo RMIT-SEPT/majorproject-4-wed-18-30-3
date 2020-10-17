@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import "bootstrap/dist/css/bootstrap.min.css"
 import NavPane from '../Layout/NavPane'
-import { connect } from 'react-redux'
 import Footer from '../Layout/Footer'
 import Header from '../Layout/Header'
 import axios from "axios";
@@ -137,11 +136,10 @@ class Dashboard extends Component {
             if (workers !== undefined) {
                 for (let i = 0; i < workers.length; i++) {
                     
-                    if (workers[i].services[0] !== undefined) {
-                        var services = workers[i].services[0]["name"]
-                    } else {
-                        var services = "None"
-                    }
+                    var services = "None"
+                    if (workers[i].services[0] !== undefined) 
+                        services = workers[i].services[0]["name"]
+                    
                     var serviceCount = workers[i].services.length
                     workerList.push({
                         user: workers[i].user.userName,

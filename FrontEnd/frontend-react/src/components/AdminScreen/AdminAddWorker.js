@@ -4,7 +4,6 @@ import NavPane from '../Layout/NavPane'
 import Header from '../Layout/Header'
 import Footer from '../Layout/Footer'
 import axios from "axios";
-import {Link} from "react-router-dom";
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
 const axiosConfig = {headers: {'Content-Type': 'application/json'}}
@@ -128,7 +127,6 @@ class AdminAddWorker extends Component {
                     </div>
                 <div className="col-sm-9">
                 <div className = "Register_worker">
-                        <div className="col-sm"></div>
                         <div className="col-sm">
                             <div>
                                 <br/>

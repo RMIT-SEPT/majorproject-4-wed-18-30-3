@@ -272,7 +272,6 @@ class AdminViewUser extends Component {
                         <Footer/>
                     </div>
                 )
-                console.log(this.state.bookings)
             }else{
                 return (
                     <div className="container">

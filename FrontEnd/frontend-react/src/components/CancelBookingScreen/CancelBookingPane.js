@@ -3,8 +3,6 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import Header from '../Layout/Header'
 import Footer from '../Layout/Footer'
 import axios from "axios";
-import { connect } from 'react-redux'
-import { Link } from 'react-router-dom';
 import CancelButton from './CancelButton';
 
 const DNS_URI = "http://localhost:8080"
@@ -213,11 +211,6 @@ class CancelBookingPane extends Component {
             reason: this.state.reason
         }
 
-        const bkgInfo = {
-            date: [this.state.bookings.date],
-            worker: { userName: [this.state.bookings.userName] }
-        }
-
         const result = await logReason(reasonInfo, this.props.token);
         console.log(result)
         if(result[0] === true ){
@@ -231,11 +224,6 @@ class CancelBookingPane extends Component {
     async deleteBooking(e) {
         e.preventDefault();
        
-        const reasonInfo = {
-            bookingReference: this.state.bookingReference,
-            reason: this.state.reason
-        }
-
         const bkgInfo = {
             date: [this.state.bookings.date],
             worker: { userName: [this.state.bookings.userName] }
@@ -270,14 +258,6 @@ class CancelBookingPane extends Component {
     }
 
     render() {
-
-        var headerText = "AGME Booking App"
-        if (this.props.userType === "CUSTOMER")
-            headerText = "AGME Booking App - Customer portal"
-        else if (this.props.userType === "WORKER")
-            headerText = "AGME Booking App - Worker portal"
-        else if (this.props.userType === "ADMIN")
-            headerText = "AGME Booking App - Admin portal"
 
         // Check user is logged in
         if (this.props.userName === undefined && this.props.userType === undefined) {
