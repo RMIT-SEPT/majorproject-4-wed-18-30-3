@@ -79,3 +79,9 @@ POST localhost:8080/api/booking
 "updated_At":"2020-08-29-00-00-00"
 }
 
+
+POST localhost:8080/api/booking/delete
+{
+    "bookingReference": 1,
+    "reason" : "test"
+}
