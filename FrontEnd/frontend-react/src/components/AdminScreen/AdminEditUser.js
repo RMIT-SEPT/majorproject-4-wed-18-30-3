@@ -228,10 +228,7 @@ class AdminEditUser extends Component {
 
 
     render() {
-        <div>
 
-        <h2>Edit a user's details</h2>
-        </div>
 
         const animatedComponents = makeAnimated();
 
@@ -250,7 +247,9 @@ class AdminEditUser extends Component {
 
         } else {
             return (
+
                 <div className="container">
+
                     <Header id={this.props.id}
                         userName={this.props.userName}
                         address={this.props.address}
