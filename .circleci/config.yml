@@ -44,7 +44,7 @@ jobs:
       # SSH into ec2, pull and start new build container images
       # TODO: write bash script to check for running containers and stop them if found.
       - run: cd /home/circleci/project/
-      - run: ssh -i "sef-keys.pem" ec2-user@ec2-100-26-21-128.compute-1.amazonaws.com "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin http://599570849149.dkr.ecr.us-east-1.amazonaws.com/ && sudo service docker start && docker pull 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:back_V1 && docker pull 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:front_V1 && docker run --publish 8080:8080 --detach --name back_v1 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:back_V1 && docker run -it -d -p 3000:3000 --name front_V1 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:front_V1"
+      - run: ssh -i "sef-keys.pem" ec2-34-204-47-86.compute-1.amazonaws.com "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin http://599570849149.dkr.ecr.us-east-1.amazonaws.com/ && sudo service docker start && docker pull 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:back_V1 && docker pull 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:front_V1 && docker run --publish 8080:8080 --detach --name back_v1 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:back_V1 && docker run -it -d -p 3000:3000 --name front_V1 599570849149.dkr.ecr.us-east-1.amazonaws.com/sef-major-project:front_V1"
 
 
 
