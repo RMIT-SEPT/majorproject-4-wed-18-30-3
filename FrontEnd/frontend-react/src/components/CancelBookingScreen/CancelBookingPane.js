@@ -156,7 +156,7 @@ class CancelBookingPane extends Component {
             var userBkgs = []
 
             console.log(bkgs)
-            var msgString = "Booking History Is Empty!!!"
+            var msgString = "Booking history is empty!"
 
             if (bkgs !== undefined) {
                 // Only add bookings if theyre in the future
@@ -203,7 +203,10 @@ class CancelBookingPane extends Component {
             alert("Please enter a valid booking ID")
             return
         }
-
+        if(this.state.msgString === "Booking history is empty!") {
+            alert("You have no bookings to cancel")
+            return
+        }
 
         const reasonInfo = {
             bookingReference: this.state.bookingReference,
@@ -413,7 +416,7 @@ class CancelBookingPane extends Component {
             return (
                 <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
                     <br/>    
-                    <b>Booking cancelled successfully. Thanks, {this.props.userName}.</b>
+                    <font color="green"><b>Booking cancelled successfully. Thanks, {this.props.userName}.</b></font>
                     <br/><br/>   
 
                     <div className="row">
@@ -434,7 +437,7 @@ class CancelBookingPane extends Component {
             return (
                 <div className="booking_screen_bookingpane" id="booking_screen_bookingpane">
                     <br/>    
-                    <b>Cancellation failed. Please try again.</b>
+                    <font color="red"><b>Cancellation failed. Please try again.</b></font>
                     <br/><br/>   
                 
                 <div className="row">
