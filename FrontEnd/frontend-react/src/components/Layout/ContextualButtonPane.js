@@ -22,12 +22,6 @@ class ContextualButtonPane extends Component {
                 <Link to="/cancel" className="btn btn-outline-dark" id="navButton">Cancel existing booking</Link>
                 <br/><br/>
                 
-                <Link to="/my_bookings" className="btn btn-outline-dark" id="navButton">View my current bookings</Link>
-                <br/><br/>
-
-                <Link to="/history" className="btn btn-outline-dark" id="navButton">View my booking history</Link>
-                <br/><br/>
-
                 <Link to="/profile" className="btn btn-outline-dark" id="navButton">Edit my profile</Link>
                 <br/><br/>
 
@@ -51,13 +45,16 @@ class ContextualButtonPane extends Component {
                 <Link to="/admin_booking_summary" className="btn btn-outline-dark" id="navButton">7-day summary</Link>
                 <br/><br/>
                 
-                <Link to="/admin_set_availabilites" className="btn btn-outline-dark" id="navButton">Set worker availability</Link>
+                <Link to="/admin_set_availabilities" className="btn btn-outline-dark" id="navButton">Set worker availability</Link>
+                <br/><br/>
+
+                <Link to="/admin_view_user" className="btn btn-outline-dark" id="navButton">View customer bookings</Link>
                 <br/><br/>
 
                 <Link to="/admin_add_worker" className="btn btn-outline-dark" id="navButton">Add new worker</Link>
                 <br/><br/>
 
-                <Link to="/admin_edit_user" className="btn btn-outline-dark" id="navButton">Edit user details</Link>
+                <Link to="/admin_edit_user" className="btn btn-outline-dark" id="navButton">Edit worker details</Link>
                 <br/><br/>
 
                 <Link to="/profile" className="btn btn-outline-dark" id="navButton">Edit my profile</Link>

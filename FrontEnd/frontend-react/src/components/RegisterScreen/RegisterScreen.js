@@ -98,7 +98,7 @@ class RegisterScreen extends Component {
     
     onTypeChange(type) {
         this.setState({ userType: type})
-        if (type.value == "WORKER") {
+        if (type.value === "WORKER") {
             this.setState({ showService: true})
         }
     }

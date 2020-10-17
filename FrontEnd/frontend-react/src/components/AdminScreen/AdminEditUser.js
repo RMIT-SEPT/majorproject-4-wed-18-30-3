@@ -73,10 +73,10 @@ async function getWorkers(token) {
 
 }
 
-const capitalise = (string) => {
-    if (typeof string !== 'string') return ''
-    return string.charAt(0).toUpperCase() + string.slice(1)
-}
+// const capitalise = (string) => {
+//     if (typeof string !== 'string') return ''
+//     return string.charAt(0).toUpperCase() + string.slice(1)
+// }
 
 // Return an array of all customer objects
 // async function getUsers() {
@@ -260,6 +260,7 @@ class AdminEditUser extends Component {
 
                     
 
+                    <h2>Edit user details</h2>
                     <div className="row">
                         <div className="col-sm-3">
                             <NavPane

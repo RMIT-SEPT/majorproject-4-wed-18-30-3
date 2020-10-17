@@ -46,32 +46,6 @@ function parseDateString(dStr) {
     return date
 }
 
-// Return the next chronological timeslot in backend format
-function nextSlot(date, increment) {
-    return new Date(date.getTime() + increment*60000);
-}
-
-// Return the given time in backend-friendly format 
-function formatTime(date) {
-    var dateString =
-        date.getFullYear() + "-" +
-        ("0" + (date.getMonth()+1)).slice(-2) + "-" +
-        ("0" + date.getDate()).slice(-2) + "-" +
-        ("0" + date.getHours()).slice(-2) + "-" +
-        ("0" + date.getMinutes()).slice(-2) + "-" +
-        ("0" + date.getSeconds()).slice(-2);
-    return dateString
-}
-
-// Return current time as Date object rounded to its next upper increment
-function roundedCurrentTime(increment) {
-    var date = new Date()
-    var ms = 1000 * 60 * increment;
-    var rDate = new Date(Math.round(date.getTime() / ms) * ms);
-    rDate.setMinutes(rDate.getMinutes() + increment)
-    return rDate 
-}
-
 class AdminBookingSummary extends Component {
 
     constructor(props) {
@@ -127,10 +101,6 @@ class AdminBookingSummary extends Component {
                 for (let i = 0; i < bkgs.length; i++) {
                    
                     // Only list future timeslots
-                    var currentTime = roundedCurrentTime(30)
-                    var formattedTime = formatTime(currentTime)
-                    var next = formatTime(nextSlot(currentTime, 30))
-                    var nextNext = formatTime(nextSlot(currentTime, 60))
                     var bkgDate = parseDateString(bkgs[i].timeslot.date)                  
 
                     // if (parseDateString(bkgs[i]["timeslot"]["date"])  > parseDateString(formattedTime) || parseDateString(bkgs[i]["timeslot"]["date"])  > parseDateString(next) || parseDateString(bkgs[i]["timeslot"]["date"])  > parseDateString(nextNext)) {

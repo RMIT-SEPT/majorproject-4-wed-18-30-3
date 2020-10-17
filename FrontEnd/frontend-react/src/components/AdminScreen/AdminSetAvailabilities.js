@@ -39,11 +39,6 @@ async function setAvailability(availability, token, userType, userName) {
     })
 }
 
-const capitalise = (string) => {
-    if (typeof string !== 'string') return null
-    return string.charAt(0).toUpperCase() + string.slice(1)
-}
-
 // Create date object from "YYYY-MM-DD-hh-mm-ss" string
 function parseDateString(dStr) {
     var date = new Date()
