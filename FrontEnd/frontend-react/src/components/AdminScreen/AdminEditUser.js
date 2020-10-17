@@ -260,6 +260,7 @@ class AdminEditUser extends Component {
 
                     
 
+                    <h2>Edit user details</h2>
                     <div className="row">
                         <div className="col-sm-3">
                             <NavPane

@@ -9,9 +9,7 @@ import { connect } from 'react-redux'
 
 const DNS_URI = "http://localhost:8080"
 // const DNS_URI = "http://ec2-34-204-47-86.compute-1.amazonaws.com:8080"
-
 // const axiosConfig = {headers: {'Content-Type': 'application/json'}}
-
 
 // Return all availability objects
 async function getBookings(token, userType, userName) {
@@ -38,6 +36,7 @@ async function getBookings(token, userType, userName) {
             return response.data.bookings
         }).catch(function (error) {
             console.error("getBookings()", error)
+            console.log(error.response)
             console.log(error.response.data)
         });
     }
@@ -328,34 +327,29 @@ class CancelBookingPane extends Component {
                                 <div className="list-group-item d-flex justify-content-between align-items-center" >
 
                                     <table width="2000%" border="2">
-                                        <tr>
-                                            <th>Booking ID </th>
-                                            <th>ServiceName</th>
-                                            <th>WorkerName</th>
-                                            <th>Duration</th>
-                                            
-                                        </tr>
-                                        <tr>
-                                            <td>{bkg["id"]}</td>
-                                            <td>{capitalise(bkg["service"]["name"])}</td>
-                                            <td>{bkg["worker"]["user"]["userName"]}</td>
-                                            <td>{bkg["service"]["minDuration"]}</td>
-                                            
-                                        </tr>
-
-
+                                        <thead>
+                                            <tr>
+                                                <th>Booking ID </th>
+                                                <th>ServiceName</th>
+                                                <th>WorkerName</th>
+                                                <th>Duration</th>
+                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>{bkg["id"]}</td>
+                                                <td>{capitalise(bkg["service"]["name"])}</td>
+                                                <td>{bkg["worker"]["user"]["userName"]}</td>
+                                                <td>{bkg["service"]["minDuration"]}</td>
+                                            </tr>
+                                        </tbody>
                                     </table>
-
                                 </div>
-
                             </div>
-
-
                         )
                     })
                 }
-
-
             }
 
             // Check user is logged in
@@ -415,13 +409,14 @@ class CancelBookingPane extends Component {
 
                                     <div className="form1">
                                         <div className="col-sm">
-                                            <input type="submit" value="delete" className="btn btn-outline-dark" id="navButton" 
+                                            <input type="submit" value="Cancel" className="btn btn-outline-dark" id="navButton" 
                                             />
                                         </div>
+                                        <br/>
                                         <div className="col-sm">
-                                        <button className="btn btn-sm btn-dark" id="navButton" onClick={refresh}>
-                                Cancel another booking
-                            </button>    
+                                        <button className="btn btn-outline-dark" id="navButton" onClick={refresh}>
+                                            Reset form
+                                        </button>    
                         </div>
                                     </div>
                                 </form>
