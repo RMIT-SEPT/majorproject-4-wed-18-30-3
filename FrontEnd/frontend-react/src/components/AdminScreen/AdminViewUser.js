@@ -4,7 +4,7 @@ import Header from '../Layout/Header';
 import axios from "axios";
 import Footer from "../Layout/Footer";
 import Select from "react-select";
-import makeAnimated from "react-select/animated/dist/react-select.esm";
+import makeAnimated from 'react-select/animated';
 import NavPane from "../Layout/NavPane";
 import {Link} from "react-router-dom";
 
@@ -69,7 +69,7 @@ class AdminViewUser extends Component {
         }
         this.onSubmit = this.onSubmit.bind(this);
         this.onCustomerChange = this.onCustomerChange.bind(this);
-        this.getOptionCustomers = this.getOptionCustomers(this);
+        this.getOptionCustomers = this.getOptionCustomers.bind(this);
     }
 
     onCustomerChange(customer){
@@ -217,12 +217,12 @@ class AdminViewUser extends Component {
                                         </div>
                                     </div>
                                     <div className="row">
-                                        <div className="col-sm"></div>
+                                        <div className="col-sm"/>
                                         <div className="col-sm">
                                             <input type="submit" className="btn btn-outline-dark" placeholder="Search"
                                                    id="navButton"/>
                                         </div>
-                                        <div className="col-sm"></div>
+                                        <div className="col-sm"/>
                                     </div>
                                 </form>
                             </div>
