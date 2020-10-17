@@ -254,7 +254,7 @@ class AdminViewUser extends Component {
                             </div>
                             <div className="col-sm">
                                 <br/>
-                                <p>Bookings:</p>
+                                <p>Booking Details:</p>
                                 {dateOfApp}
                                 <br/>
                                 {worker}
