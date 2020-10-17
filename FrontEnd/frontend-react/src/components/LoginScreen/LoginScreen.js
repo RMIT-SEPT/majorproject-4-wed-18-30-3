@@ -103,7 +103,7 @@ class LoginScreen extends Component {
                 <br/><br/><br/><br/><br/>
 
                 <div className="row">
-                    <div className="col-sm"></div>  
+                    <div className="col-sm"/>
                     <div className="col-sm">
                     <br/><br/>
             
@@ -128,7 +128,7 @@ class LoginScreen extends Component {
 
                                     </div>    
                                 </div>
-                                <div className="col-1"></div>
+                                <div className="col-1"/>
                                 </div>
 
                                 <div className="row">
@@ -145,27 +145,27 @@ class LoginScreen extends Component {
                                             
                                             </div>    
                                         </div>
-                                    <div className="col-1"></div>
+                                    <div className="col-1"/>
                                 </div>
 
                                 <div className="row form-group">
                                     <div className="col-10">
                                         <input type="submit" value="Sign in" className="btn btn-outline-dark" id="navButton"/>
                                     </div>
-                                    <div className="col-1"></div>    
+                                    <div className="col-1"/>
                                 </div>
 
                                 <div className="row form-group">
                                     <div className="col-10">
                                         <a href="/register" className="btn btn-outline-dark" id="navButton">Register</a>
                                     </div>
-                                    <div className="col-1"></div>    
+                                    <div className="col-1"/>
                                 </div>
 
                             </form>
                             <br/><br/><br/>
                         </div>
-                    <div className="col-sm"></div>  
+                    <div className="col-sm"/>
                 </div>
             <Footer/>
             </div>

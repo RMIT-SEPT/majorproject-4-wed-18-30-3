@@ -134,11 +134,11 @@ class AdminAddWorker extends Component {
 
                                 <b><font color="red">{this.state.errorMessage}</font></b>
                                 <b><font color="green">{this.state.successMessage}</font></b>
-                                <br></br><br></br>
+                                <br/><br/>
                                 <form onSubmit={this.onSubmit}>
 
                                     <div className="row">
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                         <div className="col-8">
                                             <div className = "form-group">
                                                 <input type="text" className="form-control"
@@ -150,11 +150,11 @@ class AdminAddWorker extends Component {
                                                 </input>
                                             </div>
                                         </div>
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                     </div>
 
                                     <div className="row">
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                         <div className="col-8">
                                             <div className = "form-group">
                                                 <input type="password" className="form-control"
@@ -166,11 +166,11 @@ class AdminAddWorker extends Component {
                                                 </input>
                                             </div>
                                         </div>
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                     </div>
 
                                     <div className="row">
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                         <div className="col-8">
                                             <div className = "form-group">
                                                 <input type="text" className="form-control"
@@ -182,12 +182,12 @@ class AdminAddWorker extends Component {
                                                 </input>
                                             </div>
                                         </div>
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                     </div>
 
 
                                     <div className="row">
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                         <div className="col-8">
                                             <div className = "form-group">
                                                 <input type="text" className="form-control"
@@ -199,11 +199,11 @@ class AdminAddWorker extends Component {
                                                 </input>
                                             </div>
                                         </div>
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                     </div>
 
                                     <div className="row">
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                         <div className="col-8">
                                             <div className = "form-group">
                                                 <input type="text" className="form-control"
@@ -215,12 +215,12 @@ class AdminAddWorker extends Component {
                                                 </input>
                                             </div>
                                         </div>
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                     </div>
 
 
                                     <div className="row">
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                         <div className="col-8">
                                             <div className = "form-group">
                                                 <input type="text" className="form-control"
@@ -232,12 +232,12 @@ class AdminAddWorker extends Component {
                                                 </input>
                                             </div>
                                         </div>
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                     </div>
 
 
                                     <div className="row">
-                                    <div className="col-2"></div>    
+                                    <div className="col-2"/>
                                     <div className="col-8">
                                         <div className = "form-group">
                                             <input type="company" className="form-control"
@@ -249,11 +249,11 @@ class AdminAddWorker extends Component {
                                             </input>
                                             </div>
                                         </div>    
-                                    <div className="col-2"></div>
+                                    <div className="col-2"/>
                                 </div>
 
                                     <div className="row">
-                                    <div className="col-2"></div>    
+                                    <div className="col-2"/>
                                     <div className="col-8">
                                         <div className = "form-group">
                                             <input type="service" className="form-control"
@@ -265,23 +265,23 @@ class AdminAddWorker extends Component {
                                             </input>
                                             </div>
                                         </div>    
-                                    <div className="col-2"></div>
+                                    <div className="col-2"/>
                                 </div>
 
                                     <div className="row">
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                         <div className="col-8">
                                             <input type="submit" className="btn btn-outline-dark" id="navButton"/>
                                         </div>
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                     </div>
                                     <br/>
                                     <div className="row">
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                         <div className="col-8">
                                             
                                         </div>
-                                        <div className="col-2"></div>
+                                        <div className="col-2"/>
                                     </div>
 
                                 </form>

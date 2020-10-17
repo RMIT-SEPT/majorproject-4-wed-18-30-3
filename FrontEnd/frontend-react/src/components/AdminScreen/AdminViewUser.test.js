@@ -5,6 +5,7 @@ import Adapter from 'enzyme-adapter-react-16.3'
 import AdminViewUser from './AdminViewUser';
 import Select from "react-select";
 
+
 configure({ adapter: new Adapter() });
 //FUNCTIONAL TESTS
 describe('<AdminViewUser/>', function() {
