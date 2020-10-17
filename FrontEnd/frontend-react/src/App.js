@@ -51,8 +51,8 @@ function App() {
       <Route exact path="/set_availabilites_reset" component={SetAvailabilitiesScreen}/>
       <Route exact path="/admin_booking_summary" component={AdminBookingSummary}/>
       <Route exact path="/admin_add_worker" component={AdminAddWorker}/>
-      <Route exact path="/admin_set_availabilites" component={AdminSetAvailabilities}/>
-      <Route exact path="/admin_set_availabilites_reset" component={AdminSetAvailabilities}/>
+      <Route exact path="/admin_set_availabilities" component={AdminSetAvailabilities}/>
+      <Route exact path="/admin_set_availabilities_reset" component={AdminSetAvailabilities}/>
       <Route exact path="/admin_edit_user" component={AdminEditUser}/>
       <Route exact path="/admin_view_user" component={AdminViewUser}/>
       <Route exact path="/about" component={AboutScreen}/>
