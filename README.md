@@ -5,6 +5,15 @@
 ## Deployment DNS 
 http://ec2-34-204-47-86.compute-1.amazonaws.com:3000/login
 
+There are some pre-populated users for convenience:
+Username|Password|Type
+--------|--------|----
+Admin|password|admin
+Customer|password|customer
+Jim|password|worker
+Wendy|password|worker
+Dave|password|worker
+
 ## Members
 * Kogan, Yonathan (s3719826)
 * van Roon, Cameron (s3382032)
