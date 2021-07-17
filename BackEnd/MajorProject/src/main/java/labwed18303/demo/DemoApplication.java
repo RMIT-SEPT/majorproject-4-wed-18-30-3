@@ -9,9 +9,13 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.text.DateFormat;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @SpringBootApplication
 public class DemoApplication {
@@ -33,8 +37,16 @@ public static int NUM_STARTING_AVAILABILITIES = 744;
        long minDurationMillis = 1000 * 60 * MIN_DURATION;
        long trimmed = now.getTime() / minDurationMillis;
        long rounded = trimmed * minDurationMillis;
+        ParsePosition pos = null;
+        DateFormat localformatter = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
+        localformatter.setTimeZone(TimeZone.getDefault());
+        DateFormat ausformatter = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
+        ausformatter.setTimeZone(TimeZone.getTimeZone("AEDT"));
        for(int i = 0; i < NUM_STARTING_TIMESLOTS; ++i){
-           timeslotService.saveOrUpdateTimeslot(new Timeslot(i, 30, new Date(rounded + minDurationMillis * i), now, now));
+           pos = new ParsePosition(0);
+           String localDate = localformatter.format(new Date(rounded + minDurationMillis * i));
+           Date convertedDate = ausformatter.parse(localDate, pos);
+           timeslotService.saveOrUpdateTimeslot(new Timeslot(i, 30, convertedDate, now, now));
        }
 
        List<ServiceProvided> services = new ArrayList<>();
@@ -71,11 +83,13 @@ public static int NUM_STARTING_AVAILABILITIES = 744;
         for(Customer customer : customers){
             customerService.saveOrUpdateCustomer(customer);
         }
-
-
+        Date itDate = null;
         int bookingCounter = 0;
         for(int i = 0; i<NUM_STARTING_AVAILABILITIES; ++i){
-            Date itDate = new Date(rounded + (bookingCounter * minDurationMillis));
+            pos = new ParsePosition(0);
+            itDate = new Date(rounded + (bookingCounter * minDurationMillis));
+            String localDate = localformatter.format(itDate);
+            itDate = ausformatter.parse(localDate, pos);
             while(itDate.getHours() > 16 || itDate.getHours() < 9){
                 ++bookingCounter;
                 itDate = new Date(rounded + (bookingCounter * minDurationMillis));
